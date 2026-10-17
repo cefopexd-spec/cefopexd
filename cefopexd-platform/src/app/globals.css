@@ -1,0 +1,328 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* =============================================
+   VARIABLES CSS — THÈME CEFOPEXD
+   Logo : CeFo=vert, PExD=rouge, toit=vert,
+   symbole=bleu+rouge+orange
+   ============================================= */
+:root {
+  /* Palette principale tirée du logo CeFoPExD */
+  --primary:      #1E40D8;   /* bleu symbole — boutons, liens, titres */
+  --primary-dark: #0F1F6B;   /* bleu nuit — hero, footer, sidebar */
+  --secondary:    #1FB31F;   /* vert CeFo — succès, badges */
+  --accent:       #E8231A;   /* rouge PExD — alertes, CTA forts */
+  --highlight:    #F5A623;   /* orange points — bouton inscrire, soulignés */
+
+  /* Fond et texte */
+  --bg:           #FFFFFF;
+  --bg-soft:      #F5F7FB;
+  --text:         #1A1F36;
+  --muted:        #6B7280;
+  --border:       #E5E7EB;
+
+  /* Ombres */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.15);
+
+  /* Coins arrondis */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Variables shadcn/ui (mappées sur notre palette) */
+  --radius: 0.75rem;
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary-shadcn: 226 75% 48%;
+  --primary-foreground: 0 0% 100%;
+  --secondary-shadcn: 125 70% 41%;
+  --secondary-foreground: 0 0% 100%;
+  --muted-shadcn: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --accent-shadcn: 0 79% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border-shadcn: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 226 75% 48%;
+}
+
+.dark {
+  --background: 222 47% 7%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 10%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 10%;
+  --popover-foreground: 210 40% 98%;
+  --primary-shadcn: 226 75% 60%;
+  --primary-foreground: 0 0% 100%;
+  --muted-shadcn: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --border-shadcn: 217 33% 17%;
+  --input: 217 33% 17%;
+}
+
+/* =============================================
+   RÉINITIALISATION & BASE
+   ============================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* =============================================
+   BOUTONS
+   ============================================= */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  padding: 12px 28px;
+  border-radius: var(--radius-full);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(30, 64, 216, 0.3);
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 64, 216, 0.4);
+}
+
+.btn-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--highlight);
+  color: white;
+  padding: 12px 28px;
+  border-radius: var(--radius-full);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(245, 166, 35, 0.35);
+}
+.btn-highlight:hover {
+  background: #e09415;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 166, 35, 0.45);
+}
+
+.btn-outline-white {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: white;
+  padding: 11px 27px;
+  border-radius: var(--radius-full);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+}
+.btn-outline-white:hover {
+  background: white;
+  color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+/* =============================================
+   CARTES
+   ============================================= */
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: var(--transition);
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* =============================================
+   LAYOUT
+   ============================================= */
+.section    { padding: 80px 0; }
+.section-sm { padding: 48px 0; }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* =============================================
+   TYPOGRAPHIE SECTION
+   ============================================= */
+.section-label {
+  display: inline-block;
+  color: var(--highlight);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 600px;
+}
+
+/* Ligne décorative orange */
+.orange-line {
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--highlight), var(--accent));
+  border-radius: var(--radius-full);
+  margin: 16px 0 32px;
+}
+.orange-line-center { margin: 16px auto 32px; }
+
+/* Phrase manuscrite */
+.cursive-text {
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  color: var(--highlight);
+  font-size: 1.1rem;
+}
+
+/* Hero gradient */
+.hero-gradient {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, #1a3498 50%, #1E40D8 100%);
+}
+
+/* =============================================
+   SCROLLBAR
+   ============================================= */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-soft); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes kenBurns {
+  from { transform: scale(1); }
+  to   { transform: scale(1.08); }
+}
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.4); }
+  50%       { box-shadow: 0 0 0 10px rgba(245, 166, 35, 0); }
+}
+
+.animate-fade-up    { animation: fadeInUp 0.6s ease forwards; }
+.animate-fade-left  { animation: fadeInLeft 0.6s ease forwards; }
+.animate-fade-right { animation: fadeInRight 0.6s ease forwards; }
+.animate-ken-burns  { animation: kenBurns 8s ease-in-out infinite alternate; }
+.animate-pulse-glow { animation: pulse-glow 2s infinite; }
+.animate-slide-down { animation: slideInDown 0.4s ease forwards; }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .section    { padding: 56px 0; }
+  .section-sm { padding: 32px 0; }
+  .container  { padding: 0 16px; }
+}
+@media (max-width: 480px) {
+  .section   { padding: 40px 0; }
+  .container { padding: 0 12px; }
+}
+
+/* =============================================
+   MODE SOMBRE (dashboards)
+   ============================================= */
+.dark-dashboard {
+  --bg: #0F172A;
+  --bg-soft: #1E293B;
+  --text: #F1F5F9;
+  --muted: #94A3B8;
+  --border: #334155;
+}

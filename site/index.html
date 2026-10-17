@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CeFoPExD – Centre de Formation Professionnelle d'Excellence de Dévikimè</title>
+  <meta name="description" content="Le CeFoPExD offre des formations professionnelles qualifiantes en Informatique, Mécatronique, Agro-alimentaire et Énergie renouvelable à Dévikimè, Lomé – Togo.">
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- ============ EN-TÊTE ============ -->
+<header class="header" id="header">
+  <div class="container header__inner">
+    <a href="#accueil" class="brand" aria-label="CeFoPExD – Accueil">
+      <img src="assets/img/logo.png" alt="Logo CeFoPExD" class="brand__logo">
+      <span class="brand__text">Centre de Formation Professionnelle<br>d'Excellence de Dévikimè</span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Navigation principale">
+      <ul class="nav__list">
+        <li><a href="#accueil" class="nav__link active">Accueil</a></li>
+        <li><a href="#apropos" class="nav__link">À propos</a></li>
+        <li class="has-dropdown">
+          <a href="#filieres" class="nav__link">Nos Filières <i class="fa-solid fa-chevron-down"></i></a>
+          <ul class="dropdown">
+            <li><a href="#filieres" data-filiere="informatique"><i class="fa-solid fa-desktop"></i> Informatique appliquée</a></li>
+            <li><a href="#filieres" data-filiere="mecatronique"><i class="fa-solid fa-gear"></i> Mécatronique</a></li>
+            <li><a href="#filieres" data-filiere="agro"><i class="fa-solid fa-leaf"></i> Agro-alimentaire</a></li>
+            <li><a href="#filieres" data-filiere="energie"><i class="fa-solid fa-solar-panel"></i> Énergie renouvelable</a></li>
+          </ul>
+        </li>
+        <li><a href="#inscription" class="nav__link">S'inscrire ici</a></li>
+        <li class="has-dropdown">
+          <a href="#actualites" class="nav__link">S'informer <i class="fa-solid fa-chevron-down"></i></a>
+          <ul class="dropdown">
+            <li><a href="#actualites"><i class="fa-regular fa-newspaper"></i> Actualités</a></li>
+            <li><a href="#chiffres"><i class="fa-solid fa-chart-simple"></i> Chiffres clés</a></li>
+            <li><a href="#faq"><i class="fa-regular fa-circle-question"></i> Questions fréquentes</a></li>
+          </ul>
+        </li>
+        <li><a href="#contact" class="nav__link">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <button class="icon-btn" id="searchBtn" aria-label="Rechercher"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <a href="#inscription" class="btn btn--green btn--sm"><i class="fa-solid fa-user"></i> S'inscrire</a>
+      <button class="burger" id="burger" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="search-bar" id="searchBar">
+    <div class="container">
+      <form id="searchForm" class="search-bar__form">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" id="searchInput" placeholder="Rechercher une filière, une actualité…" aria-label="Rechercher">
+        <button type="submit" class="btn btn--blue btn--sm">Rechercher</button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ============ HÉRO / SLIDER ============ -->
+<section class="hero" id="accueil">
+  <div class="hero__slides">
+    <div class="hero__slide is-active" style="background-image:url('assets/img/informatique.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('assets/img/agro.jpg')"></div>
+    <div class="hero__slide" style="background-image:url('assets/img/energie.jpg')"></div>
+  </div>
+  <div class="hero__overlay"></div>
+
+  <div class="container hero__content">
+    <p class="hero__eyebrow">Bienvenue au CeFoPExD</p>
+    <h1 class="hero__title" id="heroTitle">Votre avenir professionnel <span>commence ici !</span></h1>
+    <p class="hero__text" id="heroText">Le Centre de Formation Professionnelle d'Excellence de Dévikimè vous offre une formation de qualité, adaptée aux besoins du marché de l'emploi et aux défis de demain.</p>
+    <div class="hero__cta">
+      <a href="#filieres" class="btn btn--green"><i class="fa-solid fa-graduation-cap"></i> Découvrir nos filières</a>
+      <a href="#inscription" class="btn btn--outline-light"><i class="fa-regular fa-pen-to-square"></i> S'inscrire maintenant</a>
+    </div>
+  </div>
+
+  <p class="hero__script">Formations qualifiantes<br>pour un avenir durable</p>
+
+  <button class="hero__arrow hero__arrow--prev" id="prevSlide" aria-label="Diapositive précédente"><i class="fa-solid fa-chevron-left"></i></button>
+  <button class="hero__arrow hero__arrow--next" id="nextSlide" aria-label="Diapositive suivante"><i class="fa-solid fa-chevron-right"></i></button>
+  <div class="hero__dots" id="heroDots"></div>
+</section>
+
+<!-- ============ ATOUTS ============ -->
+<section class="features">
+  <div class="container features__grid">
+    <div class="feature"><i class="fa-solid fa-graduation-cap c-blue"></i><div><h3>Formations qualifiantes</h3><p>Des compétences pour réussir</p></div></div>
+    <div class="feature"><i class="fa-solid fa-users c-green"></i><div><h3>Encadrement professionnel</h3><p>Une équipe pédagogique expérimentée</p></div></div>
+    <div class="feature"><i class="fa-solid fa-gear c-red"></i><div><h3>Infrastructures modernes</h3><p>Des équipements à la pointe</p></div></div>
+    <div class="feature"><i class="fa-solid fa-handshake c-orange"></i><div><h3>Partenariats solides</h3><p>Avec les entreprises et institutions</p></div></div>
+    <div class="feature"><i class="fa-solid fa-bullseye c-blue"></i><div><h3>Insertion professionnelle</h3><p>Un tremplin vers l'emploi</p></div></div>
+  </div>
+</section>
+
+<!-- ============ FILIÈRES ============ -->
+<section class="section" id="filieres">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">Nos filières</span>
+      <h2 class="section__title">Nos filières de formation</h2>
+      <p class="section__sub">Choisissez la filière qui correspond à vos ambitions et construisez votre avenir avec nous.</p>
+    </div>
+
+    <div class="cards">
+      <article class="card" data-color="blue" data-id="informatique">
+        <div class="card__img"><img src="assets/img/informatique.jpg" alt="Étudiants travaillant sur une baie de serveurs" loading="lazy"></div>
+        <span class="card__icon"><i class="fa-solid fa-desktop"></i></span>
+        <div class="card__body">
+          <h3>Informatique appliquée</h3>
+          <p>Développez vos compétences en programmation, réseaux, bases de données et plus encore.</p>
+          <button class="card__btn" data-open="informatique">Détails <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </article>
+
+      <article class="card" data-color="red" data-id="mecatronique">
+        <div class="card__img card__img--illu">
+          <i class="fa-solid fa-gears illu-big"></i><i class="fa-solid fa-microchip illu-sm illu-sm--1"></i><i class="fa-solid fa-robot illu-sm illu-sm--2"></i>
+        </div>
+        <span class="card__icon"><i class="fa-solid fa-gear"></i></span>
+        <div class="card__body">
+          <h3>Mécatronique</h3>
+          <p>Maîtrisez la mécanique, l'électronique, l'automatisation et la maintenance des équipements.</p>
+          <button class="card__btn" data-open="mecatronique">Détails <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </article>
+
+      <article class="card" data-color="green" data-id="agro">
+        <div class="card__img"><img src="assets/img/agro.jpg" alt="Opérateur sur une ligne de production agro-alimentaire" loading="lazy"></div>
+        <span class="card__icon"><i class="fa-solid fa-leaf"></i></span>
+        <div class="card__body">
+          <h3>Agro-alimentaire</h3>
+          <p>Transformez et valorisez les produits agricoles dans le respect des normes sanitaires.</p>
+          <button class="card__btn" data-open="agro">Détails <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </article>
+
+      <article class="card" data-color="orange" data-id="energie">
+        <div class="card__img"><img src="assets/img/energie.jpg" alt="Panneaux solaires et éoliennes" loading="lazy"></div>
+        <span class="card__icon"><i class="fa-solid fa-sun"></i></span>
+        <div class="card__body">
+          <h3>Énergie renouvelable</h3>
+          <p>Formez-vous aux solutions énergétiques durables pour un avenir plus vert.</p>
+          <button class="card__btn" data-open="energie">Détails <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ À PROPOS + ACTUALITÉS ============ -->
+<section class="section section--tint" id="apropos">
+  <div class="container about-news">
+    <div class="about">
+      <div class="about__visual">
+        <div class="about__logo-card"><img src="assets/img/logo.png" alt="CeFoPExD"></div>
+        <div class="about__badge"><strong>100%</strong><span>orienté métier</span></div>
+      </div>
+      <div class="about__text">
+        <span class="eyebrow eyebrow--left">À propos de nous</span>
+        <h2 class="section__title section__title--left">Le CeFoPExD, un centre d'excellence</h2>
+        <p>Le Centre de Formation Professionnelle d'Excellence de Dévikimè est un établissement engagé dans la formation de jeunes talentueux, capables de répondre aux besoins du monde professionnel et de contribuer au développement durable de notre pays.</p>
+        <ul class="values">
+          <li><i class="fa-solid fa-eye c-blue"></i><div><strong>Une vision</strong><span>Développer les compétences</span></div></li>
+          <li><i class="fa-solid fa-user-tie c-green"></i><div><strong>Une mission</strong><span>Former pour l'emploi</span></div></li>
+          <li><i class="fa-solid fa-shield-heart c-red"></i><div><strong>Des valeurs</strong><span>Excellence, intégrité, solidarité</span></div></li>
+        </ul>
+        <a href="#contact" class="btn btn--outline-blue btn--sm">En savoir plus <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <aside class="news" id="actualites">
+      <span class="eyebrow eyebrow--left eyebrow--orange">Actualités &amp; annonces</span>
+      <div class="news__head">
+        <h3>Restez informé de nos dernières actualités</h3>
+        <a href="#actualites" class="link-more">Voir toutes <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <ul class="news__list">
+        <li class="news__item">
+          <img src="assets/img/informatique.jpg" alt="" loading="lazy">
+          <div><h4>Ouverture des inscriptions 2026-2027</h4><time>12 septembre 2026</time><p>Les inscriptions pour la prochaine rentrée sont ouvertes. Ne manquez pas cette opportunité !</p></div>
+        </li>
+        <li class="news__item">
+          <img src="assets/img/agro.jpg" alt="" loading="lazy">
+          <div><h4>Journée portes ouvertes</h4><time>28 septembre 2026</time><p>Découvrez nos infrastructures et rencontrez notre équipe pédagogique.</p></div>
+        </li>
+        <li class="news__item">
+          <img src="assets/img/energie.jpg" alt="" loading="lazy">
+          <div><h4>Lancement de la filière Énergie renouvelable</h4><time>15 octobre 2026</time><p>Une nouvelle filière pour répondre aux enjeux énergétiques de demain.</p></div>
+        </li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ CHIFFRES ============ -->
+<section class="stats" id="chiffres">
+  <div class="container stats__grid">
+    <div class="stat"><i class="fa-solid fa-layer-group"></i><strong data-count="4">0</strong><span>Filières de formation</span></div>
+    <div class="stat"><i class="fa-solid fa-user-graduate"></i><strong data-count="500" data-suffix="+">0</strong><span>Apprenants formés</span></div>
+    <div class="stat"><i class="fa-solid fa-chalkboard-user"></i><strong data-count="30" data-suffix="+">0</strong><span>Formateurs qualifiés</span></div>
+    <div class="stat"><i class="fa-solid fa-briefcase"></i><strong data-count="85" data-suffix="%">0</strong><span>Taux d'insertion</span></div>
+  </div>
+</section>
+
+<!-- ============ INSCRIPTION ============ -->
+<section class="section" id="inscription">
+  <div class="container signup">
+    <div class="signup__info">
+      <span class="eyebrow eyebrow--left">S'inscrire ici</span>
+      <h2 class="section__title section__title--left">Rejoignez le CeFoPExD</h2>
+      <p>Remplissez le formulaire de pré-inscription. Notre équipe vous recontacte sous 48 h pour finaliser votre dossier.</p>
+      <ol class="steps">
+        <li><span>1</span><div><strong>Pré-inscription en ligne</strong><p>Remplissez le formulaire ci-contre.</p></div></li>
+        <li><span>2</span><div><strong>Dépôt du dossier</strong><p>Copie du diplôme, acte de naissance, 2 photos d'identité.</p></div></li>
+        <li><span>3</span><div><strong>Entretien d'orientation</strong><p>Un conseiller vous aide à confirmer votre choix.</p></div></li>
+        <li><span>4</span><div><strong>Rentrée</strong><p>Bienvenue dans la famille CeFoPExD !</p></div></li>
+      </ol>
+    </div>
+
+    <form class="form" id="signupForm" novalidate>
+      <h3 class="form__title"><i class="fa-regular fa-pen-to-square"></i> Formulaire de pré-inscription</h3>
+      <div class="form__row">
+        <div class="field"><label for="nom">Nom *</label><input id="nom" name="nom" type="text" required autocomplete="family-name"><small></small></div>
+        <div class="field"><label for="prenom">Prénom(s) *</label><input id="prenom" name="prenom" type="text" required autocomplete="given-name"><small></small></div>
+      </div>
+      <div class="form__row">
+        <div class="field"><label for="tel">Téléphone *</label><input id="tel" name="tel" type="tel" placeholder="+228 90 00 00 00" required autocomplete="tel"><small></small></div>
+        <div class="field"><label for="email">E-mail</label><input id="email" name="email" type="email" placeholder="exemple@mail.com" autocomplete="email"><small></small></div>
+      </div>
+      <div class="form__row">
+        <div class="field"><label for="filiere">Filière souhaitée *</label>
+          <select id="filiere" name="filiere" required>
+            <option value="">— Choisir une filière —</option>
+            <option value="informatique">Informatique appliquée</option>
+            <option value="mecatronique">Mécatronique</option>
+            <option value="agro">Agro-alimentaire</option>
+            <option value="energie">Énergie renouvelable</option>
+          </select><small></small></div>
+        <div class="field"><label for="niveau">Niveau d'étude *</label>
+          <select id="niveau" name="niveau" required>
+            <option value="">— Choisir un niveau —</option>
+            <option>BEPC</option><option>Probatoire</option><option>BAC</option><option>BAC +2 et plus</option><option>Autre</option>
+          </select><small></small></div>
+      </div>
+      <div class="field"><label for="message">Message (facultatif)</label><textarea id="message" name="message" rows="3" placeholder="Vos questions ou précisions…"></textarea></div>
+      <label class="check"><input type="checkbox" id="consent" required> J'accepte d'être recontacté(e) par le CeFoPExD.</label>
+      <small class="check__err" id="consentErr"></small>
+      <button type="submit" class="btn btn--green btn--block"><i class="fa-solid fa-paper-plane"></i> Envoyer ma pré-inscription</button>
+      <div class="form__success" id="formSuccess" hidden><i class="fa-solid fa-circle-check"></i> <span></span></div>
+    </form>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section section--tint" id="faq">
+  <div class="container faq">
+    <div class="section__head">
+      <span class="eyebrow">S'informer</span>
+      <h2 class="section__title">Questions fréquentes</h2>
+    </div>
+    <details class="faq__item" open><summary>Quelles sont les conditions d'admission ?</summary><p>Les filières sont accessibles à partir du BEPC selon le niveau de formation visé. Un entretien d'orientation permet de valider le parcours le plus adapté.</p></details>
+    <details class="faq__item"><summary>Quelle est la durée des formations ?</summary><p>Les formations qualifiantes durent de 6 mois à 2 ans, avec des périodes de stage en entreprise.</p></details>
+    <details class="faq__item"><summary>Les formations sont-elles pratiques ?</summary><p>Oui. Plus de 60 % du temps est consacré aux travaux pratiques dans nos ateliers et laboratoires équipés.</p></details>
+    <details class="faq__item"><summary>Le centre aide-t-il à trouver un emploi ?</summary><p>Grâce à nos partenariats avec les entreprises, nous accompagnons nos apprenants vers les stages, l'emploi et l'auto-entrepreneuriat.</p></details>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">Contact</span>
+      <h2 class="section__title">Nous contacter</h2>
+      <p class="section__sub">Une question ? Notre équipe est à votre écoute.</p>
+    </div>
+    <div class="contact__grid">
+      <div class="contact-card"><i class="fa-solid fa-location-dot c-red"></i><h3>Adresse</h3><p>Dévikimè, Lomé – Togo</p></div>
+      <div class="contact-card"><i class="fa-solid fa-phone c-green"></i><h3>Téléphone</h3><p><a href="tel:+22890000000">+228 90 00 00 00</a></p></div>
+      <div class="contact-card"><i class="fa-solid fa-envelope c-blue"></i><h3>E-mail</h3><p><a href="mailto:contact@cefopexd.tg">contact@cefopexd.tg</a></p></div>
+      <div class="contact-card"><i class="fa-regular fa-clock c-orange"></i><h3>Horaires</h3><p>Lun – Ven : 7h30 – 17h30<br>Sam : 8h – 12h</p></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ PIED DE PAGE ============ -->
+<footer class="footer">
+  <div class="footer__stripe"><span></span><span></span><span></span><span></span></div>
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <div class="footer__logo"><img src="assets/img/logo.png" alt="CeFoPExD"></div>
+      <p>Centre de Formation Professionnelle d'Excellence de Dévikimè</p>
+    </div>
+    <ul class="footer__contact">
+      <li><i class="fa-solid fa-location-dot"></i> Dévikimè, Lomé – Togo</li>
+      <li><i class="fa-solid fa-phone"></i> +228 90 00 00 00</li>
+      <li><i class="fa-solid fa-envelope"></i> contact@cefopexd.tg</li>
+    </ul>
+    <div class="footer__social">
+      <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+      <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+      <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+    <p class="footer__motto">Ensemble pour une jeunesse compétente<br>et un avenir meilleur !</p>
+  </div>
+  <div class="footer__bottom">© <span id="year"></span> CeFoPExD – Tous droits réservés.</div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="Retour en haut"><i class="fa-solid fa-arrow-up"></i></button>
+
+<!-- ============ MODALE FILIÈRE ============ -->
+<div class="modal" id="modal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal__close" data-close aria-label="Fermer"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal__head" id="modalHead"><i id="modalIcon"></i><h3 id="modalTitle"></h3></div>
+    <div class="modal__body">
+      <p id="modalDesc"></p>
+      <h4>Ce que vous apprendrez</h4>
+      <ul id="modalSkills" class="modal__list"></ul>
+      <h4>Débouchés</h4>
+      <ul id="modalJobs" class="modal__tags"></ul>
+      <div class="modal__meta"><span><i class="fa-regular fa-clock"></i> <b id="modalDuree"></b></span><span><i class="fa-solid fa-certificate"></i> <b id="modalDiplome"></b></span></div>
+      <a href="#inscription" class="btn btn--green" id="modalCta" data-close>S'inscrire à cette filière <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

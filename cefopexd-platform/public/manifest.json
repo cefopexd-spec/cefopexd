@@ -1,0 +1,33 @@
+{
+  "name": "CeFoPExD — Centre de Formation Professionnelle d'Excellence",
+  "short_name": "CeFoPExD",
+  "description": "Formations professionnelles d'excellence à Lomé, Togo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F1F6B",
+  "theme_color": "#1E40D8",
+  "orientation": "portrait-primary",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/logo-cefopexd.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-cefopexd.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education"],
+  "screenshots": [
+    {
+      "src": "/logo-cefopexd.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ]
+}
