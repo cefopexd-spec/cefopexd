@@ -326,9 +326,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Ligne du menu */
 .header-nav-row {
-  background: #F7F9F5;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  background: #E4F1DC;
+  border-top: 1px solid #D2E6C6;
+  border-bottom: 1px solid #D2E6C6;
 }
 .header-nav-row .container {
   display: flex;
@@ -356,13 +356,13 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.86rem;
-  color: #2E3550;
+  color: #1F2A1A;
   text-decoration: none;
   white-space: nowrap;
   transition: background 0.2s ease, color 0.2s ease;
 }
 .nav-link svg { flex-shrink: 0; }
-.nav-link .nav-ico { color: var(--muted); }
+.nav-link .nav-ico { color: var(--secondary-text); }
 .nav-link:hover,
 .nav-link[aria-expanded="true"] {
   background: white;
@@ -448,9 +448,9 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 600;
   font-size: 0.82rem;
-  color: #2E3550;
+  color: #1F2A1A;
 }
-.nav-strip-link svg { color: var(--muted); }
+.nav-strip-link svg { color: var(--secondary-text); }
 .nav-strip-link.is-active { background: var(--secondary-text); color: white; }
 .nav-strip-link.is-active svg { color: white; }
 
@@ -543,10 +543,21 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 95% 10%, rgba(34, 192, 3, 0.08), transparent 40%),
-    radial-gradient(circle at 0% 100%, rgba(253, 166, 3, 0.08), transparent 40%),
-    #FBFCFA;
+    radial-gradient(circle at 100% 0%, rgba(34, 192, 3, 0.10), transparent 45%),
+    radial-gradient(circle at 0% 100%, rgba(253, 166, 3, 0.10), transparent 40%),
+    #F2F7EF;
   color: var(--text);
+}
+/* Photo du centre très légère en fond, estompée côté texte */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.16;
+  filter: saturate(0.7);
+  -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0.35) 0%, #000 65%);
+          mask-image: linear-gradient(90deg, rgba(0,0,0,0.35) 0%, #000 65%);
+  pointer-events: none;
 }
 
 .hero .hero-grid {

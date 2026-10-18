@@ -244,6 +244,10 @@ export default function HomePage() {
           1. HERO
           ============================================= */}
       <section className="hero" aria-label="Présentation du CeFoPExD">
+        {/* Photo du campus en filigrane */}
+        <div className="hero-bg" aria-hidden="true">
+          <Image src="/images/campus-cefopexd.jpg" alt="" fill sizes="100vw" quality={60} style={{ objectFit: "cover" }} />
+        </div>
         <div className="container hero-grid">
           {/* ---- Texte ---- */}
           <div>
@@ -495,9 +499,9 @@ export default function HomePage() {
               {/* Vision / Mission / Valeurs */}
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  { label: "Notre vision", desc: "Développer les compétences", icon: "🎯", color: "var(--primary)" },
-                  { label: "Notre mission", desc: "Former pour l'emploi", icon: "🚀", color: "var(--secondary-text)" },
-                  { label: "Nos valeurs", desc: "Excellence, Intégrité, Solidarité", icon: "⭐", color: "var(--accent-text)" },
+                  { label: "Notre vision", desc: "Développer les compétences", color: "var(--primary)" },
+                  { label: "Notre mission", desc: "Former pour l'emploi", color: "var(--secondary-text)" },
+                  { label: "Nos valeurs", desc: "Excellence, Intégrité, Solidarité", color: "var(--accent-text)" },
                 ].map((item) => (
                   <div
                     key={item.label}
@@ -509,7 +513,6 @@ export default function HomePage() {
                     }}
                     className="vmv-item"
                   >
-                    <span style={{ fontSize: "1.4rem" }}>{item.icon}</span>
                     <div>
                       <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.9rem", color: item.color }}>{item.label}</div>
                       <div style={{ color: "var(--muted)", fontSize: "0.82rem" }}>{item.desc}</div>
@@ -629,32 +632,32 @@ export default function HomePage() {
           }}>
             {[
               {
-                icon: "🎓", title: "Formation d'excellence",
+                title: "Formation d'excellence",
                 desc: "Un enseignement de qualité qui fait de l'excellence sa priorité, en créant la différence pour devenir une référence.",
                 color: "var(--primary)"
               },
               {
-                icon: "💼", title: "Insertion professionnelle",
+                title: "Insertion professionnelle",
                 desc: "Nous formons des cadres capables de créer de l'emploi dans leur domaine, pas seulement d'en demander.",
                 color: "var(--accent-text)"
               },
               {
-                icon: "🤝", title: "Égalité des chances",
+                title: "Égalité des chances",
                 desc: "Nous respectons les différences et favorisons l'égalité des chances car la diversité est une richesse.",
                 color: "var(--secondary-text)"
               },
               {
-                icon: "🔬", title: "Recherche & Innovation",
+                title: "Recherche & Innovation",
                 desc: "Une place essentielle est accordée à la recherche, notamment en entrepreneuriat, pour innover et progresser.",
                 color: "var(--logo-blue)"
               },
               {
-                icon: "🌱", title: "Adaptation continue",
+                title: "Adaptation continue",
                 desc: "Nos formations sont sans cesse adaptées à l'évolution de la société et aux besoins du marché de l'emploi.",
                 color: "var(--primary)"
               },
               {
-                icon: "⚖️", title: "Valeurs humaines",
+                title: "Valeurs humaines",
                 desc: "Paix, tolérance, intégrité et équité : nous formons des hommes et femmes acteurs responsables de la société.",
                 color: "var(--secondary-text)"
               },
@@ -665,17 +668,9 @@ export default function HomePage() {
                   background: "white", borderRadius: "var(--radius-lg)",
                   padding: "28px 24px", border: "1px solid var(--border)",
                   boxShadow: "var(--shadow-sm)", transition: "var(--transition)",
-                  display: "flex", gap: "16px",
                 }}
                 className="engage-card"
               >
-                <div style={{
-                  width: "48px", height: "48px", borderRadius: "12px",
-                  background: "var(--bg-soft)", display: "flex", alignItems: "center",
-                  justifyContent: "center", fontSize: "1.5rem", flexShrink: 0
-                }}>
-                  {item.icon}
-                </div>
                 <div>
                   <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.95rem", color: item.color, marginBottom: "8px" }}>
                     {item.title}
