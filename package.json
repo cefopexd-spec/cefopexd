@@ -1,4 +1,12 @@
 {
+  "name": "cefopexd-root",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix cefopexd-platform run dev",
+    "build": "npm --prefix cefopexd-platform run build",
+    "start": "npm --prefix cefopexd-platform run start",
+    "lint": "npm --prefix cefopexd-platform run lint"
+  },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0"
