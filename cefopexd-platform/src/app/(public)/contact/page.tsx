@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Mail, MapPin, MessageSquareText, Navigation, Phone } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import SocialIcons, { WhatsappIcon } from "@/components/SocialIcons";
@@ -75,6 +76,10 @@ export default function ContactPage() {
                   <SelectField label="Sujet" name="sujet" options={SUJETS} defaultLabel="— Choisir un sujet —" />
                   <TextAreaField label="Message" name="message" required placeholder="Écrivez votre message ici…" />
                 </div>
+                <p className="form-legal">
+                  Vos informations servent uniquement à répondre à votre message. Voir notre{" "}
+                  <Link href="/confidentialite">politique de confidentialité</Link>.
+                </p>
               </SupabaseForm>
             </div>
 

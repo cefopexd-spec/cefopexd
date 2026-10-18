@@ -110,6 +110,7 @@ export default function Footer() {
           <span>© {year} CeFoPExD — Tous droits réservés</span>
           <div>
             <Link href="/mentions-legales">Mentions légales</Link>
+            <Link href="/conditions-utilisation">Conditions d&#39;utilisation</Link>
             <Link href="/confidentialite">Politique de confidentialité</Link>
           </div>
         </div>

@@ -24,6 +24,9 @@ export const CHIFFRES = [
   { value: 12, suffix: "+", label: "Partenaires" },
 ];
 
+/* Date affichée sur les pages légales */
+export const MISE_A_JOUR_LEGALE = "18 octobre 2026";
+
 /* Liens des réseaux sociaux (à confirmer par le centre) */
 export const SOCIAL = {
   facebook: "https://facebook.com/cefopexd",
@@ -487,29 +490,213 @@ export const SECTIONS: Record<string, Section> = {
 
   confidentialite: {
     title: "Politique de confidentialité",
-    intro: "Comment le CeFoPExD utilise les informations que vous nous transmettez.",
+    intro: `Comment le CeFoPExD collecte, utilise et protège vos données personnelles. Dernière mise à jour : ${MISE_A_JOUR_LEGALE}.`,
     blocks: [
       {
         type: "text",
-        title: "Données collectées",
+        title: "1. Qui est responsable de vos données ?",
         paragraphs: [
-          "Les formulaires de pré-inscription et de contact recueillent les informations que vous saisissez : nom, prénom, téléphone, e-mail, filière souhaitée, niveau d'étude et message.",
-          "Lorsque vous vous connectez avec Google, nous recevons uniquement votre nom, votre adresse e-mail et votre photo de profil. Nous n'avons jamais accès à votre mot de passe Google.",
+          `Le responsable du traitement est le Centre de Formation Professionnelle d'Excellence de Dévikinmé (CeFoPExD), ${CONTACT.adresse}.`,
+          `Pour toute question sur vos données : ${CONTACT.email} ou ${CONTACT.telephones[0]}.`,
+          "Le CeFoPExD s'engage à traiter vos données dans le respect de la loi togolaise n° 2019-014 du 29 octobre 2019 relative à la protection des données à caractère personnel.",
+        ],
+      },
+      {
+        type: "list",
+        title: "2. Quelles données collectons-nous ?",
+        items: [
+          "Connexion avec Google : votre nom, votre adresse e-mail et votre photo de profil, transmis par Google avec votre accord. Nous n'avons jamais accès à votre mot de passe Google.",
+          "Pré-inscription : nom, prénom, téléphone, e-mail, filière souhaitée, niveau d'étude et message facultatif.",
+          "Formulaire de contact : nom, e-mail, téléphone (facultatif), sujet et message.",
+          "Assistant en ligne : les questions que vous posez dans la fenêtre de discussion.",
+          "Données techniques : un cookie de session pour vous garder connecté(e) et les journaux techniques de l'hébergeur (adresse IP, date, page consultée), nécessaires à la sécurité du site.",
+        ],
+      },
+      {
+        type: "list",
+        title: "3. Pourquoi utilisons-nous ces données ?",
+        items: [
+          "Créer et gérer votre compte, et vous permettre de vous reconnecter avec Google.",
+          "Traiter votre pré-inscription, vous recontacter et suivre votre dossier jusqu'à l'inscription définitive au centre.",
+          "Répondre à vos messages et à vos questions.",
+          "Faire fonctionner l'assistant en ligne et vous apporter une réponse.",
+          "Assurer la sécurité et le bon fonctionnement du site.",
         ],
       },
       {
         type: "text",
-        title: "Utilisation",
+        title: "4. Sur quelle base ?",
         paragraphs: [
-          "Ces informations servent uniquement à vous recontacter et à traiter votre demande. Elles ne sont ni vendues ni transmises à des tiers.",
+          "Votre consentement (case à cocher du formulaire, connexion avec Google), les mesures nécessaires à votre demande d'inscription et l'intérêt légitime du centre à sécuriser son site.",
+          "Vous pouvez retirer votre consentement à tout moment en nous écrivant.",
+        ],
+      },
+      {
+        type: "list",
+        title: "5. Qui a accès à vos données ?",
+        items: [
+          "L'équipe administrative et d'admission du CeFoPExD, uniquement pour traiter vos demandes.",
+          "Supabase : hébergement de la base de données et gestion des comptes.",
+          "Vercel Inc. : hébergement du site.",
+          "Google : service de connexion « Continuer avec Google » et affichage de la carte de localisation.",
+          "Anthropic : traitement des questions posées à l'assistant en ligne, afin de générer la réponse.",
+          "Ces prestataires agissent pour le compte du CeFoPExD. Certains sont situés hors du Togo ; ils appliquent des garanties de sécurité adaptées. Vos données ne sont jamais vendues ni utilisées à des fins publicitaires.",
         ],
       },
       {
         type: "text",
-        title: "Vos droits",
+        title: "6. Combien de temps les conservons-nous ?",
         paragraphs: [
-          `Vous pouvez demander à consulter, corriger ou supprimer vos données à tout moment en écrivant à ${CONTACT.email}.`,
+          "Les pré-inscriptions et les messages sont conservés le temps nécessaire au traitement de votre demande et au suivi de votre parcours au centre, puis supprimés ou anonymisés.",
+          "Votre compte est conservé tant que vous l'utilisez. Vous pouvez demander sa suppression à tout moment.",
+          "Les questions posées à l'assistant ne sont pas enregistrées dans la base de données du CeFoPExD.",
         ],
+      },
+      {
+        type: "list",
+        title: "7. Vos droits",
+        items: [
+          "Accéder à vos données et en obtenir une copie.",
+          "Les faire corriger si elles sont inexactes.",
+          "Demander leur suppression, ainsi que celle de votre compte.",
+          "Vous opposer à leur utilisation ou retirer votre consentement.",
+          `Pour exercer ces droits, écrivez à ${CONTACT.email} en précisant l'adresse e-mail de votre compte. Nous vous répondons dans les meilleurs délais. Vous pouvez également saisir l'Instance de Protection des Données à Caractère Personnel (IPDCP) du Togo.`,
+        ],
+      },
+      {
+        type: "text",
+        title: "8. Cookies",
+        paragraphs: [
+          "Le site utilise uniquement des cookies strictement nécessaires : le cookie de session qui vous garde connecté(e) à votre compte. Aucun cookie publicitaire ni de mesure d'audience n'est déposé par le CeFoPExD.",
+          "La carte Google Maps intégrée aux pages Contact et au pied de page peut déposer ses propres cookies lorsque vous l'affichez.",
+        ],
+      },
+      {
+        type: "text",
+        title: "9. Sécurité",
+        paragraphs: [
+          "Les échanges avec le site sont chiffrés (HTTPS). L'accès aux données est limité : chaque utilisateur ne peut consulter que ses propres pré-inscriptions, et seule l'équipe du centre accède à l'ensemble des demandes.",
+        ],
+      },
+      {
+        type: "text",
+        title: "10. Mineurs",
+        paragraphs: [
+          "Si vous avez moins de 18 ans, demandez l'accord d'un parent ou de votre tuteur légal avant de créer un compte ou de déposer une pré-inscription.",
+        ],
+      },
+      {
+        type: "text",
+        title: "11. Modifications",
+        paragraphs: [
+          "Cette politique peut être mise à jour pour suivre l'évolution du site ou de la réglementation. La date de dernière mise à jour figure en haut de cette page.",
+        ],
+      },
+      {
+        type: "cta",
+        title: "Une question sur vos données ?",
+        text: "Notre équipe vous répond pour toute demande d'accès, de correction ou de suppression.",
+        primary: { label: "Nous contacter", href: "/contact" },
+        secondary: { label: "Conditions d'utilisation", href: "/conditions-utilisation" },
+      },
+    ],
+  },
+
+  "conditions-utilisation": {
+    title: "Conditions générales d'utilisation",
+    intro: `Les règles d'utilisation du site du CeFoPExD et de votre compte. Dernière mise à jour : ${MISE_A_JOUR_LEGALE}.`,
+    blocks: [
+      {
+        type: "text",
+        title: "1. Objet",
+        paragraphs: [
+          "Les présentes conditions encadrent l'utilisation du site du Centre de Formation Professionnelle d'Excellence de Dévikinmé (CeFoPExD) : consultation des informations, création d'un compte, pré-inscription en ligne, formulaire de contact et assistant en ligne.",
+          "En utilisant le site, et notamment en créant un compte, vous acceptez ces conditions.",
+        ],
+      },
+      {
+        type: "text",
+        title: "2. Accès au site",
+        paragraphs: [
+          "Le site est accessible gratuitement. Le CeFoPExD s'efforce de le maintenir disponible, mais l'accès peut être interrompu pour maintenance ou en cas de difficulté technique, sans que sa responsabilité puisse être engagée.",
+        ],
+      },
+      {
+        type: "list",
+        title: "3. Compte utilisateur",
+        items: [
+          "Le compte est créé lors de votre première connexion avec Google ; vous vous reconnectez ensuite avec vos identifiants Google.",
+          "Vous êtes responsable de la sécurité de votre compte Google et des actions réalisées depuis votre compte CeFoPExD.",
+          "Le compte est personnel : n'utilisez pas le compte d'une autre personne.",
+          "Si vous avez moins de 18 ans, l'accord d'un parent ou d'un tuteur légal est nécessaire.",
+          "Le CeFoPExD peut suspendre un compte utilisé de manière frauduleuse ou contraire aux présentes conditions.",
+        ],
+      },
+      {
+        type: "list",
+        title: "4. Pré-inscription en ligne",
+        items: [
+          "La pré-inscription est gratuite et sans engagement.",
+          "Elle ne vaut pas inscription définitive : l'inscription se finalise en présentiel au centre, après dépôt du dossier et entretien d'orientation.",
+          "Vous vous engagez à fournir des informations exactes et à jour.",
+          "Le numéro de référence affiché après l'envoi permet de retrouver votre demande ; conservez-le.",
+        ],
+      },
+      {
+        type: "text",
+        title: "5. Assistant en ligne",
+        paragraphs: [
+          "L'assistant répond automatiquement à partir des informations publiées sur le site. Ses réponses sont fournies à titre indicatif et peuvent comporter des imprécisions ; elles ne remplacent pas les informations officielles communiquées par l'équipe du centre.",
+          "Pour toute décision importante (inscription, frais, dates), vérifiez auprès du centre. Ne communiquez pas d'informations sensibles dans la discussion.",
+        ],
+      },
+      {
+        type: "list",
+        title: "6. Règles d'utilisation",
+        items: [
+          "Utiliser le site de manière loyale et conforme à la loi.",
+          "Ne pas envoyer de contenus injurieux, faux, trompeurs ou portant atteinte aux droits d'autrui.",
+          "Ne pas tenter de perturber le fonctionnement du site, d'accéder aux données d'autres utilisateurs ou de contourner les mesures de sécurité.",
+          "Ne pas utiliser les formulaires ou l'assistant pour envoyer des messages en masse ou automatisés.",
+        ],
+      },
+      {
+        type: "text",
+        title: "7. Propriété intellectuelle",
+        paragraphs: [
+          "Le logo, les textes, les photos et la présentation du site sont la propriété du CeFoPExD. Toute reproduction ou réutilisation sans autorisation écrite est interdite.",
+        ],
+      },
+      {
+        type: "text",
+        title: "8. Responsabilité",
+        paragraphs: [
+          "Le CeFoPExD veille à l'exactitude des informations publiées, qui peuvent toutefois évoluer (filières, calendrier, conditions d'admission). Seules les informations confirmées par l'équipe du centre font foi.",
+          "Le site peut contenir des liens vers des sites tiers (Google, réseaux sociaux, WhatsApp) dont le CeFoPExD ne contrôle pas le contenu.",
+        ],
+      },
+      {
+        type: "text",
+        title: "9. Données personnelles",
+        paragraphs: [
+          "Le traitement de vos données est décrit dans la politique de confidentialité, qui fait partie des présentes conditions.",
+        ],
+      },
+      {
+        type: "text",
+        title: "10. Modification et droit applicable",
+        paragraphs: [
+          "Le CeFoPExD peut modifier ces conditions ; la version en vigueur est celle publiée sur cette page.",
+          "Les présentes conditions sont régies par le droit togolais. En cas de différend, une solution amiable sera recherchée en priorité avant toute action devant les juridictions compétentes de Lomé.",
+          `Contact : ${CONTACT.email} — ${CONTACT.telephones.join(" / ")}.`,
+        ],
+      },
+      {
+        type: "cta",
+        title: "Une question sur ces conditions ?",
+        text: "Notre équipe est à votre disposition pour toute précision.",
+        primary: { label: "Nous contacter", href: "/contact" },
+        secondary: { label: "Politique de confidentialité", href: "/confidentialite" },
       },
     ],
   },

@@ -191,7 +191,7 @@ export default function ChatWidget() {
               <Send size={17} />
             </button>
           </form>
-          <p className="chat-note">Réponses générées à partir des informations du site. Pour un conseil personnalisé, <Link href="/contact">contactez-nous</Link>.</p>
+          <p className="chat-note">Réponses générées automatiquement à partir des informations du site, à titre indicatif. <Link href="/conditions-utilisation">Conditions</Link> · <Link href="/confidentialite">Confidentialité</Link></p>
         </section>
       )}
     </>

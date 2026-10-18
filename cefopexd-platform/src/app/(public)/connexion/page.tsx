@@ -44,8 +44,12 @@ export default async function ConnexionPage({ searchParams }: Props) {
             )}
             <GoogleButton next={safeNext} />
             <p className="auth-small">
-              <ShieldCheck size={15} /> En continuant, vous acceptez notre{" "}
-              <Link href="/confidentialite">politique de confidentialité</Link>. Nous recevons uniquement votre nom, votre e-mail et votre photo de profil Google.
+              <ShieldCheck size={15} />
+              <span>
+                En continuant, vous acceptez nos <Link href="/conditions-utilisation">conditions d&#39;utilisation</Link> et
+                notre <Link href="/confidentialite">politique de confidentialité</Link>. Nous recevons uniquement votre nom,
+                votre e-mail et votre photo de profil Google.
+              </span>
             </p>
           </div>
 

@@ -42,7 +42,11 @@ export default async function PreInscriptionPage() {
                   Vous pourrez ensuite suivre votre demande dans « Mon espace » et vous reconnecter à tout moment avec vos identifiants Google.
                 </p>
                 <GoogleButton next="/inscription/formulaire" label="Continuer avec Google" />
-                <small>Aucun mot de passe à créer. Nous recevons uniquement votre nom, votre e-mail et votre photo de profil.</small>
+                <small>
+                  Aucun mot de passe à créer. En continuant, vous acceptez nos{" "}
+                  <Link href="/conditions-utilisation">conditions d&#39;utilisation</Link> et notre{" "}
+                  <Link href="/confidentialite">politique de confidentialité</Link>.
+                </small>
               </div>
             ) : (
             <>
@@ -101,7 +105,11 @@ export default async function PreInscriptionPage() {
 
               <label className="consent">
                 <input type="checkbox" name="consentement" required />
-                <span>J&#39;accepte d&#39;être recontacté(e) par le CeFoPExD au sujet de ma demande. <Link href="/confidentialite">Politique de confidentialité</Link></span>
+                <span>
+                  J&#39;accepte d&#39;être recontacté(e) par le CeFoPExD au sujet de ma demande, ainsi que les{" "}
+                  <Link href="/conditions-utilisation">conditions d&#39;utilisation</Link> et la{" "}
+                  <Link href="/confidentialite">politique de confidentialité</Link>.
+                </span>
               </label>
             </SupabaseForm>
             </>
