@@ -3,7 +3,7 @@ import ActionForm from "@/components/forms/ActionForm";
 import { Field, TextAreaField } from "@/components/forms/SupabaseForm";
 import { requireGestion, nomComplet } from "@/lib/session";
 import { roleLabel } from "@/lib/roles";
-import { envoyerMessage } from "../actions";
+import { envoyerEmailTest, envoyerMessage } from "../actions";
 
 export const metadata: Metadata = { title: "Messages" };
 
@@ -32,7 +32,7 @@ export default async function MessagesGestion() {
     <>
       <div className="g-page-head">
         <h1>Messages</h1>
-        <p>Envoyez un message à une personne ou à un groupe (apprenants, parents, professeurs…). Chaque destinataire est notifié dans son espace.</p>
+        <p>Envoyez un message à une personne ou à un groupe (apprenants, parents, professeurs…). Chaque destinataire est notifié dans son espace et, si vous le cochez, reçoit aussi le message par e-mail.</p>
       </div>
 
       <div className="g-grid-2">
@@ -56,7 +56,16 @@ export default async function MessagesGestion() {
             </label>
             <Field label="Sujet" name="sujet" required />
             <TextAreaField label="Message" name="contenu" required rows={6} />
+            <label className="g-checks">
+              <input type="checkbox" name="par_email" defaultChecked />
+              <span>Envoyer aussi par e-mail (le destinataire peut vous répondre directement)</span>
+            </label>
           </ActionForm>
+          {role === "dg" && (
+            <ActionForm action={envoyerEmailTest} submitLabel="M'envoyer un e-mail de test" className="g-form" submitClassName="btn-hero-ghost btn-sm">
+              <p className="upload-hint">Vérifie que les e-mails partent bien vers les membres.</p>
+            </ActionForm>
+          )}
         </div>
 
         <div className="g-card">

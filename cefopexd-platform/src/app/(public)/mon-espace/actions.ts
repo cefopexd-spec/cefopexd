@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSession, roleActif } from "@/lib/session";
+import { getSession, nomComplet, roleActif } from "@/lib/session";
+import { notifierParEmail } from "@/lib/email";
 import type { EtatFormulaire } from "../mon-compte/actions";
 
 const texte = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -45,6 +46,10 @@ export async function envoyerMessageFamille(_: EtatFormulaire, fd: FormData): Pr
   if (!sujet || !contenu) return { erreur: "Indiquez un sujet et un message." };
   const { error } = await supabase.from("messages").insert({ expediteur_id: user.id, cible_role: cible, sujet, contenu });
   if (error) return { erreur: error.message };
+  // Copie par e-mail au centre ; « Répondre » renvoie directement vers l'expéditeur
+  await notifierParEmail([cible], `${sujet} — ${nomComplet(profil)}`, `Message de ${nomComplet(profil)} (${user.email}) :
+
+${contenu}`, "/gestion/messages", user.email ?? undefined);
   revalidatePath("/mon-espace/messages");
   return { ok: "Message envoyé." };
 }

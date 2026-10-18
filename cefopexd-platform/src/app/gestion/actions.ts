@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { assertGestion, nomComplet } from "@/lib/session";
-import { ROLES, ROLES_RESPONSABLES, SECTIONS_GESTION } from "@/lib/roles";
-import { envoyerEmail, notifierParEmail } from "@/lib/email";
+import { ROLES, ROLES_RESPONSABLES, SECTIONS_GESTION, roleLabel } from "@/lib/roles";
+import { emailsDesProfils, emailsDesRoles, envoyerEmail, notifierParEmail } from "@/lib/email";
 import { lireFichiers, versDocuments } from "@/lib/fichiers";
 import { MESSAGE_CLE_MANQUANTE, adminClient } from "@/lib/supabase/admin";
 
@@ -368,7 +368,25 @@ export async function envoyerMessage(_: Etat, fd: FormData): Promise<Etat> {
     const { error } = await supabase.from("messages").insert(ligne);
     if (error) return { erreur: error.message };
     revalidatePath("/gestion/messages");
-    return { ok: `Message envoyé par ${nomComplet(profil)}.` };
+
+    // Copie par e-mail : le destinataire peut répondre directement à l'expéditeur
+    if (fd.get("par_email") !== "on") return { ok: `Message envoyé par ${nomComplet(profil)}.` };
+    if (!process.env.RESEND_API_KEY) return { ok: "Message envoyé dans les espaces (e-mail non configuré sur le serveur)." };
+    const adresses = (type === "role" ? await emailsDesRoles([valeur]) : await emailsDesProfils([valeur])).filter((a) => a !== profil?.email);
+    const envoyes = await envoyerEmail(
+      adresses,
+      `${sujet} — ${nomComplet(profil)}, CeFoPExD`,
+      `Message de ${nomComplet(profil)} (${profil?.role === "dg" ? "Directeur Général" : roleLabel(profil?.role ?? "")}) :
+
+${contenu}
+
+— Pour répondre, répondez simplement à cet e-mail ou écrivez depuis votre espace CeFoPExD.`,
+      "/mon-espace/messages",
+      profil?.email ?? undefined,
+    );
+    return envoyes === adresses.length
+      ? { ok: `Message envoyé dans les espaces et par e-mail à ${envoyes} personne(s).` }
+      : { ok: `Message envoyé dans les espaces. E-mails : ${envoyes} envoyé(s) sur ${adresses.length}.` };
   } catch (e) { return echec(e); }
 }
 
@@ -479,5 +497,18 @@ export async function reinitialiserMotDePasse(_: Etat, fd: FormData): Promise<Et
     const { error } = await admin.auth.admin.updateUserById(t(fd, "id"), { password: motDePasse });
     if (error) return { erreur: error.message };
     return { ok: `Nouveau mot de passe provisoire : ${motDePasse}` };
+  } catch (e) { return echec(e); }
+}
+
+/* DG : vérifie que l'envoi d'e-mails fonctionne (e-mail de test à sa propre adresse) */
+export async function envoyerEmailTest(_: Etat, _fd: FormData): Promise<Etat> {
+  try {
+    const { profil } = await assertGestion("messages", ["dg"]);
+    if (!process.env.RESEND_API_KEY) return { erreur: "RESEND_API_KEY n'est pas configurée sur Vercel." };
+    if (!profil?.email) return { erreur: "Aucune adresse e-mail sur votre profil." };
+    const envoyes = await envoyerEmail([profil.email], "Test d'envoi — CeFoPExD", `Bonjour ${nomComplet(profil)},\n\nCet e-mail confirme que le site CeFoPExD peut envoyer des e-mails aux membres.`, "/gestion/messages");
+    return envoyes
+      ? { ok: `E-mail de test envoyé à ${profil.email}. Vérifiez votre boîte de réception (et les spams).` }
+      : { erreur: "L'envoi a échoué : vérifiez que le domaine cefopexd.com est « Verified » dans Resend." };
   } catch (e) { return echec(e); }
 }
