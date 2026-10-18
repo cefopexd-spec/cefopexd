@@ -11,6 +11,32 @@ export const CONTACT = {
   telephones: ["+228 70 88 13 06", "+228 79 95 20 20"],
   email: "info@cefopexd.com",
   whatsapp: "https://wa.me/22870881306",
+  localisation: "Dévikinmé, Togo",
+  carte: "https://www.google.com/maps?q=D%C3%A9vikinm%C3%A9%2C%20Togo&output=embed",
+  itineraire: "https://www.google.com/maps/search/?api=1&query=D%C3%A9vikinm%C3%A9%2C%20Togo",
+};
+
+/* Liens des réseaux sociaux (à confirmer par le centre) */
+export const SOCIAL = {
+  facebook: "https://facebook.com/cefopexd",
+  instagram: "https://instagram.com/cefopexd",
+  tiktok: "https://tiktok.com/@cefopexd",
+  youtube: "https://youtube.com/@cefopexd",
+};
+
+export const DIRECTEUR = {
+  nom: "Monsieur D'ALMEIDA Blaise",
+  fonction: "Directeur Général du CeFoPExD",
+  extrait:
+    "Bienvenue au CeFoPExD. Notre ambition est claire : offrir à chaque jeune une formation exigeante, concrète et tournée vers l'emploi, afin qu'il devienne non seulement un professionnel compétent, mais aussi un créateur d'opportunités pour lui-même et pour sa communauté.",
+  message: [
+    "Chers jeunes, chers parents, chers partenaires,",
+    "C'est avec une grande fierté que je vous souhaite la bienvenue au Centre de Formation Professionnelle d'Excellence de Dévikinmé. Notre centre est né d'une conviction forte : la jeunesse togolaise regorge de talents, et elle mérite une formation à la hauteur de ses ambitions.",
+    "Au CeFoPExD, nous ne nous contentons pas de transmettre des connaissances. Nous formons des femmes et des hommes capables d'agir, d'innover et d'entreprendre. Nos filières — informatique appliquée, mécatronique, agro-alimentaire, énergie renouvelable, langue allemande et formations courtes — ont été pensées pour répondre aux besoins réels du marché de l'emploi et aux défis de demain.",
+    "Notre pédagogie accorde une place essentielle à la pratique, à l'encadrement personnalisé et au lien avec les entreprises. L'excellence, l'intégrité et la solidarité sont les valeurs qui guident chacune de nos actions.",
+    "À vous, futurs apprenants : choisir le CeFoPExD, c'est choisir de bâtir votre avenir avec méthode et confiance. À vous, parents et partenaires : je vous invite à cheminer à nos côtés pour faire de cette jeunesse une force de développement pour notre pays.",
+    "Ensemble, pour une jeunesse compétente et un avenir meilleur.",
+  ],
 };
 
 type Link = { label: string; href: string };
@@ -24,6 +50,7 @@ export type Block =
   | { type: "faq"; title: string; items: { q: string; a: string }[] }
   | { type: "gallery"; title?: string; images: { src: string; alt: string }[] }
   | { type: "pending"; text: string }
+  | { type: "director" }
   | { type: "cta"; title: string; text: string; primary: Link; secondary?: Link };
 
 export type Page = {
@@ -60,7 +87,7 @@ const PHOTOS = {
 const COLORS = {
   blue: "var(--primary)",
   red: "var(--accent-text)",
-  green: "var(--secondary-text)",
+  green: "var(--green-text)",
   orange: "#B86E00",
 };
 
@@ -174,7 +201,7 @@ export const SECTIONS: Record<string, Section> = {
       "mot-du-dg": {
         title: "Mot du Directeur Général",
         intro: "Le message de la direction aux apprenants, aux parents et aux partenaires du CeFoPExD.",
-        blocks: [pending("le mot du Directeur Général"), CTA_INSCRIPTION],
+        blocks: [{ type: "director" }, CTA_INSCRIPTION],
       },
       "vision-mission": {
         title: "Vision, mission et valeurs",
@@ -339,8 +366,35 @@ export const SECTIONS: Record<string, Section> = {
 
   informations: {
     title: "S'informer",
-    intro: "Actualités, événements, publications, galerie et questions fréquentes.",
-    blocks: [],
+    intro: "Toutes les informations utiles pour découvrir le centre, choisir votre formation et suivre la vie du CeFoPExD.",
+    blocks: [
+      {
+        type: "cards",
+        title: "Vous êtes…",
+        items: [
+          { title: "Futur apprenant", desc: "Découvrez nos filières, les conditions d'admission et déposez votre pré-inscription en ligne.", href: "/inscription/procedure", color: COLORS.green },
+          { title: "Parent", desc: "Comprenez notre pédagogie, nos valeurs et l'accompagnement proposé à votre enfant.", href: "/a-propos/presentation", color: COLORS.blue },
+          { title: "Entreprise ou institution", desc: "Accueillez nos stagiaires, recrutez nos diplômés ou demandez une formation sur mesure.", href: "/formations/sur-mesure", color: COLORS.red },
+          { title: "Apprenant du centre", desc: "Retrouvez le calendrier académique, les sessions et votre espace en ligne.", href: "/formations/calendrier", color: COLORS.orange },
+        ],
+      },
+      {
+        type: "faq",
+        title: "Les questions les plus posées",
+        items: [
+          { q: "Quelles sont les conditions d'admission ?", a: "Les filières sont accessibles à partir du BEPC selon le niveau de formation visé. Un entretien d'orientation permet de valider le parcours le plus adapté." },
+          { q: "Comment s'inscrire ?", a: "Remplissez la pré-inscription en ligne, puis déposez votre dossier au centre. Les inscriptions se finalisent en présentiel." },
+          { q: "Le centre aide-t-il à trouver un emploi ?", a: "Grâce à nos partenariats avec les entreprises, nous accompagnons nos apprenants vers les stages, l'emploi et l'auto-entrepreneuriat." },
+        ],
+      },
+      {
+        type: "cta",
+        title: "Vous ne trouvez pas votre réponse ?",
+        text: "Notre équipe vous répond par téléphone, par e-mail ou sur WhatsApp.",
+        primary: { label: "Nous contacter", href: "/contact" },
+        secondary: { label: "Toutes les questions", href: "/informations/faq" },
+      },
+    ],
     pages: {
       actualites: {
         title: "Actualités & annonces",

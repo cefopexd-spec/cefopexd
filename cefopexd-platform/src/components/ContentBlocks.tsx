@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Clock, Mail, Phone } from "lucide-react";
-import { CONTACT, type Block } from "@/lib/site-content";
+import { ArrowRight, CheckCircle, Clock, Mail, Phone, Quote } from "lucide-react";
+import { CONTACT, DIRECTEUR, type Block } from "@/lib/site-content";
 
 /* =============================================
    RENDU DES BLOCS DE CONTENU DES PAGES
@@ -135,6 +135,28 @@ function BlockView({ block }: { block: Block }) {
             <div className="pending-contacts">
               <a href={`tel:${CONTACT.telephones[0].replace(/\s/g, "")}`}><Phone size={15} /> {CONTACT.telephones[0]}</a>
               <a href={`mailto:${CONTACT.email}`}><Mail size={15} /> {CONTACT.email}</a>
+            </div>
+          </div>
+        </div>
+      );
+
+    case "director":
+      return (
+        <div className="director-page">
+          <div className="director-card">
+            <div className="director-monogram" aria-hidden="true">BD</div>
+            <div className="director-name">{DIRECTEUR.nom}</div>
+            <div className="director-role">{DIRECTEUR.fonction}</div>
+            <div className="director-logo">
+              <Image src="/logo-cefopexd.png" alt="CeFoPExD" fill sizes="140px" style={{ objectFit: "contain" }} />
+            </div>
+          </div>
+          <div className="director-letter">
+            <Quote size={32} aria-hidden="true" />
+            {DIRECTEUR.message.map((p) => <p key={p}>{p}</p>)}
+            <div className="director-signature">
+              <strong>{DIRECTEUR.nom}</strong>
+              <span>{DIRECTEUR.fonction}</span>
             </div>
           </div>
         </div>

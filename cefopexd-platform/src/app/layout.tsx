@@ -1,26 +1,18 @@
 import type { Metadata } from "next";
-import { Caveat, Inter, Montserrat } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-/* Polices Google */
+/* Polices Google : Plus Jakarta Sans (titres) + Inter (texte) */
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 });
 
-const montserrat = Montserrat({
-  weight: ["500", "600", "700", "800", "900"],
+const jakarta = Plus_Jakarta_Sans({
+  weight: ["500", "600", "700", "800"],
   subsets: ["latin"],
-  variable: "--font-montserrat",
-  display: "swap",
-});
-
-/* Écriture manuscrite pour les accroches */
-const caveat = Caveat({
-  weight: ["600", "700"],
-  subsets: ["latin"],
-  variable: "--font-caveat",
+  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -71,7 +63,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${montserrat.variable} ${caveat.variable}`}>
+    <html lang="fr" className={`${inter.variable} ${jakarta.variable}`}>
       <head>
         <script
           type="application/ld+json"

@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { DIRECTEUR } from "@/lib/site-content";
 import {
   Monitor, Settings, Leaf,
   Sun, Languages, Wrench, CheckCircle, Award,
   Building2, Handshake, TrendingUp, ArrowRight,
-  Users, BookOpen, Percent, Star, PenLine
+  Users, BookOpen, Percent, Star, PenLine, CalendarDays, Quote
 } from "lucide-react";
 
 /* =============================================
@@ -130,6 +131,7 @@ const ACTUALITES = [
     date: "12 avril 2025",
     extrait: "Les inscriptions pour la nouvelle rentrée académique sont ouvertes. Ne manquez pas cette opportunité !",
     image: "/images/eleves-cefopexd.jpg",
+    href: "/inscription/formulaire",
   },
   {
     id: 2,
@@ -137,6 +139,7 @@ const ACTUALITES = [
     date: "28 mars 2025",
     extrait: "Découvrez nos infrastructures et rencontrez notre équipe pédagogique lors de notre journée portes ouvertes.",
     image: "/images/batiment-cefopexd.jpg",
+    href: "/informations/evenements",
   },
   {
     id: 3,
@@ -144,6 +147,7 @@ const ACTUALITES = [
     date: "14 mars 2025",
     extrait: "Une nouvelle filière pour répondre aux enjeux de demain et aux besoins croissants en énergies vertes.",
     image: "/images/filiere-energie.jpg",
+    href: "/filieres/energie-renouvelable",
   },
 ];
 
@@ -187,7 +191,7 @@ function StatCard({ stat, animate }: { stat: typeof STATS[0]; animate: boolean }
         <stat.icon size={24} />
       </div>
       <div>
-        <div className="stat-value" style={{ color: stat.color }}>
+        <div className="stat-value">
           {count}{stat.suffix}
         </div>
         <div className="stat-label">{stat.label}</div>
@@ -270,7 +274,7 @@ export default function HomePage() {
                 Découvrir nos filières
                 <ArrowRight size={18} />
               </Link>
-              <Link href="/inscription/formulaire" className="btn-hero-ghost">
+              <Link href="/inscription/formulaire" className="btn-hero-red">
                 <PenLine size={17} />
                 S&#39;inscrire maintenant
               </Link>
@@ -458,228 +462,141 @@ export default function HomePage() {
           4. À PROPOS + ACTUALITÉS
           ============================================= */}
       <section className="section" style={{ background: "white" }}>
-        <div className="container">
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
-            gap: "48px", alignItems: "start"
-          }}>
-            {/* ---- À PROPOS ---- */}
-            <div>
-              <span className="section-label">À PROPOS DE NOUS</span>
-              <h2 className="section-title">Le CeFoPExD, un centre d'excellence</h2>
+        <div className="container about-grid">
+          {/* ---- À PROPOS ---- */}
+          <div>
+            <span className="section-label">À propos de nous</span>
+            <h2 className="section-title">Le CeFoPExD, un centre d&#39;excellence</h2>
 
-              {/* Photo du centre */}
-              <div style={{
-                position: "relative", height: "240px", borderRadius: "var(--radius-lg)",
-                overflow: "hidden", marginBottom: "24px",
-                boxShadow: "var(--shadow-lg)"
-              }}>
-                <Image
-                  src="/images/campus-cefopexd.jpg"
-                  alt="Vue aérienne du campus du CeFoPExD"
-                  fill
-                  style={{ objectFit: "cover" }}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-                <div style={{
-                  position: "absolute", bottom: "16px", left: "16px",
-                  background: "var(--primary-dark)", color: "white",
-                  padding: "6px 14px", borderRadius: "var(--radius-full)",
-                  fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "0.82rem"
-                }}>
-                  CeFoPExD — Lomé, Togo
+            <div className="about-photo">
+              <Image
+                src="/images/campus-cefopexd.jpg"
+                alt="Vue aérienne du campus du CeFoPExD"
+                fill
+                style={{ objectFit: "cover" }}
+                sizes="(max-width: 1023px) 100vw, 50vw"
+              />
+              <span className="about-photo-tag">CeFoPExD — Dévikinmé, Togo</span>
+            </div>
+
+            <p className="about-text">
+              Le Centre de Formation Professionnelle d&#39;Excellence de Dévikinmé est un établissement engagé dans la formation de jeunes talents, capables de répondre aux besoins du monde professionnel et de contribuer au développement durable de notre pays.
+            </p>
+
+            {/* Vision / Mission / Valeurs : panneaux structurés */}
+            <div className="vmv-grid">
+              {[
+                { label: "Vision", title: "Développer les compétences", desc: "Révéler le potentiel de chaque jeune par une formation exigeante.", color: "var(--primary)", tint: "rgba(10,31,232,0.07)" },
+                { label: "Mission", title: "Former pour l'emploi", desc: "Des professionnels capables de créer de l'emploi, pas seulement d'en demander.", color: "var(--green-text)", tint: "rgba(34,192,3,0.09)" },
+                { label: "Valeurs", title: "Excellence, intégrité, solidarité", desc: "Des principes qui guident notre pédagogie au quotidien.", color: "var(--accent-text)", tint: "rgba(248,35,3,0.07)" },
+              ].map((item) => (
+                <div key={item.label} className="vmv-card">
+                  <span className="vmv-label" style={{ color: item.color, background: item.tint }}>{item.label}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
                 </div>
+              ))}
+            </div>
+
+            <Link href="/a-propos/presentation" className="btn-hero-primary" style={{ marginTop: "28px" }}>
+              En savoir plus <ArrowRight size={16} />
+            </Link>
+          </div>
+
+          {/* ---- ACTUALITÉS : panneau encadré ---- */}
+          <aside className="news-panel" aria-labelledby="news-title">
+            <div className="news-head">
+              <div>
+                <span className="section-label" style={{ marginBottom: "4px" }}>Actualités & annonces</span>
+                <h2 id="news-title" className="news-title">Restez informé</h2>
               </div>
+              <Link href="/informations/actualites" className="news-all">
+                Voir toutes <ArrowRight size={14} />
+              </Link>
+            </div>
 
-              <p style={{ color: "var(--muted)", lineHeight: 1.75, fontSize: "0.9rem", marginBottom: "24px" }}>
-                Le Centre de Formation Professionnelle d&#39;Excellence de Dévikinmé est un établissement engagé dans la formation de jeunes talents, capables de répondre aux besoins du monde professionnel et de contribuer au développement durable de notre pays.
-              </p>
-
-              {/* Vision / Mission / Valeurs */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {[
-                  { label: "Notre vision", desc: "Développer les compétences", color: "var(--primary)" },
-                  { label: "Notre mission", desc: "Former pour l'emploi", color: "var(--secondary-text)" },
-                  { label: "Nos valeurs", desc: "Excellence, Intégrité, Solidarité", color: "var(--accent-text)" },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "14px",
-                      padding: "14px 18px", borderRadius: "var(--radius-md)",
-                      background: "var(--bg-soft)", border: "1px solid var(--border)",
-                      cursor: "pointer", transition: "var(--transition)",
-                    }}
-                    className="vmv-item"
-                  >
-                    <div>
-                      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.9rem", color: item.color }}>{item.label}</div>
-                      <div style={{ color: "var(--muted)", fontSize: "0.82rem" }}>{item.desc}</div>
-                    </div>
+            <div className="news-list">
+              {ACTUALITES.map((actu) => (
+                <Link key={actu.id} href={actu.href} className="news-item">
+                  <div className="news-thumb">
+                    <Image src={actu.image} alt={actu.titre} fill style={{ objectFit: "cover" }} sizes="96px" />
                   </div>
-                ))}
-              </div>
-
-              <div style={{ marginTop: "24px" }}>
-                <Link href="/a-propos/presentation" className="btn-primary">
-                  En savoir plus <ArrowRight size={16} />
+                  <div style={{ minWidth: 0 }}>
+                    <span className="news-date"><CalendarDays size={13} /> {actu.date}</span>
+                    <h3>{actu.titre}</h3>
+                    <p>{actu.extrait}</p>
+                  </div>
                 </Link>
-              </div>
+              ))}
             </div>
 
-            {/* ---- ACTUALITÉS ---- */}
-            <div>
-              <span className="section-label">ACTUALITÉS & ANNONCES</span>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                <h2 className="section-title" style={{ marginBottom: 0 }}>Restez informé</h2>
-                <Link href="/informations/actualites" style={{
-                  color: "var(--primary)", textDecoration: "none", fontWeight: 600,
-                  fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "4px"
-                }}>
-                  Voir toutes <ArrowRight size={14} />
-                </Link>
+            <div className="news-cta">
+              <div>
+                <strong>Prêt à rejoindre le CeFoPExD ?</strong>
+                <span>Déposez votre pré-inscription en ligne.</span>
               </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                {ACTUALITES.map((actu) => (
-                  <article
-                    key={actu.id}
-                    style={{
-                      display: "flex", gap: "16px", padding: "16px",
-                      borderRadius: "var(--radius-md)", border: "1px solid var(--border)",
-                      background: "white", transition: "var(--transition)",
-                      cursor: "pointer",
-                    }}
-                    className="actu-item"
-                  >
-                    <div style={{
-                      position: "relative", width: "90px", height: "70px",
-                      borderRadius: "10px", overflow: "hidden", flexShrink: 0
-                    }}>
-                      <Image
-                        src={actu.image}
-                        alt={actu.titre}
-                        fill
-                        style={{ objectFit: "cover" }}
-                        sizes="90px"
-                      />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{
-                        display: "inline-block", background: "var(--bg-soft)", color: "var(--muted)",
-                        fontSize: "0.72rem", padding: "2px 8px", borderRadius: "4px",
-                        marginBottom: "6px", fontWeight: 500
-                      }}>
-                        📅 {actu.date}
-                      </span>
-                      <h3 style={{
-                        fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.9rem",
-                        color: "var(--text)", marginBottom: "6px",
-                        overflow: "hidden", textOverflow: "ellipsis",
-                        display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical",
-                      }}>
-                        {actu.titre}
-                      </h3>
-                      <p style={{
-                        color: "var(--muted)", fontSize: "0.8rem", lineHeight: 1.5,
-                        overflow: "hidden", textOverflow: "ellipsis",
-                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-                      }}>
-                        {actu.extrait}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-
-              {/* Bloc S'inscrire */}
-              <div style={{
-                marginTop: "24px", padding: "24px",
-                borderRadius: "var(--radius-lg)",
-                background: "radial-gradient(circle at 90% 0%, rgba(10,31,232,0.7), transparent 60%), var(--ink)",
-                color: "white", textAlign: "center",
-              }}>
-                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.1rem", marginBottom: "8px" }}>
-                  Prêt à rejoindre le CeFoPExD ?
-                </h3>
-                <p style={{ fontSize: "0.85rem", opacity: 0.85, marginBottom: "16px" }}>
-                  Déposez votre pré-inscription en ligne ou venez nous rendre visite.
-                </p>
-                <Link href="/inscription/formulaire" className="btn-highlight">
-                  Pré-inscription en ligne
-                </Link>
-              </div>
+              <Link href="/inscription/formulaire" className="btn-hero-red btn-sm">
+                S&#39;inscrire <ArrowRight size={15} />
+              </Link>
             </div>
+          </aside>
+        </div>
+      </section>
+
+      {/* =============================================
+          5. MOT DU DIRECTEUR GÉNÉRAL
+          ============================================= */}
+      <section className="section director-section">
+        <div className="container director-grid">
+          <div className="director-card">
+            <div className="director-monogram" aria-hidden="true">BD</div>
+            <div className="director-name">{DIRECTEUR.nom}</div>
+            <div className="director-role">{DIRECTEUR.fonction}</div>
+            <div className="director-logo">
+              <Image src="/logo-cefopexd.png" alt="CeFoPExD" fill sizes="140px" style={{ objectFit: "contain" }} />
+            </div>
+          </div>
+          <div>
+            <span className="section-label">Mot du Directeur Général</span>
+            <h2 className="section-title">Former aujourd&#39;hui les professionnels qui bâtiront demain</h2>
+            <blockquote className="director-quote">
+              <Quote size={28} aria-hidden="true" />
+              <p>{DIRECTEUR.extrait}</p>
+            </blockquote>
+            <Link href="/a-propos/mot-du-dg" className="btn-hero-primary">
+              Lire le message complet <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </section>
 
       {/* =============================================
-          6. VALEURS & ENGAGEMENT
+          6. POURQUOI CHOISIR LE CEFOPEXD
           ============================================= */}
       <section className="section" style={{ background: "var(--bg-soft)" }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <span className="section-label">NOS ENGAGEMENTS</span>
+            <span className="section-label">Nos engagements</span>
             <h2 className="section-title">Pourquoi choisir le CeFoPExD ?</h2>
+            <p className="section-subtitle" style={{ margin: "0 auto" }}>
+              Six engagements qui font de notre centre un tremplin vers la réussite professionnelle.
+            </p>
           </div>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(min(280px, 100%), 1fr))",
-            gap: "24px"
-          }}>
+          <div className="why-grid">
             {[
-              {
-                title: "Formation d'excellence",
-                desc: "Un enseignement de qualité qui fait de l'excellence sa priorité, en créant la différence pour devenir une référence.",
-                color: "var(--primary)"
-              },
-              {
-                title: "Insertion professionnelle",
-                desc: "Nous formons des cadres capables de créer de l'emploi dans leur domaine, pas seulement d'en demander.",
-                color: "var(--accent-text)"
-              },
-              {
-                title: "Égalité des chances",
-                desc: "Nous respectons les différences et favorisons l'égalité des chances car la diversité est une richesse.",
-                color: "var(--secondary-text)"
-              },
-              {
-                title: "Recherche & Innovation",
-                desc: "Une place essentielle est accordée à la recherche, notamment en entrepreneuriat, pour innover et progresser.",
-                color: "var(--logo-blue)"
-              },
-              {
-                title: "Adaptation continue",
-                desc: "Nos formations sont sans cesse adaptées à l'évolution de la société et aux besoins du marché de l'emploi.",
-                color: "var(--primary)"
-              },
-              {
-                title: "Valeurs humaines",
-                desc: "Paix, tolérance, intégrité et équité : nous formons des hommes et femmes acteurs responsables de la société.",
-                color: "var(--secondary-text)"
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                style={{
-                  background: "white", borderRadius: "var(--radius-lg)",
-                  padding: "28px 24px", border: "1px solid var(--border)",
-                  boxShadow: "var(--shadow-sm)", transition: "var(--transition)",
-                }}
-                className="engage-card"
-              >
-                <div>
-                  <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.95rem", color: item.color, marginBottom: "8px" }}>
-                    {item.title}
-                  </h3>
-                  <p style={{ color: "var(--muted)", fontSize: "0.85rem", lineHeight: 1.65 }}>
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
+              { title: "Formation d'excellence", desc: "Un enseignement de qualité qui fait de l'excellence sa priorité, en créant la différence pour devenir une référence.", color: "var(--primary)" },
+              { title: "Insertion professionnelle", desc: "Nous formons des cadres capables de créer de l'emploi dans leur domaine, pas seulement d'en demander.", color: "var(--accent-text)" },
+              { title: "Égalité des chances", desc: "Nous respectons les différences et favorisons l'égalité des chances, car la diversité est une richesse.", color: "var(--green-text)" },
+              { title: "Recherche & innovation", desc: "Une place essentielle est accordée à la recherche, notamment en entrepreneuriat, pour innover et progresser.", color: "#B86E00" },
+              { title: "Adaptation continue", desc: "Nos formations sont sans cesse adaptées à l'évolution de la société et aux besoins du marché de l'emploi.", color: "var(--primary)" },
+              { title: "Valeurs humaines", desc: "Paix, tolérance, intégrité et équité : nous formons des femmes et des hommes acteurs responsables de la société.", color: "var(--accent-text)" },
+            ].map((item, i) => (
+              <article key={item.title} className="why-card">
+                <span className="why-num" style={{ color: item.color }}>{String(i + 1).padStart(2, "0")}</span>
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
+              </article>
             ))}
           </div>
         </div>
@@ -691,7 +608,7 @@ export default function HomePage() {
       <section style={{ background: "white", padding: "80px 0" }}>
         <div className="container" style={{ textAlign: "center" }}>
           <div style={{ maxWidth: "640px", margin: "0 auto" }}>
-            <CheckCircle size={48} color="var(--secondary-text)" style={{ marginBottom: "20px" }} />
+            <CheckCircle size={48} color="var(--green-text)" style={{ marginBottom: "20px" }} />
             <h2 className="section-title">
               Prêt à construire votre avenir avec nous ?
             </h2>
@@ -699,10 +616,10 @@ export default function HomePage() {
               Les inscriptions se font en présentiel au centre. Remplissez le formulaire de pré-inscription en ligne pour prendre rendez-vous avec notre équipe d'admission.
             </p>
             <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-              <Link href="/inscription/formulaire" className="btn-highlight" style={{ fontSize: "1rem", padding: "14px 32px" }}>
-                Pré-inscription en ligne
+              <Link href="/inscription/formulaire" className="btn-hero-red">
+                Pré-inscription en ligne <ArrowRight size={17} />
               </Link>
-              <Link href="/contact" className="btn-primary" style={{ fontSize: "1rem", padding: "14px 32px" }}>
+              <Link href="/contact" className="btn-hero-primary">
                 Nous contacter
               </Link>
             </div>
@@ -718,9 +635,6 @@ export default function HomePage() {
         .filiere-img { transform: scale(1); }
         .card:hover .filiere-img { transform: scale(1.05) !important; }
         .filiere-btn:hover { background: var(--bg-soft); }
-        .actu-item:hover { border-color: var(--primary) !important; box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .vmv-item:hover { border-color: var(--primary) !important; box-shadow: var(--shadow-sm); }
-        .engage-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
       `}</style>
     </>
   );

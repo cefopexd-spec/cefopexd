@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import SocialIcons from "@/components/SocialIcons";
 import {
   Menu, X, ChevronDown, Search, LogIn,
   GraduationCap, Building2, BookOpen, Calendar, Info, Phone,
@@ -169,6 +170,9 @@ export default function Header() {
                 </span>
                 <span><small>Écrivez-nous</small>info@cefopexd.com</span>
               </a>
+              <div className="header-social">
+                <SocialIcons variant="light" size={14} />
+              </div>
             </div>
 
             {/* ---- Actions droite ---- */}
@@ -465,6 +469,9 @@ export default function Header() {
           >
             S&#39;inscrire maintenant
           </Link>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <SocialIcons variant="light" size={15} />
+          </div>
           <div style={{ textAlign: "center", color: "var(--muted)", fontSize: "0.78rem" }}>
             <div>📞 +228 70 88 13 06</div>
             <div>📞 +228 79 95 20 20</div>

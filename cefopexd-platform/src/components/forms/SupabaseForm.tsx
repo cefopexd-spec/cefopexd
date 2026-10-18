@@ -15,15 +15,18 @@ export default function SupabaseForm({
   submitLabel,
   successTitle,
   successText,
+  nextSteps,
   children,
 }: {
   table: "inscriptions" | "contacts";
   submitLabel: string;
   successTitle: string;
   successText: string;
+  nextSteps?: string[];
   children: ReactNode;
 }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [receipt, setReceipt] = useState<{ ref: string; nom: string } | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,27 +41,61 @@ export default function SupabaseForm({
       data[key] = v === "" ? null : v;
     });
 
+    // L'identifiant est généré ici pour pouvoir afficher une référence
+    // (la lecture de la table n'est pas autorisée au public)
+    const id = crypto.randomUUID();
+
     try {
       const supabase = createClient();
-      const { error } = await supabase.from(table).insert(data);
+      const { error } = await supabase.from(table).insert({ id, ...data });
       if (error) throw error;
       form.reset();
+      setReceipt({
+        ref: `${table === "inscriptions" ? "INS" : "MSG"}-${id.slice(0, 8).toUpperCase()}`,
+        nom: [data.prenom, data.nom].filter(Boolean).join(" "),
+      });
       setStatus("sent");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("Envoi du formulaire impossible :", err);
       setStatus("error");
     }
   };
 
-  if (status === "sent") {
+  if (status === "sent" && receipt) {
     return (
       <div className="form-success" role="status">
-        <CheckCircle size={40} />
+        <CheckCircle size={44} />
         <h2>{successTitle}</h2>
-        <p>{successText}</p>
-        <button type="button" className="btn-hero-ghost" onClick={() => setStatus("idle")}>
-          Envoyer une autre demande
-        </button>
+        <p>
+          {receipt.nom && <>Merci {receipt.nom}. </>}
+          {successText}
+        </p>
+        <div className="form-receipt">
+          <span>Votre numéro de référence</span>
+          <strong>{receipt.ref}</strong>
+          <small>Conservez-le : il vous sera demandé lors de votre passage au centre.</small>
+        </div>
+        {nextSteps && (
+          <ol className="form-next">
+            {nextSteps.map((step, i) => (
+              <li key={step}><span>{i + 1}</span>{step}</li>
+            ))}
+          </ol>
+        )}
+        <div className="form-success-actions">
+          <a
+            href={`${CONTACT.whatsapp}?text=${encodeURIComponent(`Bonjour, je viens d'envoyer une demande au CeFoPExD (référence ${receipt.ref}).`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="whatsapp-btn"
+          >
+            Prévenir le centre sur WhatsApp
+          </a>
+          <button type="button" className="btn-hero-ghost" onClick={() => setStatus("idle")}>
+            Envoyer une autre demande
+          </button>
+        </div>
       </div>
     );
   }
