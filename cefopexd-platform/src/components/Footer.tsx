@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MapPin, Phone, Mail, ArrowUp, Navigation } from "lucide-react";
 import SocialIcons, { WhatsappIcon } from "@/components/SocialIcons";
+import ChatWidget from "@/components/ChatWidget";
 import { CONTACT } from "@/lib/site-content";
 
 const QUICK_LINKS = [
@@ -123,6 +124,7 @@ export default function Footer() {
         >
           <ArrowUp size={18} />
         </button>
+        <ChatWidget />
         <a
           href={CONTACT.whatsapp}
           target="_blank"

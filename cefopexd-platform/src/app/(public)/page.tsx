@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { DIRECTEUR } from "@/lib/site-content";
+import { CHIFFRES, DIRECTEUR } from "@/lib/site-content";
 import {
   Monitor, Settings, Leaf,
   Sun, Languages, Wrench, CheckCircle, Award,
@@ -155,11 +155,11 @@ const ACTUALITES = [
    DONNÉES : COMPTEURS
    ============================================= */
 const STATS = [
-  { icon: Users,    value: 500, suffix: "+", label: "Étudiants formés",      color: "var(--secondary-text)", tint: "rgba(34,192,3,0.12)" },
-  { icon: BookOpen, value: 6,   suffix: "",  label: "Filières d'excellence", color: "var(--accent-text)",    tint: "rgba(248,35,3,0.10)" },
-  { icon: Percent,  value: 85,  suffix: "%", label: "Taux d'insertion",      color: "var(--logo-blue)",      tint: "rgba(10,31,232,0.10)" },
-  { icon: Star,     value: 12,  suffix: "+", label: "Partenaires",           color: "#B86E00",               tint: "rgba(253,166,3,0.18)" },
-];
+  { icon: Users,    color: "var(--secondary-text)", tint: "rgba(34,192,3,0.12)" },
+  { icon: BookOpen, color: "var(--accent-text)",    tint: "rgba(248,35,3,0.10)" },
+  { icon: Percent,  color: "var(--logo-blue)",      tint: "rgba(10,31,232,0.10)" },
+  { icon: Star,     color: "#B86E00",               tint: "rgba(253,166,3,0.18)" },
+].map((style, i) => ({ ...style, ...CHIFFRES[i] }));
 
 /* =============================================
    HOOK : COMPTEUR ANIMÉ

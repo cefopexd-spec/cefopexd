@@ -16,6 +16,14 @@ export const CONTACT = {
   itineraire: "https://www.google.com/maps/search/?api=1&query=D%C3%A9vikinm%C3%A9%2C%20Togo",
 };
 
+/* Chiffres clés affichés sur l'accueil (et connus de l'assistant) */
+export const CHIFFRES = [
+  { value: 500, suffix: "+", label: "Étudiants formés" },
+  { value: 6, suffix: "", label: "Filières d'excellence" },
+  { value: 85, suffix: "%", label: "Taux d'insertion" },
+  { value: 12, suffix: "+", label: "Partenaires" },
+];
+
 /* Liens des réseaux sociaux (à confirmer par le centre) */
 export const SOCIAL = {
   facebook: "https://facebook.com/cefopexd",
