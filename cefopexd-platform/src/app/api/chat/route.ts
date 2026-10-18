@@ -1,19 +1,18 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { ASSISTANT_SYSTEM_PROMPT } from "@/lib/assistant-knowledge";
-import { CONTACT } from "@/lib/site-content";
+import { reponseRobot } from "@/lib/assistant-robot";
 
 /* =============================================
    API DE L'ASSISTANT : POST /api/chat
    Reçoit l'historique de la conversation et renvoie la réponse
    de Claude en flux texte (affichée au fil de l'eau dans le widget).
-   Requiert la variable d'environnement ANTHROPIC_API_KEY.
+   Avec ANTHROPIC_API_KEY : réponses de Claude. Sans clé (ou en cas d'erreur) :
+   le robot répond à partir du contenu du site.
    ============================================= */
 export const maxDuration = 60;
 
 const MAX_MESSAGES = 16;      // historique conservé par conversation
 const MAX_CHARS = 1500;       // longueur maximale d'un message visiteur
-
-const FALLBACK_TEXT = `Je ne peux pas répondre à cette question pour le moment. Notre équipe vous répond au ${CONTACT.telephones[0]}, par e-mail à ${CONTACT.email} ou sur la page [Contact](/contact).`;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
@@ -34,11 +33,11 @@ function parseMessages(body: unknown): Anthropic.Beta.BetaMessageParam[] | null 
   return messages;
 }
 
-export async function POST(request: Request) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return Response.json({ error: "assistant_indisponible" }, { status: 503 });
-  }
+function texteSimple(texte: string) {
+  return new Response(texte, { headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" } });
+}
 
+export async function POST(request: Request) {
   let messages: Anthropic.Beta.BetaMessageParam[] | null = null;
   try {
     messages = parseMessages(await request.json());
@@ -48,6 +47,9 @@ export async function POST(request: Request) {
   if (!messages) {
     return Response.json({ error: "requete_invalide" }, { status: 400 });
   }
+
+  const question = messages[messages.length - 1].content as string;
+  if (!process.env.ANTHROPIC_API_KEY) return texteSimple(reponseRobot(question));
 
   const client = new Anthropic();
   const stream = client.beta.messages.stream({
@@ -75,8 +77,10 @@ export async function POST(request: Request) {
           }
         }
         const final = await stream.finalMessage();
-        if (final.stop_reason === "refusal" || !sent) {
-          controller.enqueue(encoder.encode(sent ? `\n\n${FALLBACK_TEXT}` : FALLBACK_TEXT));
+        if (final.stop_reason === "refusal") {
+          controller.enqueue(encoder.encode(`${sent ? "\n\n" : ""}${reponseRobot(question)}`));
+        } else if (!sent) {
+          controller.enqueue(encoder.encode(reponseRobot(question)));
         }
       } catch (error) {
         if (error instanceof Anthropic.RateLimitError) {
@@ -86,7 +90,7 @@ export async function POST(request: Request) {
         } else {
           console.error("Assistant : erreur inattendue", error);
         }
-        controller.enqueue(encoder.encode(sent ? `\n\n${FALLBACK_TEXT}` : FALLBACK_TEXT));
+        if (!sent) controller.enqueue(encoder.encode(reponseRobot(question)));
       } finally {
         controller.close();
       }
