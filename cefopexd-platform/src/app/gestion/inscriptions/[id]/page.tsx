@@ -5,7 +5,9 @@ import { CheckCircle, Printer } from "lucide-react";
 import ActionForm from "@/components/forms/ActionForm";
 import { Field, TextAreaField } from "@/components/forms/SupabaseForm";
 import { requireGestion, nomComplet } from "@/lib/session";
-import { PIECES, STATUTS_INSCRIPTION, typeLabel } from "@/lib/roles";
+import { PIECES, STATUTS_INSCRIPTION, dateHeure, typeLabel } from "@/lib/roles";
+import ListeDocuments, { type DocumentDb } from "@/components/ListeDocuments";
+import { urlsPhotos } from "@/lib/fichiers";
 import {
   enregistrerDossier, enregistrerNotes, prendreEnCharge, refuserInscription,
   soumettreDG, transmettreAdmin, validerInscription,
@@ -28,6 +30,11 @@ export default async function InscriptionDetail({ params, searchParams }: Props)
     supabase.from("filieres").select("slug, nom").eq("active", true).order("nom"),
   ]);
   if (!ins) notFound();
+  const [{ data: docs }, photos] = await Promise.all([
+    supabase.from("documents").select("id, categorie, titre, nom_fichier, taille, type_mime, created_at").eq("inscription_id", id).order("created_at"),
+    urlsPhotos(supabase, [ins.photo_path]),
+  ]);
+  const photo = ins.photo_path ? photos.get(ins.photo_path) : null;
 
   const s = STATUTS_INSCRIPTION[ins.statut] ?? STATUTS_INSCRIPTION.en_attente;
   const d = (ins.dossier ?? {}) as Record<string, string | string[] | null>;
@@ -61,6 +68,13 @@ export default async function InscriptionDetail({ params, searchParams }: Props)
         {/* Demande reçue */}
         <div className="g-card">
           <div className="g-card-head"><h2>Demande en ligne</h2></div>
+          <div className="g-account-id">
+            {photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={photo} alt={`Photo d'identité de ${ins.prenom} ${ins.nom}`} className="g-id-photo" />
+            ) : <span className="profile-initial">{ins.prenom.charAt(0)}</span>}
+            <div><strong>{ins.prenom} {ins.nom}</strong><p className="field-hint">Reçue le {dateHeure(ins.created_at)}{ins.valide_le ? ` · validée le ${dateHeure(ins.valide_le)}` : ""}</p></div>
+          </div>
           <div className="g-kv">
             <div><span>Profil</span><strong>{typeLabel(ins.type_demandeur)}</strong></div>
             <div><span>Filière souhaitée</span><strong>{ins.filiere}</strong></div>
@@ -70,6 +84,8 @@ export default async function InscriptionDetail({ params, searchParams }: Props)
             <div><span>E-mail</span><strong>{ins.email ?? "—"}</strong></div>
           </div>
           {ins.motif && <p className="g-motif"><strong>Motif :</strong> {ins.motif}</p>}
+          <h3 className="form-section-title">Documents joints</h3>
+          <ListeDocuments documents={(docs ?? []) as DocumentDb[]} />
           {ins.message && <p className="g-motif"><strong>Message :</strong> {ins.message}</p>}
           <p className="field-hint">
             {ins.traite ? `Traitée par ${nomComplet(ins.traite)}. ` : ""}

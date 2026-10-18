@@ -3,9 +3,10 @@ import { redirect } from "next/navigation";
 import { UserRoundCheck } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ActionForm from "@/components/forms/ActionForm";
-import { Field, SelectField, TextAreaField } from "@/components/forms/SupabaseForm";
+import { Field, TextAreaField } from "@/components/forms/SupabaseForm";
+import FileUpload from "@/components/forms/FileUpload";
+import TypeEtDocuments from "@/components/forms/TypeEtDocuments";
 import { getSession } from "@/lib/session";
-import { TYPES_DEMANDEUR } from "@/lib/roles";
 import { completerProfil } from "../actions";
 
 export const metadata: Metadata = { title: "Compléter mon profil", robots: { index: false } };
@@ -40,19 +41,19 @@ export default async function CompleterProfilPage({ searchParams }: Props) {
               <Field label="Date de naissance" name="date_naissance" type="date" required defaultValue={profil?.date_naissance ?? ""} autoComplete="bday" />
               <Field label="Lieu de naissance" name="lieu_naissance" required defaultValue={profil?.lieu_naissance ?? ""} placeholder="Ville, pays" />
               <Field label="Téléphone" name="telephone" type="tel" defaultValue={profil?.telephone ?? ""} placeholder="+228 …" autoComplete="tel" />
-              <Field label="E-mail (compte Google)" name="email" defaultValue={user.email ?? ""} readOnly />
+              <Field label="E-mail" name="email" defaultValue={user.email ?? ""} readOnly />
             </div>
+            <FileUpload
+              label="Photo d'identité (format passeport)"
+              categorie="photo"
+              bucket="photos"
+              required
+              hint="Visage de face, fond clair, bien éclairé. Elle permet à l'équipe de vous identifier."
+            />
 
             <h2 className="form-section-title">2. Qui êtes-vous ?</h2>
             <div className="form-grid">
-              <SelectField
-                label="Vous êtes"
-                name="type_demandeur"
-                required
-                defaultLabel="— Choisir —"
-                options={TYPES_DEMANDEUR.map((t) => t.label)}
-                values={TYPES_DEMANDEUR.map((t) => t.value)}
-              />
+              <TypeEtDocuments defaut={profil?.type_demandeur} />
               <TextAreaField
                 label="Motif de votre inscription sur le site"
                 name="motif"

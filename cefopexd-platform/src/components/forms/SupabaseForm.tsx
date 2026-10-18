@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 import { CheckCircle, AlertCircle, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import type { FichierDepose } from "./FileUpload";
 import { CONTACT } from "@/lib/site-content";
 
 /* =============================================
@@ -36,11 +37,17 @@ export default function SupabaseForm({
     const form = e.currentTarget;
     setStatus("sending");
 
-    // Champs vides -> null ; la case de consentement n'est pas stockée
+    // Champs vides -> null ; la case de consentement n'est pas stockée ;
+    // les fichiers déposés (« fichier:<catégorie> ») sont traités à part
     const data: Record<string, string | null> = {};
+    const fichiers: FichierDepose[] = [];
     new FormData(form).forEach((value, key) => {
       if (key === "consentement") return;
       const v = String(value).trim();
+      if (key.startsWith("fichier:")) {
+        if (v) fichiers.push(JSON.parse(v) as FichierDepose);
+        return;
+      }
       data[key] = v === "" ? null : v;
     });
 
@@ -50,8 +57,18 @@ export default function SupabaseForm({
 
     try {
       const supabase = createClient();
-      const { error } = await supabase.from(table).insert({ id, ...data });
+      const photo = fichiers.find((f) => f.categorie === "photo");
+      const { error } = await supabase.from(table).insert({ id, ...data, ...(photo && table === "inscriptions" ? { photo_path: photo.chemin } : {}) });
       if (error) throw error;
+      if (fichiers.length && table === "inscriptions") {
+        const { error: errDocs } = await supabase.from("documents").insert(
+          fichiers.map((f) => ({
+            categorie: f.categorie, bucket: f.bucket, chemin: f.chemin, nom_fichier: f.nom,
+            taille: f.taille, type_mime: f.type, titre: f.nom, inscription_id: id,
+          }))
+        );
+        if (errDocs) console.error("Documents non enregistrés :", errDocs.message);
+      }
       form.reset();
       setReceipt({
         ref: `${table === "inscriptions" ? "INS" : "MSG"}-${id.slice(0, 8).toUpperCase()}`,

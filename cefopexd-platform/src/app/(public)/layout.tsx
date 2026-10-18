@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import VisiteTracker from "@/components/VisiteTracker";
 
 /* =============================================
    LAYOUT PAGES PUBLIQUES
@@ -16,6 +17,7 @@ export default function PublicLayout({
         {children}
       </main>
       <Footer />
+      <VisiteTracker />
     </>
   );
 }

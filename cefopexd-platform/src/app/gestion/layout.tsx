@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bell, ExternalLink } from "lucide-react";
+import { Bell, ExternalLink, Search } from "lucide-react";
 import GestionNav from "./GestionNav";
 import { getSession, nomComplet, roleActif } from "@/lib/session";
 import { ROLES_PERSONNEL, SECTIONS_GESTION, roleLabel, sectionsAutorisees } from "@/lib/roles";
@@ -23,7 +23,10 @@ export default async function GestionLayout({ children }: { children: React.Reac
   if (!role || !ROLES_PERSONNEL.includes(role)) redirect("/mon-espace?acces=refuse");
 
   const autorisees = sectionsAutorisees(role, profil.sections);
-  const liens = SECTIONS_GESTION.filter((s) => autorisees.includes(s.key)).map(({ key, label, href }) => ({ key, label, href }));
+  const liens = [
+    ...SECTIONS_GESTION.filter((s) => autorisees.includes(s.key)).map(({ key, label, href }) => ({ key, label, href })),
+    { key: "messagerie", label: "Messagerie interne", href: "/messagerie" },
+  ];
   const { count } = await supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })
@@ -50,6 +53,10 @@ export default async function GestionLayout({ children }: { children: React.Reac
             <strong>{nomComplet(profil)}</strong>
             <span>{roleLabel(role)} · @{profil.pseudo}</span>
           </div>
+          <form action="/gestion/recherche" className="g-topsearch" role="search">
+            <Search size={16} />
+            <input type="search" name="q" placeholder="Rechercher : nom, matricule, document…" aria-label="Rechercher dans le système" />
+          </form>
           <div className="g-topbar-actions">
             <Link href="/gestion" className="g-bell" aria-label="Notifications">
               <Bell size={18} />

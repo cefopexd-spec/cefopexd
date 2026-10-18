@@ -48,3 +48,28 @@ export async function envoyerMessageFamille(_: EtatFormulaire, fd: FormData): Pr
   revalidatePath("/mon-espace/messages");
   return { ok: "Message envoyé." };
 }
+
+/* Parent ou apprenant : demande de permission, d'absence ou de retard (traitée par le secrétariat) */
+export async function deposerDemande(_: EtatFormulaire, fd: FormData): Promise<EtatFormulaire> {
+  const { supabase, user, profil } = await getSession();
+  if (!user || !roleActif(profil)) return { erreur: "Votre compte doit être validé pour envoyer une demande." };
+  const type = texte(fd, "type");
+  const motif = texte(fd, "motif");
+  const debut = texte(fd, "date_debut");
+  if (!["permission", "absence", "retard", "autre"].includes(type)) return { erreur: "Choisissez le type de demande." };
+  if (!debut || !motif) return { erreur: "Indiquez la date et le motif." };
+  const fin = texte(fd, "date_fin");
+  if (fin && fin < debut) return { erreur: "La date de fin doit être après la date de début." };
+  const { error } = await supabase.from("demandes").insert({
+    demandeur_id: user.id,
+    apprenant_id: texte(fd, "apprenant_id") || null,
+    type,
+    date_debut: debut,
+    date_fin: fin || null,
+    heure: texte(fd, "heure") || null,
+    motif,
+  });
+  if (error) return { erreur: error.message };
+  revalidatePath("/mon-espace");
+  return { ok: "Demande envoyée au secrétariat. Vous serez notifié(e) de la réponse." };
+}

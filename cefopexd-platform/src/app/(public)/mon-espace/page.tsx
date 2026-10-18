@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CalendarCheck, FileText, LayoutDashboard, LogOut, Mail, MessageSquare, Users } from "lucide-react";
+import { ArrowRight, CalendarCheck, CalendarClock, FileText, FolderOpen, KeyRound, LayoutDashboard, LogOut, Mail, MessageSquare, MessagesSquare, Users } from "lucide-react";
+import FileUpload from "@/components/forms/FileUpload";
+import ListeDocuments, { type DocumentDb } from "@/components/ListeDocuments";
+import { TextAreaField } from "@/components/forms/SupabaseForm";
+import { urlsPhotos } from "@/lib/fichiers";
 import PageHeader from "@/components/PageHeader";
 import ActionForm from "@/components/forms/ActionForm";
 import Notifications, { type Notification } from "@/components/Notifications";
 import { Field } from "@/components/forms/SupabaseForm";
 import { nomComplet, requireProfil, roleActif } from "@/lib/session";
-import { ROLES_PERSONNEL, STATUTS_INSCRIPTION, roleLabel, typeLabel } from "@/lib/roles";
-import { modifierProfil } from "../mon-compte/actions";
-import { lierEnfant } from "./actions";
+import { CATEGORIES_DOCUMENT, ROLES_PERSONNEL, STATUTS_INSCRIPTION, dateHeure, roleLabel, typeLabel } from "@/lib/roles";
+import { ajouterDocuments, changerMotDePasse, modifierProfil } from "../mon-compte/actions";
+import { deposerDemande, lierEnfant } from "./actions";
 
 export const metadata: Metadata = { title: "Mon espace", robots: { index: false } };
 
+const TYPES_DEMANDE: Record<string, string> = { permission: "Permission", absence: "Absence", retard: "Retard", autre: "Demande" };
 const STATUT_PRESENCE: Record<string, string> = { present: "Présent", absent: "Absent", retard: "En retard", excuse: "Absence excusée" };
 const dateFr = (d: string) => new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
@@ -40,6 +45,15 @@ export default async function MonEspacePage() {
     : { data: [] as Presence[] };
 
   const afficherParent = role === "parent" || profil.type_demandeur === "parent" || enfants.length > 0;
+  const peutDemander = !!role && (suivis.length > 0 || role === "apprenant" || role === "parent");
+  const compteMotDePasse = (user.identities ?? []).some((i) => i.provider === "email");
+
+  const [{ data: mesDocuments }, { data: mesDemandes }, photos] = await Promise.all([
+    supabase.from("documents").select("id, categorie, titre, nom_fichier, taille, type_mime, created_at").eq("proprietaire_id", user.id).order("created_at", { ascending: false }),
+    supabase.from("demandes").select("id, type, date_debut, date_fin, statut, motif, reponse, traite_le, created_at").eq("demandeur_id", user.id).order("created_at", { ascending: false }).limit(20),
+    urlsPhotos(supabase, [profil.photo_path]),
+  ]);
+  const maPhoto = (profil.photo_path && photos.get(profil.photo_path)) || profil.photo_url;
 
   return (
     <>
@@ -141,10 +155,82 @@ export default async function MonEspacePage() {
               )}
             </div>
 
+            {/* Permissions, absences, retards */}
+            {peutDemander && (
+              <div className="g-card">
+                <div className="g-card-head"><h2><CalendarClock size={18} /> Permissions, absences & retards</h2></div>
+                {(mesDemandes ?? []).length > 0 && (
+                  <ul className="g-notifs">
+                    {(mesDemandes ?? []).map((d) => (
+                      <li key={d.id}>
+                        <div>
+                          <strong>{TYPES_DEMANDE[d.type]} — du {new Date(d.date_debut).toLocaleDateString("fr-FR")}{d.date_fin && d.date_fin !== d.date_debut ? ` au ${new Date(d.date_fin).toLocaleDateString("fr-FR")}` : ""}</strong>
+                          <span>{d.motif}</span>
+                          <small>
+                            Envoyée le {dateHeure(d.created_at)}
+                            {d.traite_le ? ` · ${d.statut === "approuvee" ? "acceptée" : "refusée"} le ${dateHeure(d.traite_le)}` : ""}
+                            {d.reponse ? ` — « ${d.reponse} »` : ""}
+                          </small>
+                        </div>
+                        <span className={`statut ${d.statut === "approuvee" ? "is-ok" : d.statut === "refusee" ? "is-ko" : "is-pending"}`}>
+                          {d.statut === "approuvee" ? "Acceptée" : d.statut === "refusee" ? "Refusée" : "En attente"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <details className="g-details" open={(mesDemandes ?? []).length === 0}>
+                  <summary>Nouvelle demande</summary>
+                  <ActionForm action={deposerDemande} submitLabel="Envoyer au secrétariat" className="g-form" submitClassName="btn-hero-primary btn-sm">
+                    <div className="form-grid">
+                      <label className="field"><span>Type de demande<em> *</em></span>
+                        <select name="type" required defaultValue="">
+                          <option value="" disabled>— Choisir —</option>
+                          <option value="permission">Permission de sortie / d&#39;absence</option>
+                          <option value="absence">Justification d&#39;une absence</option>
+                          <option value="retard">Retard</option>
+                          <option value="autre">Autre</option>
+                        </select>
+                      </label>
+                      {suivis.length > 0 && (
+                        <label className="field"><span>Apprenant concerné</span>
+                          <select name="apprenant_id" defaultValue={suivis[0].id}>
+                            {suivis.map((a) => <option key={a.id} value={a.id}>{a.prenom} {a.nom} ({a.matricule})</option>)}
+                          </select>
+                        </label>
+                      )}
+                      <Field label="Date (début)" name="date_debut" type="date" required />
+                      <Field label="Date de fin (si plusieurs jours)" name="date_fin" type="date" />
+                      <Field label="Heure (retard ou sortie)" name="heure" type="time" />
+                      <TextAreaField label="Motif" name="motif" required rows={3} />
+                    </div>
+                  </ActionForm>
+                </details>
+              </div>
+            )}
+
+            {/* Mes documents */}
+            <div className="g-card">
+              <div className="g-card-head"><h2><FolderOpen size={18} /> Mes documents</h2></div>
+              <ListeDocuments documents={(mesDocuments ?? []) as DocumentDb[]} />
+              <details className="g-details">
+                <summary>Ajouter des documents (CV, diplômes, pièces…)</summary>
+                <ActionForm action={ajouterDocuments} submitLabel="Enregistrer les documents" className="g-form" submitClassName="btn-hero-primary btn-sm">
+                  <Field label="Titre (facultatif)" name="titre" placeholder="Ex. : CV 2026, diplôme du BAC…" />
+                  <div className="upload-grid">
+                    {["cv", "diplome", "piece_identite", "autre"].map((c) => (
+                      <FileUpload key={c} label={CATEGORIES_DOCUMENT[c]} categorie={c} />
+                    ))}
+                  </div>
+                </ActionForm>
+              </details>
+            </div>
+
             {/* Profil */}
             <div className="g-card">
               <div className="g-card-head"><h2>Mon profil</h2></div>
               <ActionForm action={modifierProfil} submitLabel="Enregistrer" className="g-form" submitClassName="btn-hero-primary btn-sm">
+                <FileUpload label="Changer ma photo de profil / d'identité" categorie="photo" bucket="photos" hint="Facultatif — visage de face, fond clair." />
                 <div className="form-grid">
                   <Field label="Pseudo" name="pseudo" required defaultValue={profil.pseudo} hint="Lettres, chiffres, point ou tiret bas" />
                   <Field label="Téléphone" name="telephone" type="tel" defaultValue={profil.telephone ?? ""} />
@@ -155,13 +241,25 @@ export default async function MonEspacePage() {
                 </div>
               </ActionForm>
             </div>
+
+            {compteMotDePasse && (
+              <div className="g-card">
+                <div className="g-card-head"><h2><KeyRound size={18} /> Mon mot de passe</h2></div>
+                <ActionForm action={changerMotDePasse} submitLabel="Changer le mot de passe" className="g-form" submitClassName="btn-hero-primary btn-sm">
+                  <div className="form-grid">
+                    <Field label="Nouveau mot de passe" name="mot_de_passe" type="password" required autoComplete="new-password" hint="8 caractères minimum" />
+                    <Field label="Confirmation" name="confirmation" type="password" required autoComplete="new-password" />
+                  </div>
+                </ActionForm>
+              </div>
+            )}
           </div>
 
           {/* ---- Colonne latérale ---- */}
           <aside className="form-aside profile-card">
-            {profil.photo_url ? (
+            {maPhoto ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={profil.photo_url} alt="" className="profile-photo" referrerPolicy="no-referrer" />
+              <img src={maPhoto} alt="" className="profile-photo" referrerPolicy="no-referrer" />
             ) : (
               <div className="profile-photo profile-initial">{(profil.prenom || profil.pseudo).charAt(0).toUpperCase()}</div>
             )}
@@ -169,6 +267,11 @@ export default async function MonEspacePage() {
             <span className="profile-mail">@{profil.pseudo}</span>
             <span className="profile-mail"><Mail size={14} /> {profil.email}</span>
             <span className="profile-badge">{role ? roleLabel(role) : "En attente de validation"}</span>
+            {role && (
+              <Link href="/messagerie" className="btn-hero-primary" style={{ width: "100%" }}>
+                <MessagesSquare size={16} /> Messagerie
+              </Link>
+            )}
             <Link href="/mon-espace/messages" className="btn-hero-ghost" style={{ width: "100%" }}>
               <MessageSquare size={16} /> Messages & annonces
             </Link>

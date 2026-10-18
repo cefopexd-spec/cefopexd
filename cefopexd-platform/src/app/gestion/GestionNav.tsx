@@ -5,11 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3, BookOpen, CalendarCheck, ClipboardList, FileText, GraduationCap,
-  History, LayoutDashboard, Megaphone, Menu, MessageSquare, ShieldCheck, Users, X,
+  CalendarClock, FolderOpen, History, LayoutDashboard, Megaphone, Menu, MessageSquare, MessagesSquare, Search, ShieldCheck, Users, X,
 } from "lucide-react";
 
 const ICONES: Record<string, typeof LayoutDashboard> = {
   tableau: LayoutDashboard,
+  recherche: Search,
+  demandes: CalendarClock,
+  documents: FolderOpen,
+  messagerie: MessagesSquare,
   comptes: ShieldCheck,
   inscriptions: ClipboardList,
   apprenants: GraduationCap,

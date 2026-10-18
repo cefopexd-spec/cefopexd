@@ -3,25 +3,28 @@ import { AlertTriangle, ArrowRight } from "lucide-react";
 import Notifications, { type Notification } from "@/components/Notifications";
 import { requireGestion } from "@/lib/session";
 import { STATUTS_INSCRIPTION } from "@/lib/roles";
+import StatsDG, { type Periode } from "./StatsDG";
 
-type Props = { searchParams: Promise<{ acces?: string }> };
+type Props = { searchParams: Promise<{ acces?: string; periode?: string }> };
 
 /* =============================================
    TABLEAU DE BORD — chiffres clés et tâches en attente selon le rôle
    ============================================= */
 export default async function TableauDeBord({ searchParams }: Props) {
-  const { acces } = await searchParams;
+  const { acces, periode } = await searchParams;
   const { supabase, user, role, autorisees } = await requireGestion("tableau");
   const aujourdhui = new Date().toISOString().slice(0, 10);
   const compter = (table: string) => supabase.from(table).select("id", { count: "exact", head: true });
 
-  const [comptes, inscriptions, apprenants, professeurs, absences, rapports, notifications] = await Promise.all([
+  const [comptes, inscriptions, apprenants, professeurs, absences, rapports, pubsAValider, demandes, notifications] = await Promise.all([
     autorisees.includes("comptes") ? compter("profils").eq("statut", "en_attente").eq("profil_complet", true) : null,
     autorisees.includes("inscriptions") ? supabase.from("inscriptions").select("statut") : null,
     autorisees.includes("apprenants") ? compter("apprenants").eq("statut", "actif") : null,
     autorisees.includes("professeurs") ? compter("professeurs").eq("actif", true) : null,
     autorisees.includes("presences") ? compter("presences").eq("jour", aujourdhui).eq("statut", "absent") : null,
     role === "dg" ? compter("rapports").eq("statut", "soumis") : null,
+    role === "dg" ? compter("publications").eq("statut", "soumise") : null,
+    autorisees.includes("demandes") ? compter("demandes").eq("statut", "soumise") : null,
     supabase.from("notifications").select("*").eq("destinataire_id", user!.id).order("created_at", { ascending: false }).limit(10),
   ]);
 
@@ -34,9 +37,13 @@ export default async function TableauDeBord({ searchParams }: Props) {
     aFaire.push({ label: "Comptes à valider", n: comptes?.count ?? 0, href: "/gestion/comptes" });
     aFaire.push({ label: "Dossiers d'inscription à valider", n: parStatut.dossier_complet ?? 0, href: "/gestion/inscriptions?statut=dossier_complet" });
     aFaire.push({ label: "Rapports non lus", n: rapports?.count ?? 0, href: "/gestion/rapports" });
+    aFaire.push({ label: "Publications à valider", n: pubsAValider?.count ?? 0, href: "/gestion/publications?statut=soumise" });
   }
   if (role === "admin" || role === "dg") {
     aFaire.push({ label: "Dossiers transmis par le secrétariat", n: parStatut.transmis_admin ?? 0, href: "/gestion/inscriptions?statut=transmis_admin" });
+  }
+  if (autorisees.includes("demandes")) {
+    aFaire.push({ label: "Permissions, absences, retards à traiter", n: demandes?.count ?? 0, href: "/gestion/demandes" });
   }
   if (["secretaire", "admin", "dg"].includes(role)) {
     aFaire.push({ label: "Nouvelles pré-inscriptions", n: parStatut.en_attente ?? 0, href: "/gestion/inscriptions?statut=en_attente" });
@@ -60,6 +67,8 @@ export default async function TableauDeBord({ searchParams }: Props) {
       {acces === "refuse" && (
         <div className="form-error" role="alert"><AlertTriangle size={18} /><span>Cette rubrique ne vous est pas attribuée. Contactez le Directeur Général.</span></div>
       )}
+
+      {role === "dg" && <StatsDG supabase={supabase} periode={(["day", "week", "month", "year"].includes(periode ?? "") ? periode : "day") as Periode} />}
 
       {chiffres.length > 0 && (
         <div className="g-stats">

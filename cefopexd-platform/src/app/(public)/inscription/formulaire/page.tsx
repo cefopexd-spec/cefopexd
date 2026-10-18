@@ -6,6 +6,8 @@ import GoogleButton from "@/components/auth/GoogleButton";
 import { redirect } from "next/navigation";
 import { getSession, nomComplet } from "@/lib/session";
 import { alerteNouvelleInscription } from "../actions";
+import FileUpload from "@/components/forms/FileUpload";
+import { CATEGORIES_DOCUMENT, DOCUMENTS_INSCRIPTION } from "@/lib/roles";
 import SupabaseForm, { Field, SelectField, TextAreaField } from "@/components/forms/SupabaseForm";
 import { CONTACT, SECTIONS } from "@/lib/site-content";
 
@@ -112,7 +114,15 @@ export default async function PreInscriptionPage() {
                 </p>
               )}
 
-              <h2 className="form-section-title">2. Votre formation</h2>
+              <h2 className="form-section-title">2. Photo et documents de l&#39;apprenant(e)</h2>
+              <div className="upload-grid">
+                <FileUpload label="Photo d'identité (format passeport)" categorie="photo" bucket="photos" required hint="Visage de face, fond clair." />
+                {DOCUMENTS_INSCRIPTION.map((c) => (
+                  <FileUpload key={c} label={CATEGORIES_DOCUMENT[c]} categorie={c} hint="Facultatif — peut aussi être déposé au centre." />
+                ))}
+              </div>
+
+              <h2 className="form-section-title">3. Votre formation</h2>
               <div className="form-grid">
                 <SelectField label="Filière souhaitée" name="filiere" options={FILIERES} required defaultLabel="— Choisir une filière —" />
                 <SelectField label="Niveau d'étude" name="niveau_etude" options={NIVEAUX} required defaultLabel="— Choisir un niveau —" />

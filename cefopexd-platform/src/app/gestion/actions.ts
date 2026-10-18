@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { assertGestion, nomComplet } from "@/lib/session";
-import { ROLES, SECTIONS_GESTION } from "@/lib/roles";
-import { notifierParEmail } from "@/lib/email";
+import { ROLES, ROLES_RESPONSABLES, SECTIONS_GESTION } from "@/lib/roles";
+import { envoyerEmail, notifierParEmail } from "@/lib/email";
+import { lireFichiers, versDocuments } from "@/lib/fichiers";
+import { MESSAGE_CLE_MANQUANTE, adminClient } from "@/lib/supabase/admin";
 
 export type Etat = { erreur?: string; ok?: string };
 
@@ -129,10 +131,13 @@ export async function validerInscription(id: string) {
     tuteur_lien: d.tuteur_lien,
     tuteur_telephone: d.tuteur_telephone,
     tuteur_email: d.tuteur_email,
+    photo_path: ins.photo_path,
   }).select("id").single();
   if (errApp || !apprenant) throw new Error("Création de l'apprenant impossible : " + errApp?.message);
 
   await supabase.from("inscriptions").update({ statut: "valide", apprenant_id: apprenant.id }).eq("id", id);
+  // Les documents de la demande suivent l'apprenant
+  await supabase.from("documents").update({ apprenant_id: apprenant.id }).eq("inscription_id", id);
 
   // Le demandeur obtient l'accès correspondant (apprenant ou parent) si son compte n'avait pas encore de rôle
   if (ins.user_id) {
@@ -287,12 +292,16 @@ export async function enregistrerPresences(_: Etat, fd: FormData): Promise<Etat>
 }
 
 /* =============================================
-   PUBLICATIONS (site public ou annonces internes)
+   PUBLICATIONS : le personnel prépare et soumet, le DG publie
    ============================================= */
 export async function enregistrerPublication(_: Etat, fd: FormData): Promise<Etat> {
   try {
-    const { supabase, user } = await assertGestion("publications");
+    const { supabase, user, role } = await assertGestion("publications");
     const id = t(fd, "id");
+    // brouillon | soumettre | publier (la case « Brouillon » l'emporte)
+    const intentions = fd.getAll("intention").map(String);
+    const intention = intentions.includes("brouillon") ? "brouillon" : intentions[0];
+    const statut = role === "dg" && intention === "publier" ? "publiee" : intention === "brouillon" ? "brouillon" : "soumise";
     const champs = {
       titre: t(fd, "titre"),
       resume: tn(fd, "resume"),
@@ -302,7 +311,7 @@ export async function enregistrerPublication(_: Etat, fd: FormData): Promise<Eta
       cible: t(fd, "cible") || "tous",
       date_evenement: tn(fd, "date_evenement"),
       image_url: tn(fd, "image_url"),
-      publie: fd.get("publie") === "on",
+      statut,
     };
     if (!champs.titre || !champs.contenu) return { erreur: "Titre et contenu obligatoires." };
     const { error } = id
@@ -311,8 +320,27 @@ export async function enregistrerPublication(_: Etat, fd: FormData): Promise<Eta
     if (error) return { erreur: error.message };
     revalidatePath("/gestion/publications");
     revalidatePath("/informations/actualites");
-    revalidatePath("/");
-    return { ok: champs.publie ? (champs.public ? "Publié sur le site." : "Annonce interne publiée.") : "Brouillon enregistré." };
+    return {
+      ok: statut === "publiee" ? (champs.public ? "Publié sur le site." : "Annonce interne publiée.")
+        : statut === "soumise" ? "Publication soumise au Directeur Général pour validation." : "Brouillon enregistré.",
+    };
+  } catch (e) { return echec(e); }
+}
+
+export async function validerPublication(id: string) {
+  const { supabase } = await assertGestion("publications", ["dg"]);
+  await supabase.from("publications").update({ statut: "publiee", motif_refus: null }).eq("id", id);
+  revalidatePath("/gestion/publications");
+  revalidatePath("/informations/actualites");
+}
+
+export async function refuserPublication(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    const { supabase } = await assertGestion("publications", ["dg"]);
+    const { error } = await supabase.from("publications").update({ statut: "refusee", motif_refus: tn(fd, "motif_refus") }).eq("id", t(fd, "id"));
+    if (error) return { erreur: error.message };
+    revalidatePath("/gestion/publications");
+    return { ok: "Publication refusée ; l'auteur est notifié." };
   } catch (e) { return echec(e); }
 }
 
@@ -324,7 +352,7 @@ export async function supprimerPublication(id: string) {
 }
 
 /* =============================================
-   MESSAGES
+   ANNONCES AUX GROUPES (messages)
    ============================================= */
 export async function envoyerMessage(_: Etat, fd: FormData): Promise<Etat> {
   try {
@@ -345,7 +373,7 @@ export async function envoyerMessage(_: Etat, fd: FormData): Promise<Etat> {
 }
 
 /* =============================================
-   RAPPORTS (soumis au DG)
+   RAPPORTS (soumis au DG, avec pièces jointes ; non modifiables ensuite)
    ============================================= */
 export async function soumettreRapport(_: Etat, fd: FormData): Promise<Etat> {
   try {
@@ -353,9 +381,13 @@ export async function soumettreRapport(_: Etat, fd: FormData): Promise<Etat> {
     const titre = t(fd, "titre");
     const contenu = t(fd, "contenu");
     if (!titre || !contenu) return { erreur: "Titre et contenu obligatoires." };
-    const { error } = await supabase.from("rapports").insert({ auteur_id: user!.id, titre, periode: tn(fd, "periode"), contenu });
+    const { data: rapport, error } = await supabase.from("rapports").insert({ auteur_id: user!.id, titre, periode: tn(fd, "periode"), contenu }).select("id").single();
     if (error) return { erreur: error.message };
-    await notifierParEmail(["dg"], `Nouveau rapport : ${titre}`, `${nomComplet(profil)} vous a soumis un rapport${t(fd, "periode") ? ` (${t(fd, "periode")})` : ""}.`, "/gestion/rapports");
+    const fichiers = lireFichiers(fd.entries(), user!.id);
+    if (fichiers.length) {
+      await supabase.from("documents").insert(versDocuments(fichiers.map((f) => ({ ...f, categorie: "rapport" })), { rapport_id: rapport.id }));
+    }
+    await notifierParEmail(["dg"], `Nouveau rapport : ${titre}`, `${nomComplet(profil)} vous a soumis un rapport${t(fd, "periode") ? ` (${t(fd, "periode")})` : ""}${fichiers.length ? ` avec ${fichiers.length} pièce(s) jointe(s)` : ""}.`, "/gestion/rapports");
     revalidatePath("/gestion/rapports");
     return { ok: "Rapport soumis au Directeur Général." };
   } catch (e) { return echec(e); }
@@ -368,5 +400,84 @@ export async function traiterRapport(_: Etat, fd: FormData): Promise<Etat> {
     if (error) return { erreur: error.message };
     revalidatePath("/gestion/rapports");
     return { ok: "Rapport mis à jour." };
+  } catch (e) { return echec(e); }
+}
+
+/* =============================================
+   DEMANDES : permission, absence, retard (secrétariat ; le DG peut revoir)
+   ============================================= */
+export async function traiterDemande(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    const { supabase } = await assertGestion("demandes", ["dg", "secretaire"]);
+    const statut = t(fd, "decision");
+    if (!["approuvee", "refusee"].includes(statut)) return { erreur: "Choisissez accepter ou refuser." };
+    const { error } = await supabase.from("demandes").update({ statut, reponse: tn(fd, "reponse") }).eq("id", t(fd, "id"));
+    if (error) return { erreur: error.message };
+    revalidatePath("/gestion/demandes");
+    return { ok: statut === "approuvee" ? "Demande acceptée : la famille est notifiée et la présence mise à jour." : "Demande refusée : la famille est notifiée." };
+  } catch (e) { return echec(e); }
+}
+
+/* =============================================
+   COMPTES DES RESPONSABLES (créés par le DG : e-mail + mot de passe)
+   ============================================= */
+function motDePasseProvisoire() {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  const octets = crypto.getRandomValues(new Uint8Array(12));
+  return Array.from(octets, (o) => alphabet.at(o % alphabet.length)).join("");
+}
+
+export async function creerResponsable(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    const { supabase, profil } = await assertGestion("comptes", ["dg"]);
+    const admin = adminClient();
+    if (!admin) return { erreur: MESSAGE_CLE_MANQUANTE };
+    const email = t(fd, "email").toLowerCase();
+    const role = t(fd, "role");
+    const nom = t(fd, "nom");
+    const prenom = t(fd, "prenom");
+    const pseudo = t(fd, "pseudo").toLowerCase();
+    if (!email || !nom || !prenom) return { erreur: "Nom, prénom et e-mail obligatoires." };
+    if (!ROLES_RESPONSABLES.includes(role as never)) return { erreur: "Rôle invalide." };
+    if (pseudo && !/^[a-z0-9._]{3,30}$/.test(pseudo)) return { erreur: "Pseudo : 3 à 30 caractères (lettres, chiffres, point, tiret bas)." };
+    const motDePasse = t(fd, "mot_de_passe") || motDePasseProvisoire();
+    if (motDePasse.length < 8) return { erreur: "Le mot de passe doit contenir au moins 8 caractères." };
+
+    const { data: cree, error } = await admin.auth.admin.createUser({
+      email, password: motDePasse, email_confirm: true, user_metadata: { given_name: prenom, family_name: nom },
+    });
+    if (error || !cree.user) return { erreur: error?.message.includes("already") ? "Un compte existe déjà avec cet e-mail : attribuez-lui un rôle dans la liste ci-dessous." : error?.message ?? "Création impossible." };
+
+    // Le profil est créé par la base ; le DG lui attribue rôle et accès (date et heure de validation enregistrées)
+    const { error: errProfil } = await supabase.from("profils").update({
+      nom, prenom, role, statut: "valide", profil_complet: true, telephone: tn(fd, "telephone"),
+      type_demandeur: "administration", motif: `Compte ${role} créé par le Directeur Général`,
+      ...(pseudo ? { pseudo } : {}),
+    }).eq("id", cree.user.id);
+    if (errProfil) return { erreur: "Compte créé, mais profil incomplet : " + errProfil.message };
+
+    await admin.from("notifications").insert({
+      destinataire_id: cree.user.id,
+      titre: "Bienvenue dans l'espace de gestion du CeFoPExD",
+      message: `Votre compte a été créé par ${nomComplet(profil)}. Pensez à changer votre mot de passe dans « Mon espace ».`,
+      lien: "/gestion",
+    });
+    await envoyerEmail([email], "Votre accès à l'espace de gestion du CeFoPExD",
+      `Bonjour ${prenom},\n\nLe Directeur Général vous a ouvert un accès à l'espace de gestion du CeFoPExD.\n\nIdentifiant : ${email}${pseudo ? ` (ou le pseudo « ${pseudo} »)` : ""}\nMot de passe provisoire : ${motDePasse}\n\nConnectez-vous sur www.cefopexd.com/connexion (rubrique « Personnel du centre »), puis changez votre mot de passe dans « Mon espace ».`,
+      "/connexion");
+    revalidatePath("/gestion/comptes");
+    return { ok: `Compte créé pour ${prenom} ${nom}. Identifiant : ${email}${pseudo ? ` ou ${pseudo}` : ""} — mot de passe provisoire : ${motDePasse} (transmettez-le en main propre si l'e-mail n'est pas configuré).` };
+  } catch (e) { return echec(e); }
+}
+
+export async function reinitialiserMotDePasse(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    await assertGestion("comptes", ["dg"]);
+    const admin = adminClient();
+    if (!admin) return { erreur: MESSAGE_CLE_MANQUANTE };
+    const motDePasse = motDePasseProvisoire();
+    const { error } = await admin.auth.admin.updateUserById(t(fd, "id"), { password: motDePasse });
+    if (error) return { erreur: error.message };
+    return { ok: `Nouveau mot de passe provisoire : ${motDePasse}` };
   } catch (e) { return echec(e); }
 }

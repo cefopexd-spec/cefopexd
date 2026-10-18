@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CheckCircle, ShieldCheck } from "lucide-react";
+import { CheckCircle, KeyRound, ShieldCheck } from "lucide-react";
+import ActionForm from "@/components/forms/ActionForm";
+import { Field } from "@/components/forms/SupabaseForm";
+import { seConnecterPersonnel } from "./actions";
 import PageHeader from "@/components/PageHeader";
 import GoogleButton from "@/components/auth/GoogleButton";
 import { getProfil } from "@/lib/auth";
@@ -51,6 +54,17 @@ export default async function ConnexionPage({ searchParams }: Props) {
                 votre e-mail et votre photo de profil Google.
               </span>
             </p>
+
+            {/* Personnel : comptes créés par le Directeur Général */}
+            <details className="staff-login">
+              <summary><KeyRound size={16} /> Personnel du centre : connexion par identifiant</summary>
+              <p className="auth-small">Utilisez l&#39;e-mail ou le pseudo et le mot de passe reçus de la direction.</p>
+              <ActionForm action={seConnecterPersonnel} submitLabel="Se connecter" className="g-form" submitClassName="btn-hero-primary btn-sm">
+                <input type="hidden" name="next" value={next ?? ""} />
+                <Field label="E-mail ou pseudo" name="identifiant" required autoComplete="username" />
+                <Field label="Mot de passe" name="mot_de_passe" type="password" required autoComplete="current-password" />
+              </ActionForm>
+            </details>
           </div>
 
           <aside className="form-aside">

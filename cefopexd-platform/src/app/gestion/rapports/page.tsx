@@ -1,38 +1,55 @@
 import type { Metadata } from "next";
 import ActionForm from "@/components/forms/ActionForm";
+import FileUpload from "@/components/forms/FileUpload";
+import ListeDocuments, { type DocumentDb } from "@/components/ListeDocuments";
 import { Field, TextAreaField } from "@/components/forms/SupabaseForm";
 import { requireGestion, nomComplet } from "@/lib/session";
+import { dateHeure, roleLabel } from "@/lib/roles";
 import { soumettreRapport, traiterRapport } from "../actions";
 
 export const metadata: Metadata = { title: "Rapports" };
 
 type Rapport = {
-  id: string; titre: string; periode: string | null; contenu: string; statut: string; commentaire_dg: string | null; created_at: string;
+  id: string; titre: string; periode: string | null; contenu: string; statut: string; commentaire_dg: string | null;
+  created_at: string; lu_le: string | null;
   auteur: { prenom: string | null; nom: string | null; pseudo: string; role: string } | null;
+  documents: DocumentDb[];
 };
 
 /* =============================================
-   RAPPORTS — chaque responsable rédige et soumet ; le DG lit et commente
+   RAPPORTS — chaque responsable rédige et soumet (avec pièces jointes) ;
+   le DG lit, commente, télécharge. Un rapport soumis n'est plus modifiable.
    ============================================= */
 export default async function RapportsPage() {
   const { supabase, role } = await requireGestion("rapports");
-  const { data } = await supabase.from("rapports").select("*, auteur:profils!rapports_auteur_id_fkey(prenom, nom, pseudo, role)").order("created_at", { ascending: false });
+  const { data } = await supabase
+    .from("rapports")
+    .select("*, auteur:profils!rapports_auteur_id_fkey(prenom, nom, pseudo, role), documents(id, categorie, titre, nom_fichier, taille, type_mime, created_at)")
+    .order("created_at", { ascending: false });
   const rapports = (data ?? []) as unknown as Rapport[];
 
   return (
     <>
       <div className="g-page-head">
         <h1>Rapports</h1>
-        <p>{role === "dg" ? "Tous les rapports soumis par vos équipes." : "Rédigez vos rapports : ils sont transmis directement au Directeur Général."}</p>
+        <p>
+          {role === "dg"
+            ? "Tous les rapports soumis par vos collaborateurs, avec leurs pièces jointes à consulter ou télécharger."
+            : "Rédigez votre rapport (par exemple chaque semaine) et joignez vos fichiers : il est transmis directement au Directeur Général et ne peut plus être modifié ensuite."}
+        </p>
       </div>
 
       <details className="g-card g-details" open={role !== "dg"}>
         <summary>Rédiger un rapport</summary>
         <ActionForm action={soumettreRapport} submitLabel="Soumettre au DG" className="g-form" submitClassName="btn-hero-primary btn-sm">
           <div className="form-grid">
-            <Field label="Titre" name="titre" required />
+            <Field label="Titre" name="titre" required placeholder="Ex. : Rapport hebdomadaire du secrétariat" />
             <Field label="Période" name="periode" placeholder="Ex. : semaine du 14 au 18 octobre" />
             <TextAreaField label="Contenu du rapport" name="contenu" required rows={8} />
+          </div>
+          <div className="upload-grid">
+            <FileUpload label="Pièce jointe 1" categorie="rapport" dossier="rapports" hint="PDF, Word ou image — 10 Mo maximum." />
+            <FileUpload label="Pièce jointe 2" categorie="rapport_2" dossier="rapports" hint="Facultatif." />
           </div>
         </ActionForm>
       </details>
@@ -44,11 +61,13 @@ export default async function RapportsPage() {
             <summary>
               <div>
                 <strong>{r.titre}</strong>
-                <span>{nomComplet(r.auteur)} · {r.periode ?? ""} · {new Date(r.created_at).toLocaleDateString("fr-FR")}</span>
+                <span>{nomComplet(r.auteur)} ({roleLabel(r.auteur?.role ?? "")}) · {r.periode ?? ""} · soumis le {dateHeure(r.created_at)}</span>
               </div>
               <span className={`statut ${r.statut === "soumis" ? "is-pending" : "is-ok"}`}>{r.statut === "soumis" ? "Non lu" : r.statut === "lu" ? "Lu" : "Archivé"}</span>
             </summary>
             <p className="g-rapport">{r.contenu}</p>
+            {r.documents.length > 0 && <ListeDocuments documents={r.documents} />}
+            {r.lu_le && <p className="g-validation">Lu par le Directeur Général le {dateHeure(r.lu_le)}</p>}
             {r.commentaire_dg && <p className="g-motif"><strong>Commentaire du DG :</strong> {r.commentaire_dg}</p>}
             {role === "dg" && (
               <ActionForm action={traiterRapport} submitLabel="Enregistrer" className="g-form" submitClassName="btn-hero-ghost btn-sm">

@@ -15,6 +15,7 @@ export type ProfilDb = {
   lieu_naissance: string | null;
   telephone: string | null;
   photo_url: string | null;
+  photo_path: string | null;
   type_demandeur: string | null;
   motif: string | null;
   role: Role;

@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import { UserPlus } from "lucide-react";
 import ActionForm from "@/components/forms/ActionForm";
+import { Field } from "@/components/forms/SupabaseForm";
 import { requireGestion, nomComplet } from "@/lib/session";
-import { ROLES, SECTIONS_GESTION, roleLabel, typeLabel } from "@/lib/roles";
-import { majCompte } from "../actions";
+import { ROLES, ROLES_RESPONSABLES, SECTIONS_GESTION, dateHeure, roleLabel, typeLabel } from "@/lib/roles";
+import { urlsPhotos } from "@/lib/fichiers";
+import { creerResponsable, majCompte, reinitialiserMotDePasse } from "../actions";
 
 export const metadata: Metadata = { title: "Comptes & rôles" };
 
@@ -11,6 +14,7 @@ type Profil = {
   id: string; email: string; pseudo: string; nom: string | null; prenom: string | null; date_naissance: string | null;
   lieu_naissance: string | null; telephone: string | null; type_demandeur: string | null; motif: string | null;
   role: string; statut: string; sections: string[] | null; profil_complet: boolean; created_at: string;
+  photo_path: string | null; photo_url: string | null; valide_le: string | null;
 };
 
 const FILTRES = [
@@ -31,6 +35,7 @@ export default async function ComptesPage({ searchParams }: Props) {
   if (filtre === "valide" || filtre === "refuse") requete = requete.eq("statut", filtre);
   const { data } = await requete;
   const profils = (data ?? []) as Profil[];
+  const photos = await urlsPhotos(supabase, profils.map((p) => p.photo_path));
 
   return (
     <>
@@ -38,6 +43,30 @@ export default async function ComptesPage({ searchParams }: Props) {
         <h1>Comptes & rôles</h1>
         <p>Validez les comptes créés avec Google, attribuez un rôle et, si besoin, choisissez précisément les rubriques ouvertes à chaque personne.</p>
       </div>
+
+      {/* Les responsables (administration, secrétariat, pédagogie, professeurs) reçoivent un compte direct */}
+      <details className="g-card g-details" open={profils.length === 0}>
+        <summary><UserPlus size={16} /> Créer le compte d&#39;un responsable</summary>
+        <p className="field-hint">
+          Le compte est créé immédiatement avec son rôle. La personne se connecte sur la page Connexion (« Personnel du centre ») avec
+          son e-mail ou son pseudo et le mot de passe provisoire, qu&#39;elle change ensuite dans « Mon espace ».
+        </p>
+        <ActionForm action={creerResponsable} submitLabel="Créer le compte" className="g-form" submitClassName="btn-hero-primary btn-sm">
+          <div className="form-grid">
+            <Field label="Nom" name="nom" required />
+            <Field label="Prénom(s)" name="prenom" required />
+            <Field label="E-mail" name="email" type="email" required />
+            <Field label="Téléphone" name="telephone" type="tel" />
+            <label className="field"><span>Responsabilité</span>
+              <select name="role" required defaultValue="secretaire">
+                {ROLES.filter((r) => ROLES_RESPONSABLES.includes(r.value)).map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+              </select>
+            </label>
+            <Field label="Pseudo de connexion (facultatif)" name="pseudo" placeholder="ex. secretariat" />
+            <Field label="Mot de passe provisoire (facultatif)" name="mot_de_passe" hint="Laissé vide : un mot de passe sûr est généré." />
+          </div>
+        </ActionForm>
+      </details>
 
       <div className="g-tabs">
         {FILTRES.map((f) => (
@@ -65,6 +94,16 @@ export default async function ComptesPage({ searchParams }: Props) {
               <div><span>Naissance</span><strong>{p.date_naissance ? new Date(p.date_naissance).toLocaleDateString("fr-FR") : "—"} {p.lieu_naissance ? `à ${p.lieu_naissance}` : ""}</strong></div>
               <div><span>Téléphone</span><strong>{p.telephone ?? "—"}</strong></div>
               <div><span>Compte créé le</span><strong>{new Date(p.created_at).toLocaleDateString("fr-FR")}</strong></div>
+            </div>
+            <div className="g-account-id">
+              {photos.get(p.photo_path ?? "") || p.photo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={photos.get(p.photo_path ?? "") ?? p.photo_url ?? ""} alt={`Photo de ${nomComplet(p)}`} referrerPolicy="no-referrer" />
+              ) : <span className="profile-initial">{(p.prenom || p.pseudo).charAt(0).toUpperCase()}</span>}
+              <div>
+                {p.valide_le && <p className="g-validation">Compte validé le {dateHeure(p.valide_le)}</p>}
+                <p className="field-hint">Compte créé le {dateHeure(p.created_at)}</p>
+              </div>
             </div>
             {p.motif && <p className="g-motif"><strong>Motif :</strong> {p.motif}</p>}
 
@@ -98,6 +137,11 @@ export default async function ComptesPage({ searchParams }: Props) {
                 ))}
               </fieldset>
             </ActionForm>
+            {ROLES_RESPONSABLES.includes(p.role as never) && (
+              <ActionForm action={reinitialiserMotDePasse} submitLabel="Générer un nouveau mot de passe" className="g-form" submitClassName="g-link-btn">
+                <input type="hidden" name="id" value={p.id} />
+              </ActionForm>
+            )}
           </details>
         ))}
       </div>

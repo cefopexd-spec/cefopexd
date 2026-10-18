@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import AppInstall from "@/components/AppInstall";
 
 /* Polices Google : Plus Jakarta Sans (titres) + Inter (texte) */
 const inter = Inter({
@@ -42,10 +43,10 @@ export const metadata: Metadata = {
     title: "CeFoPExD — Formations Professionnelles d'Excellence",
     description: "Votre avenir professionnel commence ici !",
   },
-  manifest: "/manifest.json",
+  appleWebApp: { capable: true, title: "CeFoPExD", statusBarStyle: "default" },
   icons: {
     icon: "/logo-mark.png",
-    apple: "/logo-mark.png",
+    apple: "/icons/apple-touch-icon.png",
   },
 };
 
@@ -81,6 +82,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         {children}
+        <AppInstall />
       </body>
     </html>
   );
