@@ -164,35 +164,51 @@ const STATS = [
 /* =============================================
    HOOK : COMPTEUR ANIMÉ
    ============================================= */
-function useCountUp(target: number, duration = 2000, start = false) {
+function useCountUp(target: number, duration = 2000, start = false, delay = 0) {
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (!start) return;
+    // Animations réduites : affiche directement la valeur finale
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCount(target);
+      return;
+    }
+    let frame = 0;
     let startTime: number | null = null;
     const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      setCount(Math.floor(progress * target));
-      if (progress < 1) requestAnimationFrame(step);
+      if (startTime === null) startTime = timestamp + delay;
+      const progress = Math.min(Math.max((timestamp - startTime) / duration, 0), 1);
+      // Décélération (easeOutExpo) : rapide au départ, ralentit en arrivant
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCount(Math.round(eased * target));
+      if (progress < 1) frame = requestAnimationFrame(step);
     };
-    requestAnimationFrame(step);
-  }, [target, duration, start]);
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [target, duration, start, delay]);
   return count;
 }
 
 /* =============================================
    COMPOSANT : STAT CARD
    ============================================= */
-function StatCard({ stat, animate }: { stat: typeof STATS[0]; animate: boolean }) {
-  const count = useCountUp(stat.value, 1600, animate);
+function StatCard({ stat, animate, index }: { stat: typeof STATS[0]; animate: boolean; index: number }) {
+  const delay = index * 180;
+  const count = useCountUp(stat.value, 2200, animate, delay + 250);
+  const done = animate && count === stat.value;
   return (
-    <div className="stat-tile">
-      <div className="stat-icon" style={{ background: stat.tint, color: stat.color }}>
-        <stat.icon size={24} />
+    <div
+      className={`stat-tile ${animate ? "is-visible" : ""} ${done ? "is-done" : ""}`}
+      style={{ "--delay": `${delay}ms`, "--p": stat.value ? count / stat.value : 0, "--ring": stat.color } as React.CSSProperties}
+    >
+      <div className="stat-icon-wrap">
+        <div className="stat-icon" style={{ background: stat.tint, color: stat.color }}>
+          <stat.icon size={24} />
+        </div>
       </div>
       <div>
         <div className="stat-value">
-          {count}{stat.suffix}
+          <span className="stat-number">{count}</span>{stat.suffix}
         </div>
         <div className="stat-label">{stat.label}</div>
       </div>
@@ -329,8 +345,8 @@ export default function HomePage() {
       <div className="stats-bar" ref={statsRef}>
         <div className="container">
           <div className="stats-grid">
-            {STATS.map((stat) => (
-              <StatCard key={stat.label} stat={stat} animate={statsVisible} />
+            {STATS.map((stat, i) => (
+              <StatCard key={stat.label} stat={stat} animate={statsVisible} index={i} />
             ))}
           </div>
         </div>

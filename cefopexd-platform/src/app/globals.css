@@ -1799,3 +1799,69 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 600px) {
   .chat-panel { right: 10px; left: 10px; bottom: 76px; width: auto; height: min(70vh, 540px); }
 }
+
+/* =============================================
+   STATISTIQUES ANIMÉES
+   Apparition en cascade, anneau de progression autour de l'icône
+   pendant le décompte, petit rebond du chiffre à l'arrivée.
+   ============================================= */
+.stat-tile {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease var(--delay, 0ms),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0ms),
+    background 0.3s ease;
+}
+.stat-tile.is-visible { opacity: 1; transform: none; }
+.stat-tile:hover { background: #FAFCF8; }
+
+.stat-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  /* Anneau qui se remplit avec le compteur (--p de 0 à 1) */
+  background: conic-gradient(var(--ring) calc(var(--p, 0) * 360deg), #EEF1F6 0);
+}
+.stat-icon-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: white;
+}
+.stat-icon-wrap .stat-icon {
+  position: relative;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  transform: scale(0.4) rotate(-30deg);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--delay, 0ms) + 150ms);
+}
+.stat-tile.is-visible .stat-icon { transform: none; }
+.stat-tile:hover .stat-icon { transform: scale(1.08) rotate(-6deg); transition-delay: 0ms; }
+
+.stat-number { display: inline-block; font-variant-numeric: tabular-nums; }
+.stat-tile.is-done .stat-value { animation: stat-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.stat-tile.is-done .stat-icon-wrap { animation: stat-glow 1.2s ease-out; }
+@keyframes stat-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+@keyframes stat-glow {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ring) 35%, transparent); }
+  100% { box-shadow: 0 0 0 14px transparent; }
+}
+.stat-value { transform-origin: left center; }
+
+@media (max-width: 600px) {
+  .stat-icon-wrap { width: 52px; height: 52px; }
+  .stat-icon-wrap .stat-icon { width: 40px; height: 40px; }
+}
