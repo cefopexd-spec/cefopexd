@@ -61,6 +61,11 @@ export default async function MonEspacePage() {
         title={`Bonjour ${profil.prenom || profil.pseudo} !`}
         intro="Votre espace personnel CeFoPExD : profil, demandes, scolarité, messages et notifications."
         crumbs={[{ label: "Mon espace" }]}
+        actions={
+          <form action="/auth/deconnexion" method="post">
+            <button type="submit" className="btn-logout"><LogOut size={16} /> Se déconnecter</button>
+          </form>
+        }
       />
       <section className="section">
         <div className="container space-layout">

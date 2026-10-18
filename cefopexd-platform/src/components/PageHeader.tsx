@@ -10,10 +10,12 @@ export default function PageHeader({
   title,
   intro,
   crumbs,
+  actions,
 }: {
   title: string;
   intro?: string;
   crumbs: { label: string; href?: string }[];
+  actions?: React.ReactNode;
 }) {
   return (
     <section className="page-header">
@@ -32,6 +34,7 @@ export default function PageHeader({
         </nav>
         <h1 className="page-title">{title}</h1>
         {intro && <p className="page-intro">{intro}</p>}
+        {actions && <div className="page-actions">{actions}</div>}
       </div>
     </section>
   );

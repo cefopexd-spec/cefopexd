@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FileText, Info, Lock, Phone } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import GoogleButton from "@/components/auth/GoogleButton";
+import CreationCompte from "@/components/auth/CreationCompte";
 import { redirect } from "next/navigation";
 import { getSession, nomComplet } from "@/lib/session";
 import { alerteNouvelleInscription } from "../actions";
@@ -42,12 +43,14 @@ export default async function PreInscriptionPage() {
             {!profil ? (
               <div className="auth-gate">
                 <span className="auth-gate-ico"><Lock size={22} /></span>
-                <h2>Connectez-vous pour vous pré-inscrire</h2>
+                <h2>Créez votre compte pour vous pré-inscrire</h2>
                 <p>
-                  La pré-inscription se fait depuis votre compte CeFoPExD, créé en un clic avec votre compte Google.
-                  Vous pourrez ensuite suivre votre demande dans « Mon espace » et vous reconnecter à tout moment avec vos identifiants Google.
+                  Indiquez votre identité, puis continuez avec Google. Vous compléterez ensuite votre photo et vos documents,
+                  et suivrez votre demande dans « Mon espace ».
                 </p>
-                <GoogleButton next="/inscription/formulaire" label="Continuer avec Google" />
+                <CreationCompte next="/inscription/formulaire" />
+                <div className="auth-separateur"><span>déjà un compte ?</span></div>
+                <GoogleButton next="/inscription/formulaire" label="Me connecter avec Google" />
                 <small>
                   Aucun mot de passe à créer. En continuant, vous acceptez nos{" "}
                   <Link href="/conditions-utilisation">conditions d&#39;utilisation</Link> et notre{" "}

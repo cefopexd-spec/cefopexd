@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import SocialIcons from "@/components/SocialIcons";
 import { createClient } from "@/lib/supabase/client";
 import {
-  Menu, X, ChevronDown, Search, LogIn,
+  Menu, X, ChevronDown, Search, LogIn, LogOut,
   GraduationCap, Building2, BookOpen, Calendar, Info, Phone,
   Home, Newspaper, Mail, UserRound
 } from "lucide-react";
@@ -490,6 +490,13 @@ export default function Header() {
           >
             {compte ? <><UserRound size={16} /> Mon espace ({compte.prenom})</> : <><LogIn size={16} /> Se connecter avec Google</>}
           </Link>
+          {compte && (
+            <form action="/auth/deconnexion" method="post">
+              <button type="submit" className="btn-logout" style={{ width: "100%", justifyContent: "center", padding: "12px" }}>
+                <LogOut size={16} /> Se déconnecter
+              </button>
+            </form>
+          )}
           <Link
             href="/inscription/formulaire"
             className="header-cta"

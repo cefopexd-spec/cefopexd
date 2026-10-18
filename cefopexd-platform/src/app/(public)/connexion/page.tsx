@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CheckCircle, KeyRound, ShieldCheck } from "lucide-react";
+import { CheckCircle, KeyRound, LogIn, ShieldCheck, UserPlus } from "lucide-react";
 import ActionForm from "@/components/forms/ActionForm";
 import { Field } from "@/components/forms/SupabaseForm";
 import { seConnecterPersonnel } from "./actions";
 import PageHeader from "@/components/PageHeader";
 import GoogleButton from "@/components/auth/GoogleButton";
+import CreationCompte from "@/components/auth/CreationCompte";
 import { getProfil } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -30,22 +31,27 @@ export default async function ConnexionPage({ searchParams }: Props) {
     <>
       <PageHeader
         title="Connexion à votre espace"
-        intro="Utilisez votre compte Google : votre espace CeFoPExD est créé automatiquement lors de votre première connexion."
+        intro="Créez votre compte en quelques secondes avec votre identité et votre compte Google, ou reconnectez-vous si vous en avez déjà un."
         crumbs={[{ label: "Connexion" }]}
       />
       <section className="section">
         <div className="container auth-layout">
           <div className="auth-card">
-            <h2>Se connecter ou créer un compte</h2>
-            <p className="auth-lead">
-              Un seul bouton, aucun mot de passe à retenir : vous vous connectez avec vos identifiants Google.
-            </p>
             {erreur && (
               <p className="google-error" role="alert">
                 La connexion n&#39;a pas abouti. Réessayez, ou contactez-nous si le problème persiste.
               </p>
             )}
-            <GoogleButton next={safeNext} />
+            <h2><UserPlus size={22} /> Créer mon compte</h2>
+            <p className="auth-lead">
+              Renseignez votre identité, puis continuez avec Google : aucun mot de passe à retenir.
+            </p>
+            <CreationCompte next={safeNext} />
+
+            <div className="auth-separateur"><span>ou</span></div>
+
+            <h2><LogIn size={22} /> J&#39;ai déjà un compte</h2>
+            <GoogleButton next={safeNext} label="Me connecter avec Google" />
             <p className="auth-small">
               <ShieldCheck size={15} />
               <span>
