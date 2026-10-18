@@ -5,10 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SocialIcons from "@/components/SocialIcons";
+import { createClient } from "@/lib/supabase/client";
 import {
   Menu, X, ChevronDown, Search, LogIn,
   GraduationCap, Building2, BookOpen, Calendar, Info, Phone,
-  Home, Newspaper, Mail
+  Home, Newspaper, Mail, UserRound
 } from "lucide-react";
 
 /* =============================================
@@ -90,10 +91,26 @@ export default function Header() {
   const [searchOpen, setSearchOpen]     = useState(false);
   const [searchQuery, setSearchQuery]   = useState("");
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const [compte, setCompte] = useState<{ prenom: string; photo: string | null } | null>(null);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* Compte Google connecté : affiché à la place de « Se connecter » */
+  useEffect(() => {
+    const supabase = createClient();
+    type MaybeUser = { user_metadata?: Record<string, string>; email?: string } | null;
+    const apply = (user: MaybeUser) => {
+      if (!user) return setCompte(null);
+      const meta = user.user_metadata ?? {};
+      const nom = meta.full_name || meta.name || user.email || "";
+      setCompte({ prenom: meta.given_name || nom.split(" ")[0], photo: meta.avatar_url || meta.picture || null });
+    };
+    supabase.auth.getUser().then(({ data }) => apply(data.user));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => apply(session?.user ?? null));
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   /* Écoute du scroll */
   useEffect(() => {
@@ -220,11 +237,23 @@ export default function Header() {
                 </button>
               )}
 
-              {/* Connexion */}
-              <Link href="/connexion" className="header-login" aria-label="Se connecter">
-                <LogIn size={15} />
-                <span className="login-text">Se connecter</span>
-              </Link>
+              {/* Connexion (ou accès à l'espace personnel si connecté) */}
+              {compte ? (
+                <Link href="/mon-espace" className="header-login header-account" aria-label="Mon espace">
+                  {compte.photo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={compte.photo} alt="" referrerPolicy="no-referrer" />
+                  ) : (
+                    <UserRound size={15} />
+                  )}
+                  <span className="login-text">Mon espace</span>
+                </Link>
+              ) : (
+                <Link href="/connexion" className="header-login" aria-label="Se connecter">
+                  <LogIn size={15} />
+                  <span className="login-text">Se connecter</span>
+                </Link>
+              )}
 
               {/* Bouton S'inscrire */}
               <Link href="/inscription/formulaire" className="header-cta">
@@ -454,12 +483,12 @@ export default function Header() {
         {/* Footer du panneau */}
         <div style={{ padding: "20px", borderTop: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "12px" }}>
           <Link
-            href="/connexion"
+            href={compte ? "/mon-espace" : "/connexion"}
             className="header-login"
             style={{ justifyContent: "center", padding: "12px", width: "auto", height: "auto" }}
             onClick={() => setMobileOpen(false)}
           >
-            <LogIn size={16} /> Se connecter
+            {compte ? <><UserRound size={16} /> Mon espace ({compte.prenom})</> : <><LogIn size={16} /> Se connecter avec Google</>}
           </Link>
           <Link
             href="/inscription/formulaire"

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, Info, Phone } from "lucide-react";
+import { FileText, Info, Lock, Phone } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import GoogleButton from "@/components/auth/GoogleButton";
+import { getProfil } from "@/lib/auth";
 import SupabaseForm, { Field, SelectField, TextAreaField } from "@/components/forms/SupabaseForm";
 import { CONTACT, SECTIONS } from "@/lib/site-content";
 
@@ -15,8 +17,12 @@ const NIVEAUX = ["BEPC", "Probatoire", "BAC", "BAC +2 et plus", "Autre"];
 
 /* =============================================
    PRÉ-INSCRIPTION — enregistrée dans la table `inscriptions`
+   Réservée aux personnes connectées avec leur compte Google :
+   la demande est rattachée au compte et visible dans « Mon espace ».
    ============================================= */
-export default function PreInscriptionPage() {
+export default async function PreInscriptionPage() {
+  const profil = await getProfil();
+
   return (
     <>
       <PageHeader
@@ -27,6 +33,32 @@ export default function PreInscriptionPage() {
       <section className="section">
         <div className="container form-layout">
           <div style={{ minWidth: 0 }}>
+            {!profil ? (
+              <div className="auth-gate">
+                <span className="auth-gate-ico"><Lock size={22} /></span>
+                <h2>Connectez-vous pour vous pré-inscrire</h2>
+                <p>
+                  La pré-inscription se fait depuis votre compte CeFoPExD, créé en un clic avec votre compte Google.
+                  Vous pourrez ensuite suivre votre demande dans « Mon espace » et vous reconnecter à tout moment avec vos identifiants Google.
+                </p>
+                <GoogleButton next="/inscription/formulaire" label="Continuer avec Google" />
+                <small>Aucun mot de passe à créer. Nous recevons uniquement votre nom, votre e-mail et votre photo de profil.</small>
+              </div>
+            ) : (
+            <>
+            <div className="auth-connected">
+              {profil.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profil.photo} alt="" referrerPolicy="no-referrer" />
+              ) : (
+                <span className="profile-initial">{(profil.prenom || profil.email).charAt(0).toUpperCase()}</span>
+              )}
+              <div>
+                <strong>Connecté(e) en tant que {profil.nomComplet}</strong>
+                <span>{profil.email} · <Link href="/mon-espace">Mon espace</Link></span>
+              </div>
+            </div>
+
             {/* Consignes avant de remplir */}
             <div className="form-notice">
               <Info size={20} />
@@ -54,10 +86,10 @@ export default function PreInscriptionPage() {
             >
               <h2 className="form-section-title">1. Vos informations</h2>
               <div className="form-grid">
-                <Field label="Nom" name="nom" required autoComplete="family-name" />
-                <Field label="Prénom(s)" name="prenom" required autoComplete="given-name" />
+                <Field label="Nom" name="nom" required autoComplete="family-name" defaultValue={profil.nom} />
+                <Field label="Prénom(s)" name="prenom" required autoComplete="given-name" defaultValue={profil.prenom} />
                 <Field label="Téléphone" name="telephone" type="tel" required placeholder="+228 …" autoComplete="tel" />
-                <Field label="E-mail" name="email" type="email" autoComplete="email" placeholder="facultatif" />
+                <Field label="E-mail" name="email" type="email" defaultValue={profil.email} readOnly hint="Adresse de votre compte Google" />
               </div>
 
               <h2 className="form-section-title">2. Votre formation</h2>
@@ -72,12 +104,15 @@ export default function PreInscriptionPage() {
                 <span>J&#39;accepte d&#39;être recontacté(e) par le CeFoPExD au sujet de ma demande. <Link href="/confidentialite">Politique de confidentialité</Link></span>
               </label>
             </SupabaseForm>
+            </>
+            )}
           </div>
 
           <aside className="form-aside">
             <h2 className="block-title">Comment ça se passe ?</h2>
             <ol className="steps">
               {[
+                ["Connexion avec Google", "Votre compte est créé en un clic."],
                 ["Pré-inscription en ligne", "Vous remplissez ce formulaire."],
                 ["Appel de l'équipe", "Nous vous contactons pour fixer un rendez-vous."],
                 ["Dépôt du dossier", "Copie du diplôme, acte de naissance, 2 photos d'identité."],

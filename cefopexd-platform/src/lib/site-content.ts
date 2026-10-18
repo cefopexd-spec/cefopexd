@@ -347,7 +347,8 @@ export const SECTIONS: Record<string, Section> = {
             type: "steps",
             title: "Les étapes",
             items: [
-              { title: "Pré-inscription en ligne", desc: "Remplissez le formulaire de pré-inscription." },
+              { title: "Connexion avec Google", desc: "Créez votre compte CeFoPExD en un clic avec votre compte Google, puis reconnectez-vous avec vos identifiants Google." },
+              { title: "Pré-inscription en ligne", desc: "Remplissez le formulaire de pré-inscription depuis votre compte." },
               { title: "Dépôt du dossier", desc: "Copie du diplôme, acte de naissance, 2 photos d'identité." },
               { title: "Entretien d'orientation", desc: "Un conseiller vous aide à confirmer votre choix." },
               { title: "Rentrée", desc: "Bienvenue dans la famille CeFoPExD !" },
@@ -391,7 +392,7 @@ export const SECTIONS: Record<string, Section> = {
         title: "Les questions les plus posées",
         items: [
           { q: "Quelles sont les conditions d'admission ?", a: "Les filières sont accessibles à partir du BEPC selon le niveau de formation visé. Un entretien d'orientation permet de valider le parcours le plus adapté." },
-          { q: "Comment s'inscrire ?", a: "Remplissez la pré-inscription en ligne, puis déposez votre dossier au centre. Les inscriptions se finalisent en présentiel." },
+          { q: "Comment s'inscrire ?", a: "Connectez-vous avec votre compte Google, remplissez la pré-inscription en ligne, puis déposez votre dossier au centre. Les inscriptions se finalisent en présentiel." },
           { q: "Le centre aide-t-il à trouver un emploi ?", a: "Grâce à nos partenariats avec les entreprises, nous accompagnons nos apprenants vers les stages, l'emploi et l'auto-entrepreneuriat." },
         ],
       },
@@ -445,22 +446,14 @@ export const SECTIONS: Record<string, Section> = {
               { q: "Quelle est la durée des formations ?", a: "Les formations qualifiantes durent de 6 mois à 2 ans, avec des périodes de stage en entreprise." },
               { q: "Les formations sont-elles pratiques ?", a: "Oui. Plus de 60 % du temps est consacré aux travaux pratiques dans nos ateliers et laboratoires équipés." },
               { q: "Le centre aide-t-il à trouver un emploi ?", a: "Grâce à nos partenariats avec les entreprises, nous accompagnons nos apprenants vers les stages, l'emploi et l'auto-entrepreneuriat." },
-              { q: "Comment s'inscrire ?", a: "Remplissez la pré-inscription en ligne, puis déposez votre dossier au centre. Les inscriptions se finalisent en présentiel." },
+              { q: "Comment s'inscrire ?", a: "Connectez-vous avec votre compte Google, remplissez la pré-inscription en ligne, puis déposez votre dossier au centre. Les inscriptions se finalisent en présentiel." },
+              { q: "Faut-il créer un compte ?", a: "Oui : la pré-inscription se fait depuis un compte CeFoPExD, créé automatiquement lors de votre première connexion avec Google. Vous vous reconnectez ensuite avec vos identifiants Google et suivez votre demande dans « Mon espace »." },
             ],
           },
           CTA_INSCRIPTION,
         ],
       },
     },
-  },
-
-  connexion: {
-    title: "Espace apprenants",
-    intro: "L'espace en ligne des apprenants et des formateurs.",
-    blocks: [{
-      type: "pending",
-      text: "L'espace apprenants (emplois du temps, notes, documents) est en cours de mise en place. Les comptes seront communiqués directement par le centre aux apprenants inscrits.",
-    }, CTA_INSCRIPTION],
   },
 
   "mentions-legales": {
@@ -501,6 +494,7 @@ export const SECTIONS: Record<string, Section> = {
         title: "Données collectées",
         paragraphs: [
           "Les formulaires de pré-inscription et de contact recueillent les informations que vous saisissez : nom, prénom, téléphone, e-mail, filière souhaitée, niveau d'étude et message.",
+          "Lorsque vous vous connectez avec Google, nous recevons uniquement votre nom, votre adresse e-mail et votre photo de profil. Nous n'avons jamais accès à votre mot de passe Google.",
         ],
       },
       {

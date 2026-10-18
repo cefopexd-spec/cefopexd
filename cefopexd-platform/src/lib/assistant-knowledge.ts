@@ -54,6 +54,7 @@ Itinéraire : ${CONTACT.itineraire}
 Réseaux sociaux : Facebook ${SOCIAL.facebook}, Instagram ${SOCIAL.instagram}, TikTok ${SOCIAL.tiktok}, YouTube ${SOCIAL.youtube}.
 Chiffres clés : ${CHIFFRES.map((c) => `${c.value}${c.suffix} ${c.label.toLowerCase()}`).join(", ")}.
 Pages utiles : pré-inscription en ligne (/inscription/formulaire), contact (/contact), filières (/filieres), FAQ (/informations/faq).
+Pour se pré-inscrire, il faut se connecter avec un compte Google (page : /connexion) : le compte CeFoPExD est créé automatiquement à la première connexion, puis on se reconnecte avec ses identifiants Google. L'espace personnel (page : /mon-espace) permet de suivre ses pré-inscriptions.
 Les inscriptions se finalisent en présentiel au centre, après la pré-inscription en ligne.`);
 
   for (const [key, section] of Object.entries(SECTIONS)) {

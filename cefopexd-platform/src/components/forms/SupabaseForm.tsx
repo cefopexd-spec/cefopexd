@@ -84,6 +84,9 @@ export default function SupabaseForm({
           </ol>
         )}
         <div className="form-success-actions">
+          {table === "inscriptions" && (
+            <a href="/mon-espace" className="btn-hero-primary">Suivre ma demande dans « Mon espace »</a>
+          )}
           <a
             href={`${CONTACT.whatsapp}?text=${encodeURIComponent(`Bonjour, je viens d'envoyer une demande au CeFoPExD (référence ${receipt.ref}).`)}`}
             target="_blank"
@@ -130,6 +133,9 @@ export function Field({
   type = "text",
   placeholder,
   autoComplete,
+  defaultValue,
+  readOnly,
+  hint,
 }: {
   label: string;
   name: string;
@@ -137,11 +143,23 @@ export function Field({
   type?: string;
   placeholder?: string;
   autoComplete?: string;
+  defaultValue?: string;
+  readOnly?: boolean;
+  hint?: string;
 }) {
   return (
     <label className="field">
       <span>{label}{required && <em> *</em>}</span>
-      <input name={name} type={type} required={required} placeholder={placeholder} autoComplete={autoComplete} />
+      <input
+        name={name}
+        type={type}
+        required={required}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        defaultValue={defaultValue}
+        readOnly={readOnly}
+      />
+      {hint && <small className="field-hint">{hint}</small>}
     </label>
   );
 }
