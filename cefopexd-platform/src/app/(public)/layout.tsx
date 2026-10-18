@@ -12,7 +12,7 @@ export default function PublicLayout({
   return (
     <>
       <Header />
-      <main style={{ paddingTop: "72px" /* hauteur du header fixe */ }}>
+      <main style={{ paddingTop: "var(--header-h)" /* hauteur du header fixe (2 étages) */ }}>
         {children}
       </main>
       <Footer />

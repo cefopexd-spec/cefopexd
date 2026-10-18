@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import {
   Menu, X, ChevronDown, Search, LogIn,
   GraduationCap, Building2, BookOpen, Calendar, Info, Phone,
-  Home, Newspaper
+  Home, Newspaper, Mail
 } from "lucide-react";
 
 /* =============================================
@@ -155,63 +155,21 @@ export default function Header() {
               />
             </Link>
 
-            {/* ---- Navigation desktop ---- */}
-            <nav ref={dropdownRef} className="main-nav hidden-mobile" aria-label="Menu principal">
-              {NAV_ITEMS.map((item) => (
-                <div
-                  key={item.label}
-                  style={{ position: "relative" }}
-                  onMouseEnter={item.children ? () => openDropdown(item.label) : undefined}
-                  onMouseLeave={item.children ? scheduleClose : undefined}
-                >
-                  {item.children ? (
-                    <>
-                      <button
-                        onClick={() =>
-                          setActiveDropdown(activeDropdown === item.label ? null : item.label)
-                        }
-                        className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
-                        aria-expanded={activeDropdown === item.label}
-                      >
-                        <item.icon size={15} className="nav-ico" />
-                        {item.label}
-                        <ChevronDown
-                          size={14}
-                          style={{
-                            transition: "transform 0.2s",
-                            transform: activeDropdown === item.label ? "rotate(180deg)" : "rotate(0deg)",
-                          }}
-                        />
-                      </button>
-
-                      {/* Sous-menu */}
-                      {activeDropdown === item.label && (
-                        <div className="nav-dropdown">
-                          {item.children.map((child) => (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
-                            >
-                              <span className="dropdown-icon"><child.icon size={16} /></span>
-                              {child.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
-                    >
-                      <item.icon size={15} className="nav-ico" />
-                      {item.label}
-                    </Link>
-                  )}
-                </div>
-              ))}
-            </nav>
+            {/* ---- Contacts rapides (grand écran) ---- */}
+            <div className="header-contact">
+              <a href="tel:+22870881306">
+                <span className="header-contact-ico" style={{ background: "rgba(34,192,3,0.12)", color: "var(--secondary-text)" }}>
+                  <Phone size={15} />
+                </span>
+                <span><small>Appelez-nous</small>+228 70 88 13 06</span>
+              </a>
+              <a href="mailto:info@cefopexd.com">
+                <span className="header-contact-ico" style={{ background: "rgba(248,35,3,0.1)", color: "var(--accent-text)" }}>
+                  <Mail size={15} />
+                </span>
+                <span><small>Écrivez-nous</small>info@cefopexd.com</span>
+              </a>
+            </div>
 
             {/* ---- Actions droite ---- */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0, marginLeft: "auto" }}>
@@ -252,14 +210,14 @@ export default function Header() {
                 <button
                   onClick={() => setSearchOpen(true)}
                   aria-label="Rechercher"
-                  className="header-icon-btn hidden-mobile"
+                  className="header-icon-btn header-search"
                 >
                   <Search size={18} />
                 </button>
               )}
 
               {/* Connexion */}
-              <Link href="/connexion" className="header-login hidden-mobile" aria-label="Se connecter">
+              <Link href="/connexion" className="header-login" aria-label="Se connecter">
                 <LogIn size={15} />
                 <span className="login-text">Se connecter</span>
               </Link>
@@ -279,6 +237,83 @@ export default function Header() {
                 {mobileOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* ========== LIGNE DU MENU HORIZONTAL ========== */}
+        <div className="header-nav-row">
+          <div className="container header-container">
+            {/* ---- Menu desktop avec sous-menus ---- */}
+            <nav ref={dropdownRef} className="main-nav" aria-label="Menu principal">
+              {NAV_ITEMS.map((item) => (
+                <div
+                  key={item.label}
+                  style={{ position: "relative" }}
+                  onMouseEnter={item.children ? () => openDropdown(item.label) : undefined}
+                  onMouseLeave={item.children ? scheduleClose : undefined}
+                >
+                  {item.children ? (
+                    <>
+                      <button
+                        onClick={() =>
+                          setActiveDropdown(activeDropdown === item.label ? null : item.label)
+                        }
+                        className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
+                        aria-expanded={activeDropdown === item.label}
+                      >
+                        <item.icon size={15} className="nav-ico" />
+                        {item.label}
+                        <ChevronDown
+                          size={14}
+                          style={{
+                            transition: "transform 0.2s",
+                            transform: activeDropdown === item.label ? "rotate(180deg)" : "rotate(0deg)",
+                          }}
+                        />
+                      </button>
+  
+                      {/* Sous-menu */}
+                      {activeDropdown === item.label && (
+                        <div className="nav-dropdown">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
+                            >
+                              <span className="dropdown-icon"><child.icon size={16} /></span>
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
+                    >
+                      <item.icon size={15} className="nav-ico" />
+                      {item.label}
+                    </Link>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            {/* ---- Menu mobile : liens principaux défilables au doigt ---- */}
+            <nav className="nav-strip" aria-label="Menu principal (mobile)">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={`nav-strip-link ${isActive(item.href) ? "is-active" : ""}`}
+                >
+                  <item.icon size={15} />
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
       </header>

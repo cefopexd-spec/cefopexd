@@ -18,6 +18,7 @@ const HERO_SLIDES = [
     id: 1,
     image: "/images/campus-cefopexd.jpg",
     alt: "Vue aérienne du campus du CeFoPExD à Dévikinmé",
+    caption: "Le campus de Dévikinmé",
     pretitle: "BIENVENUE AU CeFoPExD",
     title: "Votre avenir professionnel",
     accent: "commence ici !",
@@ -28,6 +29,7 @@ const HERO_SLIDES = [
     id: 2,
     image: "/images/eleves-cefopexd.jpg",
     alt: "Élèves du CeFoPExD en séance de formation",
+    caption: "Nos apprenants en séance",
     pretitle: "EXCELLENCE & INNOVATION",
     title: "Des formations pour créer",
     accent: "l'emploi de demain",
@@ -38,6 +40,7 @@ const HERO_SLIDES = [
     id: 3,
     image: "/images/batiment-cefopexd.jpg",
     alt: "Bâtiment de formation du CeFoPExD",
+    caption: "Nos bâtiments de formation",
     pretitle: "6 FILIÈRES D'EXCELLENCE",
     title: "Informatique, Mécatronique,",
     accent: "Énergie et plus encore",
@@ -148,10 +151,10 @@ const ACTUALITES = [
    DONNÉES : COMPTEURS
    ============================================= */
 const STATS = [
-  { icon: Users,   value: 500,  suffix: "+", label: "Étudiants formés" },
-  { icon: BookOpen, value: 6,   suffix: "",  label: "Filières d'excellence" },
-  { icon: Percent, value: 85,   suffix: "%", label: "Taux d'insertion" },
-  { icon: Star,    value: 12,   suffix: "+", label: "Partenaires" },
+  { icon: Users,    value: 500, suffix: "+", label: "Étudiants formés",      color: "var(--secondary-text)", tint: "rgba(34,192,3,0.12)" },
+  { icon: BookOpen, value: 6,   suffix: "",  label: "Filières d'excellence", color: "var(--accent-text)",    tint: "rgba(248,35,3,0.10)" },
+  { icon: Percent,  value: 85,  suffix: "%", label: "Taux d'insertion",      color: "var(--logo-blue)",      tint: "rgba(10,31,232,0.10)" },
+  { icon: Star,     value: 12,  suffix: "+", label: "Partenaires",           color: "#B86E00",               tint: "rgba(253,166,3,0.18)" },
 ];
 
 /* =============================================
@@ -177,36 +180,17 @@ function useCountUp(target: number, duration = 2000, start = false) {
    COMPOSANT : STAT CARD
    ============================================= */
 function StatCard({ stat, animate }: { stat: typeof STATS[0]; animate: boolean }) {
-  const count = useCountUp(stat.value, 2000, animate);
+  const count = useCountUp(stat.value, 1600, animate);
   return (
-    <div style={{
-      textAlign: "center",
-      padding: "32px 24px",
-      background: "rgba(255,255,255,0.08)",
-      borderRadius: "var(--radius-lg)",
-      border: "1px solid rgba(255,255,255,0.15)",
-      backdropFilter: "blur(10px)",
-    }}>
-      <div style={{
-        width: "56px", height: "56px", borderRadius: "50%",
-        background: "var(--highlight)", display: "flex",
-        alignItems: "center", justifyContent: "center",
-        margin: "0 auto 16px"
-      }}>
-        <stat.icon size={24} color="var(--ink)" />
+    <div className="stat-tile">
+      <div className="stat-icon" style={{ background: stat.tint, color: stat.color }}>
+        <stat.icon size={24} />
       </div>
-      <div style={{
-        fontFamily: "var(--font-display)",
-        fontWeight: 800,
-        fontSize: "2.8rem",
-        color: "white",
-        lineHeight: 1,
-        marginBottom: "8px"
-      }}>
-        {count}{stat.suffix}
-      </div>
-      <div style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.9rem", fontWeight: 500 }}>
-        {stat.label}
+      <div>
+        <div className="stat-value" style={{ color: stat.color }}>
+          {count}{stat.suffix}
+        </div>
+        <div className="stat-label">{stat.label}</div>
       </div>
     </div>
   );
@@ -257,26 +241,9 @@ export default function HomePage() {
   return (
     <>
       {/* =============================================
-          1. HERO CARROUSEL
+          1. HERO
           ============================================= */}
-      <section className="hero" aria-label="Carrousel principal">
-        {/* Photos réelles du centre en fond, sous un voile bleu nuit */}
-        <div className="hero-media">
-          {HERO_SLIDES.map((s, i) => (
-            <Image
-              key={s.id}
-              src={s.image}
-              alt={s.alt}
-              fill
-              priority={i === 0}
-              sizes="100vw"
-              quality={85}
-              className={`hero-slide-img ${i === currentSlide ? "is-active" : ""}`}
-            />
-          ))}
-          <div className="hero-overlay" />
-        </div>
-
+      <section className="hero" aria-label="Présentation du CeFoPExD">
         <div className="container hero-grid">
           {/* ---- Texte ---- */}
           <div>
@@ -286,8 +253,8 @@ export default function HomePage() {
             </div>
 
             <h1 key={`title-${currentSlide}`} className="hero-anim" style={{ animationDelay: "0.08s" }}>
-              <span className="hero-title" style={{ display: "block" }}>{slide.title}</span>
-              <span className="hero-title-script">{slide.accent}</span>
+              <span className="hero-title">{slide.title}</span>
+              <span className="hero-title-accent">{slide.accent}</span>
             </h1>
 
             <p key={`sub-${currentSlide}`} className="hero-subtitle hero-anim" style={{ animationDelay: "0.16s" }}>
@@ -312,47 +279,54 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* ---- Carte chiffres clés ---- */}
-          <aside className="hero-card" aria-label="Le CeFoPExD en chiffres">
-            <div className="hero-card-head">
-              <div className="hero-card-logo">
-                <Image src="/logo-mark.png" alt="" fill sizes="44px" style={{ objectFit: "contain", padding: "6px" }} />
-              </div>
-              <div>
-                <div className="hero-card-title">CeFoPExD</div>
-                <div className="hero-card-sub">Centre de formation · Dévikinmé, Togo</div>
-              </div>
+          {/* ---- Photos réelles du centre ---- */}
+          <div className="hero-photo">
+            {HERO_SLIDES.map((s, i) => (
+              <Image
+                key={s.id}
+                src={s.image}
+                alt={s.alt}
+                fill
+                priority={i === 0}
+                sizes="(max-width: 1023px) 100vw, 580px"
+                quality={90}
+                className={`hero-slide-img ${i === currentSlide ? "is-active" : ""}`}
+              />
+            ))}
+            <div className="hero-caption">
+              <span className="hero-caption-logo">
+                <Image src="/logo-mark.png" alt="" fill sizes="28px" style={{ objectFit: "contain" }} />
+              </span>
+              {slide.caption}
             </div>
-            <div className="hero-stats">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="hero-stat">
-                  <strong>{stat.value}{stat.suffix}</strong>
-                  <span>{stat.label}</span>
-                </div>
+            <div className="hero-dots">
+              {HERO_SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  aria-label={`Aller à la photo ${i + 1}`}
+                  className="hero-dot"
+                  style={{
+                    width: i === currentSlide ? "24px" : "8px",
+                    background: i === currentSlide ? "white" : "rgba(255,255,255,0.6)",
+                  }}
+                />
               ))}
             </div>
-            <Link href="/inscription/formulaire" className="hero-card-cta">
-              Pré-inscription en ligne <ArrowRight size={16} />
-            </Link>
-          </aside>
-        </div>
-
-        {/* Points de navigation du carrousel */}
-        <div className="hero-dots">
-          {HERO_SLIDES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              aria-label={`Aller à la slide ${i + 1}`}
-              className="hero-dot"
-              style={{
-                width: i === currentSlide ? "28px" : "8px",
-                background: i === currentSlide ? "white" : "rgba(255,255,255,0.4)",
-              }}
-            />
-          ))}
+          </div>
         </div>
       </section>
+
+      {/* ---- Statistiques aux couleurs du logo ---- */}
+      <div className="stats-bar" ref={statsRef}>
+        <div className="container">
+          <div className="stats-grid">
+            {STATS.map((stat) => (
+              <StatCard key={stat.label} stat={stat} animate={statsVisible} />
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* =============================================
           2. BANDEAU D'ATOUTS
@@ -634,48 +608,6 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =============================================
-          5. COMPTEURS ANIMÉS
-          ============================================= */}
-      <section
-        ref={statsRef}
-        style={{
-          background: "radial-gradient(circle at 80% 0%, rgba(10,31,232,0.6), transparent 60%), var(--ink)",
-          padding: "80px 0",
-        }}
-      >
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <h2 style={{
-              fontFamily: "var(--font-display)", fontWeight: 800,
-              fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-              color: "white", marginBottom: "12px"
-            }}>
-              Le CeFoPExD en chiffres
-            </h2>
-            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "1rem" }}>
-              Notre impact au service de la jeunesse togolaise
-            </p>
-          </div>
-
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
-            gap: "24px"
-          }}>
-            {STATS.map((stat) => (
-              <StatCard key={stat.label} stat={stat} animate={statsVisible} />
-            ))}
-          </div>
-
-          <div style={{ textAlign: "center", marginTop: "48px" }}>
-            <Link href="/inscription/formulaire" className="btn-highlight" style={{ fontSize: "1rem", padding: "14px 32px" }}>
-              Rejoignez-nous aujourd'hui !
-            </Link>
           </div>
         </div>
       </section>
