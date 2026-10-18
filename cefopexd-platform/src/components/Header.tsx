@@ -6,17 +6,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Menu, X, ChevronDown, Search, LogIn,
-  GraduationCap, Building2, BookOpen, Calendar, Info, Phone
+  GraduationCap, Building2, BookOpen, Calendar, Info, Phone,
+  Home, Newspaper
 } from "lucide-react";
 
 /* =============================================
    DONNÉES DU MENU DE NAVIGATION
    ============================================= */
 const NAV_ITEMS = [
-  { label: "Accueil", href: "/" },
+  { label: "Accueil", href: "/", icon: Home },
   {
     label: "À propos",
     href: "/a-propos",
+    icon: Info,
     children: [
       { label: "Présentation du centre", href: "/a-propos/presentation", icon: Building2 },
       { label: "Mot du Directeur Général", href: "/a-propos/mot-du-dg", icon: GraduationCap },
@@ -30,6 +32,7 @@ const NAV_ITEMS = [
   {
     label: "Nos filières",
     href: "/filieres",
+    icon: BookOpen,
     children: [
       { label: "Informatique appliquée", href: "/filieres/informatique", icon: BookOpen },
       { label: "Mécatronique", href: "/filieres/mecatronique", icon: BookOpen },
@@ -42,6 +45,7 @@ const NAV_ITEMS = [
   {
     label: "Formations",
     href: "/formations",
+    icon: Calendar,
     children: [
       { label: "Calendrier académique", href: "/formations/calendrier", icon: Calendar },
       { label: "Sessions à venir", href: "/formations/sessions", icon: Calendar },
@@ -52,6 +56,7 @@ const NAV_ITEMS = [
   {
     label: "Inscription",
     href: "/inscription",
+    icon: GraduationCap,
     children: [
       { label: "Comment s'inscrire", href: "/inscription/procedure", icon: GraduationCap },
       { label: "Pièces à fournir", href: "/inscription/pieces", icon: GraduationCap },
@@ -62,6 +67,7 @@ const NAV_ITEMS = [
   {
     label: "S'informer",
     href: "/informations",
+    icon: Newspaper,
     children: [
       { label: "Actualités & annonces", href: "/informations/actualites", icon: Info },
       { label: "Événements", href: "/informations/evenements", icon: Calendar },
@@ -134,7 +140,7 @@ export default function Header() {
     <>
       {/* ========== HEADER PRINCIPAL ========== */}
       <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
-        <div className="container">
+        <div className="container header-container">
           <div className="header-row">
 
             {/* ---- Logo officiel ---- */}
@@ -167,6 +173,7 @@ export default function Header() {
                         className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
                         aria-expanded={activeDropdown === item.label}
                       >
+                        <item.icon size={15} className="nav-ico" />
                         {item.label}
                         <ChevronDown
                           size={14}
@@ -186,7 +193,7 @@ export default function Header() {
                               href={child.href}
                               className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
                             >
-                              <child.icon size={15} color="var(--primary)" style={{ flexShrink: 0 }} />
+                              <span className="dropdown-icon"><child.icon size={16} /></span>
                               {child.label}
                             </Link>
                           ))}
@@ -198,6 +205,7 @@ export default function Header() {
                       href={item.href}
                       className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
                     >
+                      <item.icon size={15} className="nav-ico" />
                       {item.label}
                     </Link>
                   )}
@@ -318,8 +326,7 @@ export default function Header() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "18px 20px",
-          borderBottom: "3px solid transparent",
-          borderImage: "var(--brand-stripe) 1",
+          borderBottom: "1px solid var(--border)",
         }}>
           <Link href="/" style={{ position: "relative", width: "150px", height: "42px" }} onClick={() => setMobileOpen(false)}>
             <Image src="/logo-cefopexd.png" alt="Logo CeFoPExD" fill sizes="150px" style={{ objectFit: "contain", objectPosition: "left center" }} />
@@ -343,15 +350,16 @@ export default function Header() {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              padding: "13px 16px",
-              marginBottom: "6px",
-              borderRadius: "14px",
-              border: active ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
-              background: active ? "var(--bg-soft)" : "white",
+              gap: "12px",
+              padding: "12px 14px",
+              marginBottom: "2px",
+              borderRadius: "12px",
+              border: "none",
+              background: active ? "var(--primary-dark)" : "transparent",
               cursor: "pointer",
-              fontWeight: 700,
+              fontWeight: 600,
               fontSize: "0.95rem",
-              color: active ? "var(--primary)" : "var(--text)",
+              color: active ? "white" : "var(--text)",
               fontFamily: "var(--font-display)",
               textAlign: "left",
               textDecoration: "none",
@@ -365,7 +373,10 @@ export default function Header() {
                       style={rowStyle}
                       aria-expanded={mobileExpanded === item.label}
                     >
-                      {item.label}
+                      <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <item.icon size={17} />
+                        {item.label}
+                      </span>
                       <ChevronDown
                         size={16}
                         style={{
@@ -375,7 +386,7 @@ export default function Header() {
                       />
                     </button>
                     {mobileExpanded === item.label && (
-                      <div style={{ margin: "-2px 0 8px 14px", paddingLeft: "10px", borderLeft: "3px solid var(--logo-orange)" }}>
+                      <div style={{ padding: "4px 0 8px 12px" }}>
                         {item.children.map((child) => (
                           <Link
                             key={child.href}
@@ -383,7 +394,7 @@ export default function Header() {
                             className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
                             onClick={() => setMobileOpen(false)}
                           >
-                            <child.icon size={15} color="var(--primary)" style={{ flexShrink: 0 }} />
+                            <span className="dropdown-icon"><child.icon size={16} /></span>
                             {child.label}
                           </Link>
                         ))}
@@ -391,7 +402,8 @@ export default function Header() {
                     )}
                   </>
                 ) : (
-                  <Link href={item.href} style={rowStyle} onClick={() => setMobileOpen(false)}>
+                  <Link href={item.href} style={{ ...rowStyle, justifyContent: "flex-start" }} onClick={() => setMobileOpen(false)}>
+                    <item.icon size={17} />
                     {item.label}
                   </Link>
                 )}

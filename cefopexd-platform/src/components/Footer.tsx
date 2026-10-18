@@ -55,11 +55,11 @@ export default function Footer() {
   return (
     <>
       {/* ========== FOOTER PRINCIPAL ========== */}
-      <footer style={{ background: "var(--ink)", color: "white", paddingTop: "64px", paddingBottom: "0", borderTop: "4px solid transparent", borderImage: "var(--brand-stripe) 1" }}>
+      <footer style={{ background: "var(--ink)", color: "white", paddingTop: "64px", paddingBottom: "0" }}>
         <div className="container">
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))",
             gap: "40px",
             paddingBottom: "48px",
           }}>

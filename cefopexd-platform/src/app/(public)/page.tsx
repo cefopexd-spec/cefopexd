@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ChevronLeft, ChevronRight, Monitor, Settings, Leaf,
+  Monitor, Settings, Leaf,
   Sun, Languages, Wrench, CheckCircle, Award,
   Building2, Handshake, TrendingUp, ArrowRight,
-  Users, BookOpen, Percent, Star, GraduationCap, PenLine
+  Users, BookOpen, Percent, Star, PenLine
 } from "lucide-react";
 
 /* =============================================
@@ -241,8 +241,6 @@ export default function HomePage() {
     stopAutoplay();
     startAutoplay();
   };
-  const prev = () => goTo((currentSlide - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
-  const next = () => goTo((currentSlide + 1) % HERO_SLIDES.length);
 
   /* Intersection Observer pour les compteurs */
   useEffect(() => {
@@ -262,9 +260,21 @@ export default function HomePage() {
           1. HERO CARROUSEL
           ============================================= */}
       <section className="hero" aria-label="Carrousel principal">
-        {/* Fond : photo floutée de la slide en cours */}
-        <div className="hero-bg" aria-hidden="true">
-          <Image src={slide.image} alt="" fill sizes="100vw" style={{ objectFit: "cover" }} />
+        {/* Photos réelles du centre en fond, sous un voile bleu nuit */}
+        <div className="hero-media">
+          {HERO_SLIDES.map((s, i) => (
+            <Image
+              key={s.id}
+              src={s.image}
+              alt={s.alt}
+              fill
+              priority={i === 0}
+              sizes="100vw"
+              quality={85}
+              className={`hero-slide-img ${i === currentSlide ? "is-active" : ""}`}
+            />
+          ))}
+          <div className="hero-overlay" />
         </div>
 
         <div className="container hero-grid">
@@ -275,95 +285,72 @@ export default function HomePage() {
               {slide.pretitle}
             </div>
 
-            <h1 key={`title-${currentSlide}`} className="hero-title hero-anim" style={{ animationDelay: "0.08s" }}>
-              {slide.title}{" "}
-              <span className="hero-title-accent">{slide.accent}</span>
+            <h1 key={`title-${currentSlide}`} className="hero-anim" style={{ animationDelay: "0.08s" }}>
+              <span className="hero-title" style={{ display: "block" }}>{slide.title}</span>
+              <span className="hero-title-script">{slide.accent}</span>
             </h1>
 
             <p key={`sub-${currentSlide}`} className="hero-subtitle hero-anim" style={{ animationDelay: "0.16s" }}>
               {slide.subtitle}
             </p>
 
-            <div key={`btns-${currentSlide}`} className="hero-actions hero-anim" style={{ animationDelay: "0.24s" }}>
+            <div className="hero-actions">
               <Link href="/filieres" className="btn-hero-primary">
-                <GraduationCap size={19} />
                 Découvrir nos filières
                 <ArrowRight size={18} />
               </Link>
               <Link href="/inscription/formulaire" className="btn-hero-ghost">
-                <PenLine size={18} />
+                <PenLine size={17} />
                 S&#39;inscrire maintenant
               </Link>
             </div>
 
-            {/* Phrase manuscrite */}
-            <div className="hero-script hero-anim" style={{ animationDelay: "0.32s" }}>
-              Formations qualifiantes pour un avenir durable
-              <svg width="230" height="14" viewBox="0 0 230 14" fill="none" aria-hidden="true">
-                <path
-                  d="M3 10 C 60 2, 140 2, 227 7"
-                  stroke="currentColor" strokeWidth="4" strokeLinecap="round"
-                  strokeDasharray="260" style={{ animation: "draw 1.2s 0.6s ease both" }}
-                />
-              </svg>
+            <div className="hero-trust">
+              <span><CheckCircle size={15} /> Formations qualifiantes</span>
+              <span><CheckCircle size={15} /> Encadrement professionnel</span>
+              <span><CheckCircle size={15} /> Insertion professionnelle</span>
             </div>
           </div>
 
-          {/* ---- Visuel : photos réelles du centre ---- */}
-          <div className="hero-visual">
-            <div className="hero-frame">
-              <div className="hero-frame-inner">
-                {HERO_SLIDES.map((s, i) => (
-                  <Image
-                    key={s.id}
-                    src={s.image}
-                    alt={s.alt}
-                    fill
-                    priority={i === 0}
-                    sizes="(max-width: 960px) 92vw, 540px"
-                    quality={90}
-                    className={`hero-slide-img ${i === currentSlide ? "is-active" : ""}`}
-                  />
-                ))}
+          {/* ---- Carte chiffres clés ---- */}
+          <aside className="hero-card" aria-label="Le CeFoPExD en chiffres">
+            <div className="hero-card-head">
+              <div className="hero-card-logo">
+                <Image src="/logo-mark.png" alt="" fill sizes="44px" style={{ objectFit: "contain", padding: "6px" }} />
               </div>
-            </div>
-
-            {/* Badges flottants */}
-            <div className="hero-badge hero-badge-logo">
-              <div style={{ position: "relative", width: "128px", height: "36px" }}>
-                <Image src="/logo-cefopexd.png" alt="CeFoPExD" fill sizes="128px" style={{ objectFit: "contain" }} />
-              </div>
-            </div>
-            <div className="hero-badge hero-badge-stat">
-              <div className="hero-badge-icon"><Users size={20} /></div>
               <div>
-                <strong>500+</strong>
-                <span>étudiants formés</span>
+                <div className="hero-card-title">CeFoPExD</div>
+                <div className="hero-card-sub">Centre de formation · Dévikinmé, Togo</div>
               </div>
             </div>
-
-            {/* Navigation du carrousel */}
-            <div className="hero-nav">
-              <button onClick={prev} aria-label="Slide précédente" className="hero-arrow">
-                <ChevronLeft size={20} />
-              </button>
-              {HERO_SLIDES.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goTo(i)}
-                  aria-label={`Aller à la slide ${i + 1}`}
-                  className="hero-dot"
-                  style={{
-                    width: i === currentSlide ? "30px" : "10px",
-                    background: i === currentSlide ? "var(--logo-orange)" : "rgba(255,255,255,0.35)",
-                  }}
-                />
+            <div className="hero-stats">
+              {STATS.map((stat) => (
+                <div key={stat.label} className="hero-stat">
+                  <strong>{stat.value}{stat.suffix}</strong>
+                  <span>{stat.label}</span>
+                </div>
               ))}
-              <button onClick={next} aria-label="Slide suivante" className="hero-arrow">
-                <ChevronRight size={20} />
-              </button>
             </div>
-          </div>
+            <Link href="/inscription/formulaire" className="hero-card-cta">
+              Pré-inscription en ligne <ArrowRight size={16} />
+            </Link>
+          </aside>
+        </div>
+
+        {/* Points de navigation du carrousel */}
+        <div className="hero-dots">
+          {HERO_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              aria-label={`Aller à la slide ${i + 1}`}
+              className="hero-dot"
+              style={{
+                width: i === currentSlide ? "28px" : "8px",
+                background: i === currentSlide ? "white" : "rgba(255,255,255,0.4)",
+              }}
+            />
+          ))}
         </div>
       </section>
 
@@ -377,14 +364,12 @@ export default function HomePage() {
             gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
             gap: "0",
           }}>
-            {ATOUTS.map((atout, i) => (
+            {ATOUTS.map((atout) => (
               <div
                 key={atout.label}
                 style={{
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start",
                   padding: "28px 16px", textAlign: "center",
-                  borderRight: i < ATOUTS.length - 1 ? "1px solid var(--border)" : "none",
-                  borderBottom: "3px solid transparent",
                   transition: "var(--transition)",
                   cursor: "default",
                 }}
@@ -418,7 +403,6 @@ export default function HomePage() {
           <div style={{ textAlign: "center", marginBottom: "48px" }}>
             <span className="section-label">— NOS FILIÈRES —</span>
             <h2 className="section-title">Nos filières de formation</h2>
-            <div className="orange-line orange-line-center" />
             <p className="section-subtitle" style={{ margin: "0 auto" }}>
               Choisissez la filière qui correspond à vos ambitions et construisez votre avenir avec nous.
             </p>
@@ -426,7 +410,7 @@ export default function HomePage() {
 
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(320px, 100%), 1fr))",
             gap: "28px"
           }}>
             {FILIERES.map((filiere) => (
@@ -499,14 +483,13 @@ export default function HomePage() {
         <div className="container">
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(320px, 100%), 1fr))",
             gap: "48px", alignItems: "start"
           }}>
             {/* ---- À PROPOS ---- */}
             <div>
               <span className="section-label">À PROPOS DE NOUS</span>
               <h2 className="section-title">Le CeFoPExD, un centre d'excellence</h2>
-              <div className="orange-line" />
 
               {/* Photo du centre */}
               <div style={{
@@ -580,7 +563,6 @@ export default function HomePage() {
                   Voir toutes <ArrowRight size={14} />
                 </Link>
               </div>
-              <div className="orange-line" />
 
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 {ACTUALITES.map((actu) => (
@@ -639,8 +621,7 @@ export default function HomePage() {
                 marginTop: "24px", padding: "24px",
                 borderRadius: "var(--radius-lg)",
                 background: "radial-gradient(circle at 90% 0%, rgba(10,31,232,0.7), transparent 60%), var(--ink)",
-                color: "white", textAlign: "center", borderTop: "4px solid transparent",
-                borderImage: "var(--brand-stripe) 1"
+                color: "white", textAlign: "center",
               }}>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.1rem", marginBottom: "8px" }}>
                   Prêt à rejoindre le CeFoPExD ?
@@ -683,7 +664,7 @@ export default function HomePage() {
 
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))",
             gap: "24px"
           }}>
             {STATS.map((stat) => (
@@ -707,12 +688,11 @@ export default function HomePage() {
           <div style={{ textAlign: "center", marginBottom: "48px" }}>
             <span className="section-label">NOS ENGAGEMENTS</span>
             <h2 className="section-title">Pourquoi choisir le CeFoPExD ?</h2>
-            <div className="orange-line orange-line-center" />
           </div>
 
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fill, minmax(min(280px, 100%), 1fr))",
             gap: "24px"
           }}>
             {[
@@ -788,7 +768,6 @@ export default function HomePage() {
             <h2 className="section-title">
               Prêt à construire votre avenir avec nous ?
             </h2>
-            <div className="orange-line orange-line-center" />
             <p style={{ color: "var(--muted)", fontSize: "1rem", lineHeight: 1.75, marginBottom: "32px" }}>
               Les inscriptions se font en présentiel au centre. Remplissez le formulaire de pré-inscription en ligne pour prendre rendez-vous avec notre équipe d'admission.
             </p>
@@ -809,9 +788,6 @@ export default function HomePage() {
 
       {/* Styles hover */}
       <style jsx>{`
-        .atout-item:hover { border-bottom-color: var(--highlight) !important; }
-        .atout-item:hover .atout-icon { background: var(--primary) !important; border-color: var(--primary) !important; }
-        .atout-item:hover .atout-icon svg { color: white !important; }
         .filiere-img { transform: scale(1); }
         .card:hover .filiere-img { transform: scale(1.05) !important; }
         .filiere-btn:hover { background: var(--bg-soft); }
