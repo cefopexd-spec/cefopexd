@@ -99,7 +99,7 @@ const COLORS = {
   blue: "var(--primary)",
   red: "var(--accent-text)",
   green: "var(--green-text)",
-  orange: "#B86E00",
+  orange: "#9A5B00",
 };
 
 /* ---------- Filières ---------- */

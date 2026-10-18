@@ -158,7 +158,7 @@ const STATS = [
   { icon: Users,    color: "var(--secondary-text)", tint: "rgba(34,192,3,0.12)" },
   { icon: BookOpen, color: "var(--accent-text)",    tint: "rgba(248,35,3,0.10)" },
   { icon: Percent,  color: "var(--logo-blue)",      tint: "rgba(10,31,232,0.10)" },
-  { icon: Star,     color: "#B86E00",               tint: "rgba(253,166,3,0.18)" },
+  { icon: Star,     color: "#9A5B00",               tint: "rgba(253,166,3,0.18)" },
 ].map((style, i) => ({ ...style, ...CHIFFRES[i] }));
 
 /* =============================================
@@ -604,7 +604,7 @@ export default function HomePage() {
               { title: "Formation d'excellence", desc: "Un enseignement de qualité qui fait de l'excellence sa priorité, en créant la différence pour devenir une référence.", color: "var(--primary)" },
               { title: "Insertion professionnelle", desc: "Nous formons des cadres capables de créer de l'emploi dans leur domaine, pas seulement d'en demander.", color: "var(--accent-text)" },
               { title: "Égalité des chances", desc: "Nous respectons les différences et favorisons l'égalité des chances, car la diversité est une richesse.", color: "var(--green-text)" },
-              { title: "Recherche & innovation", desc: "Une place essentielle est accordée à la recherche, notamment en entrepreneuriat, pour innover et progresser.", color: "#B86E00" },
+              { title: "Recherche & innovation", desc: "Une place essentielle est accordée à la recherche, notamment en entrepreneuriat, pour innover et progresser.", color: "#9A5B00" },
               { title: "Adaptation continue", desc: "Nos formations sont sans cesse adaptées à l'évolution de la société et aux besoins du marché de l'emploi.", color: "var(--primary)" },
               { title: "Valeurs humaines", desc: "Paix, tolérance, intégrité et équité : nous formons des femmes et des hommes acteurs responsables de la société.", color: "var(--accent-text)" },
             ].map((item, i) => (

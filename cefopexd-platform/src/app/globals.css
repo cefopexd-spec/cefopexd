@@ -8,6 +8,8 @@
    symbole = bleu + étoile rouge + points orange
    ============================================= */
 :root {
+  color-scheme: light;
+
   /* Couleurs exactes du logo */
   --logo-green:  #22C003;
   --logo-red:    #F82303;
@@ -19,9 +21,9 @@
   --primary-dark:   #08137A;   /* bleu nuit — header mobile, footer */
   --ink:            #050B47;   /* bleu encre — fond du hero */
   --secondary:      #22C003;   /* vert CeFo — fonds, pastilles */
-  --green:        #1DAA00;   /* vert du logo, version boutons/pastilles */
-  --green-dark:   #168A00;   /* survol */
-  --green-text:   #138A00;   /* vert lisible sur blanc */
+  --green:        #138800;   /* vert du logo, version boutons/pastilles (texte blanc lisible) */
+  --green-dark:   #0F7400;   /* survol */
+  --green-text:   #0F7A00;   /* vert lisible sur blanc et sur fond teinté */
   --green-tint:   #EDF8E7;   /* fonds teintés */
   --green-line:   #CDEBC0;   /* bordures teintées */
   --secondary-text: var(--green-text);
@@ -589,8 +591,8 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--green-tint);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.72rem;
-  letter-spacing: 1.8px;
+  font-size: 0.76rem;
+  letter-spacing: 1.6px;
   color: var(--secondary-text);
 }
 .hero-pretitle-dot {
@@ -746,6 +748,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 6px;
 }
 .hero-dot {
+  position: relative;
   height: 8px;
   border-radius: 4px;
   border: none;
@@ -802,7 +805,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 1023px) {
   .hero .hero-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 40px;
     padding-top: 48px;
     padding-bottom: 112px;
@@ -1079,12 +1082,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 1023px) {
-  .page-layout, .form-layout { grid-template-columns: 1fr; gap: 32px; }
+  .page-layout, .form-layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .side-nav { position: static; }
 }
 @media (max-width: 600px) {
   .page-header { padding: 36px 0 34px; }
-  .form-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: minmax(0, 1fr); }
   .site-form, .form-success { padding: 20px; }
   .page-cta { padding: 22px; }
   .page-cta-actions a { width: 100%; }
@@ -1159,8 +1162,8 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 6px;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.7rem;
-  letter-spacing: 1.5px;
+  font-size: 0.76rem;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
 }
 .vmv-card h3 {
@@ -1226,7 +1229,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 5px;
   margin-bottom: 4px;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--green-text);
 }
@@ -1491,7 +1494,7 @@ h1, h2, h3, h4, h5, h6 {
   min-width: 0;
 }
 .contact-quick-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--green-line); }
-.contact-quick-item small { display: block; font-size: 0.74rem; color: var(--muted); }
+.contact-quick-item small { display: block; font-size: 0.78rem; color: var(--muted); }
 .contact-quick-item strong {
   display: block;
   font-family: var(--font-display);
@@ -1580,17 +1583,17 @@ h1, h2, h3, h4, h5, h6 {
   .contact-quick { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 1023px) {
-  .about-grid, .director-grid, .director-page { grid-template-columns: 1fr; gap: 32px; }
+  .about-grid, .director-grid, .director-page { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .director-card { max-width: 420px; }
   .why-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
-  .vmv-grid, .why-grid { grid-template-columns: 1fr; }
+  .vmv-grid, .why-grid { grid-template-columns: minmax(0, 1fr); }
   .news-panel { padding: 18px; }
   .news-head { flex-direction: column; align-items: flex-start; }
   .news-cta { flex-direction: column; align-items: flex-start; }
-  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
-  .contact-quick { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .contact-quick { grid-template-columns: minmax(0, 1fr); }
   .contact-map { padding: 14px; }
   .contact-map-head { flex-direction: column; align-items: flex-start; }
   .contact-map iframe { height: 280px; }
@@ -1995,7 +1998,7 @@ h1, h2, h3, h4, h5, h6 {
 .profile-badge { margin: 4px 0 12px; padding: 4px 10px; border-radius: 999px; background: white; border: 1px solid var(--green-line); font-size: 0.74rem; font-weight: 700; color: var(--green-text); }
 
 @media (max-width: 1023px) {
-  .auth-layout { grid-template-columns: 1fr; gap: 32px; }
+  .auth-layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
 }
 @media (max-width: 600px) {
   .auth-card, .auth-gate { padding: 24px 20px; }
@@ -2005,3 +2008,48 @@ h1, h2, h3, h4, h5, h6 {
 /* Mention légale sous le formulaire de contact */
 .form-legal { margin-top: 14px; font-size: 0.8rem; color: var(--muted); }
 .form-legal a, .auth-gate small a { color: var(--btn-blue); }
+
+/* =============================================
+   CONFORT MOBILE
+   ============================================= */
+/* Points du carrousel : zone de clic invisible de 40 px autour */
+.hero-dot::after { content: ""; position: absolute; inset: -16px -6px; }
+.footer-route { padding: 8px 0; }
+
+/* Aucun élément ne doit élargir la page sur mobile */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, video, iframe { max-width: 100%; }
+.about-grid > *, .director-grid > *, .form-layout > *, .auth-layout > *, .page-layout > * { min-width: 0; }
+
+/* Saisie : 16 px minimum pour éviter le zoom automatique sur iPhone */
+@media (max-width: 600px) {
+  .field input, .field select, .field textarea, .chat-input textarea { font-size: 16px; }
+  .section-title { font-size: clamp(1.55rem, 7vw, 2rem); }
+  .page-title { font-size: clamp(1.6rem, 8vw, 2.1rem); }
+  .hero-title, .hero-title-accent { font-size: clamp(1.9rem, 9vw, 2.4rem); }
+}
+
+/* Encoche et barre d'accueil des iPhone récents */
+@supports (padding: max(0px)) {
+  .floating-actions { right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); }
+  .footer-bottom { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+}
+.aside-box a { display: inline-block; padding: 6px 0; }
+
+/* Mobile : photo de fond très discrète + voile clair pour un texte bien lisible */
+@media (max-width: 1023px) {
+  .hero-bg, .page-header .hero-bg { opacity: 0.1; }
+  .hero::before, .page-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(240, 248, 235, 0.55) 0%, rgba(255, 255, 255, 0.35) 100%);
+  }
+  .page-intro, .hero-subtitle { color: #2B3352; }
+}
+@media (max-width: 600px) {
+  .float-whatsapp, .float-chat { width: 44px; height: 44px; }
+  .float-top { width: 36px; height: 36px; }
+}
