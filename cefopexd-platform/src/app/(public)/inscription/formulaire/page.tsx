@@ -3,7 +3,9 @@ import Link from "next/link";
 import { FileText, Info, Lock, Phone } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import GoogleButton from "@/components/auth/GoogleButton";
-import { getProfil } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getSession, nomComplet } from "@/lib/session";
+import { alerteNouvelleInscription } from "../actions";
 import SupabaseForm, { Field, SelectField, TextAreaField } from "@/components/forms/SupabaseForm";
 import { CONTACT, SECTIONS } from "@/lib/site-content";
 
@@ -21,7 +23,9 @@ const NIVEAUX = ["BEPC", "Probatoire", "BAC", "BAC +2 et plus", "Autre"];
    la demande est rattachée au compte et visible dans « Mon espace ».
    ============================================= */
 export default async function PreInscriptionPage() {
-  const profil = await getProfil();
+  const { user, profil } = await getSession();
+  // Compte créé mais profil incomplet : on le complète d'abord
+  if (user && !profil?.profil_complet) redirect("/mon-compte/completer?next=/inscription/formulaire");
 
   return (
     <>
@@ -51,14 +55,14 @@ export default async function PreInscriptionPage() {
             ) : (
             <>
             <div className="auth-connected">
-              {profil.photo ? (
+              {profil.photo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={profil.photo} alt="" referrerPolicy="no-referrer" />
+                <img src={profil.photo_url} alt="" referrerPolicy="no-referrer" />
               ) : (
                 <span className="profile-initial">{(profil.prenom || profil.email).charAt(0).toUpperCase()}</span>
               )}
               <div>
-                <strong>Connecté(e) en tant que {profil.nomComplet}</strong>
+                <strong>Connecté(e) en tant que {nomComplet(profil)} (@{profil.pseudo})</strong>
                 <span>{profil.email} · <Link href="/mon-espace">Mon espace</Link></span>
               </div>
             </div>
@@ -79,6 +83,7 @@ export default async function PreInscriptionPage() {
 
             <SupabaseForm
               table="inscriptions"
+              apresEnvoi={alerteNouvelleInscription}
               submitLabel="Envoyer ma pré-inscription"
               successTitle="Votre pré-inscription est bien enregistrée !"
               successText="Notre équipe d'admission vous contactera très prochainement par téléphone pour la suite de votre dossier."
@@ -88,13 +93,24 @@ export default async function PreInscriptionPage() {
                 "Un entretien d'orientation confirme votre choix de filière.",
               ]}
             >
-              <h2 className="form-section-title">1. Vos informations</h2>
+              {/* Qui est le demandeur et pourquoi : repris du profil */}
+              <input type="hidden" name="type_demandeur" value={profil.type_demandeur ?? ""} />
+              <input type="hidden" name="motif" value={profil.motif ?? ""} />
+
+              <h2 className="form-section-title">1. Identité de l&#39;apprenant(e)</h2>
               <div className="form-grid">
-                <Field label="Nom" name="nom" required autoComplete="family-name" defaultValue={profil.nom} />
-                <Field label="Prénom(s)" name="prenom" required autoComplete="given-name" defaultValue={profil.prenom} />
-                <Field label="Téléphone" name="telephone" type="tel" required placeholder="+228 …" autoComplete="tel" />
+                <Field label="Nom" name="nom" required autoComplete="family-name" defaultValue={profil.nom ?? ""} />
+                <Field label="Prénom(s)" name="prenom" required autoComplete="given-name" defaultValue={profil.prenom ?? ""} />
+                <Field label="Date de naissance" name="date_naissance" type="date" required defaultValue={profil.date_naissance ?? ""} />
+                <Field label="Lieu de naissance" name="lieu_naissance" required defaultValue={profil.lieu_naissance ?? ""} />
+                <Field label="Téléphone" name="telephone" type="tel" required placeholder="+228 …" autoComplete="tel" defaultValue={profil.telephone ?? ""} />
                 <Field label="E-mail" name="email" type="email" defaultValue={profil.email} readOnly hint="Adresse de votre compte Google" />
               </div>
+              {profil.type_demandeur === "parent" && (
+                <p className="field-hint" style={{ marginTop: "-6px", marginBottom: "12px" }}>
+                  Vous inscrivez votre enfant : remplacez les informations ci-dessus par les siennes.
+                </p>
+              )}
 
               <h2 className="form-section-title">2. Votre formation</h2>
               <div className="form-grid">

@@ -17,6 +17,14 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      // Première connexion : le profil doit d'abord être complété
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: profil } = user
+        ? await supabase.from("profils").select("profil_complet").eq("id", user.id).maybeSingle()
+        : { data: null };
+      if (profil && !profil.profil_complet) {
+        return NextResponse.redirect(`${origin}/mon-compte/completer?next=${encodeURIComponent(safeNext)}`);
+      }
       return NextResponse.redirect(`${origin}${safeNext}`);
     }
     console.error("Connexion Google : échec de l'échange du code", error.message);

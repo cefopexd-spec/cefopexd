@@ -11,9 +11,14 @@ import { SECTIONS } from "@/lib/site-content";
    ============================================= */
 export const dynamicParams = false;
 
+/* Pages ayant leur propre route (contenu dynamique depuis la base) */
+const ROUTES_DEDIEES = new Set(["informations/actualites", "inscription/formulaire"]);
+
 export function generateStaticParams() {
   return Object.entries(SECTIONS).flatMap(([section, data]) =>
-    Object.keys(data.pages ?? {}).map((slug) => ({ section, slug }))
+    Object.keys(data.pages ?? {})
+      .filter((slug) => !ROUTES_DEDIEES.has(`${section}/${slug}`))
+      .map((slug) => ({ section, slug }))
   );
 }
 

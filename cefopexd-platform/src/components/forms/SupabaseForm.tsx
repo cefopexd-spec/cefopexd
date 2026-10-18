@@ -16,6 +16,7 @@ export default function SupabaseForm({
   successTitle,
   successText,
   nextSteps,
+  apresEnvoi,
   children,
 }: {
   table: "inscriptions" | "contacts";
@@ -23,6 +24,8 @@ export default function SupabaseForm({
   successTitle: string;
   successText: string;
   nextSteps?: string[];
+  /** Server Action appelée après l'enregistrement (ex. e-mail au personnel) */
+  apresEnvoi?: (id: string) => Promise<void>;
   children: ReactNode;
 }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -55,6 +58,7 @@ export default function SupabaseForm({
         nom: [data.prenom, data.nom].filter(Boolean).join(" "),
       });
       setStatus("sent");
+      apresEnvoi?.(id).catch(() => {});
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("Envoi du formulaire impossible :", err);
@@ -168,31 +172,49 @@ export function SelectField({
   label,
   name,
   options,
+  values,
   required,
   defaultLabel,
+  defaultValue = "",
 }: {
   label: string;
   name: string;
   options: string[];
+  values?: string[];
   required?: boolean;
   defaultLabel: string;
+  defaultValue?: string;
 }) {
   return (
     <label className="field">
       <span>{label}{required && <em> *</em>}</span>
-      <select name={name} required={required} defaultValue="">
+      <select name={name} required={required} defaultValue={defaultValue}>
         <option value="" disabled>{defaultLabel}</option>
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+        {options.map((o, i) => <option key={o} value={values?.[i] ?? o}>{o}</option>)}
       </select>
     </label>
   );
 }
 
-export function TextAreaField({ label, name, required, placeholder }: { label: string; name: string; required?: boolean; placeholder?: string }) {
+export function TextAreaField({
+  label,
+  name,
+  required,
+  placeholder,
+  defaultValue,
+  rows = 5,
+}: {
+  label: string;
+  name: string;
+  required?: boolean;
+  placeholder?: string;
+  defaultValue?: string;
+  rows?: number;
+}) {
   return (
     <label className="field field-full">
       <span>{label}{required && <em> *</em>}</span>
-      <textarea name={name} required={required} rows={5} placeholder={placeholder} />
+      <textarea name={name} required={required} rows={rows} placeholder={placeholder} defaultValue={defaultValue} />
     </label>
   );
 }
