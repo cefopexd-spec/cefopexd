@@ -84,8 +84,9 @@ export default function Header() {
   const [searchQuery, setSearchQuery]   = useState("");
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const pathname = usePathname();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* Écoute du scroll */
   useEffect(() => {
@@ -116,99 +117,54 @@ export default function Header() {
     setActiveDropdown(null);
   }, [pathname]);
 
+  /* Ouverture au survol, fermeture avec un léger délai pour atteindre le sous-menu */
+  const openDropdown = (label: string) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setActiveDropdown(label);
+  };
+  const scheduleClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setActiveDropdown(null), 180);
+  };
+
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <>
       {/* ========== HEADER PRINCIPAL ========== */}
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-lg"
-            : "bg-white"
-        }`}
-        style={{ borderBottom: scrolled ? "none" : "1px solid #E5E7EB" }}
-      >
+      <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
         <div className="container">
-          <div style={{ display: "flex", alignItems: "center", height: "72px", gap: "16px" }}>
+          <div className="header-row">
 
-            {/* ---- Logo + Nom ---- */}
-            <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", flexShrink: 0 }}>
-              <div style={{ position: "relative", width: "52px", height: "52px" }}>
-                <Image
-                  src="/logo-cefopexd.png"
-                  alt="Logo CeFoPExD"
-                  fill
-                  style={{ objectFit: "contain" }}
-                  priority
-                />
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.15 }}>
-                <span style={{
-                  fontFamily: "var(--font-poppins, 'Poppins')",
-                  fontWeight: 800,
-                  fontSize: "1.15rem",
-                  color: "var(--primary-dark)"
-                }}>
-                  <span style={{ color: "var(--secondary)" }}>CeFo</span>
-                  <span style={{ color: "var(--accent)" }}>PExD</span>
-                </span>
-                <span style={{
-                  fontSize: "0.62rem",
-                  color: "var(--muted)",
-                  fontWeight: 500,
-                  maxWidth: "180px",
-                  lineHeight: 1.2
-                }}>
-                  Centre de Formation Prof. d'Excellence
-                </span>
-              </div>
+            {/* ---- Logo officiel ---- */}
+            <Link href="/" className="header-logo" aria-label="CeFoPExD — Accueil">
+              <Image
+                src="/logo-cefopexd.png"
+                alt="Logo CeFoPExD"
+                fill
+                sizes="168px"
+                style={{ objectFit: "contain", objectPosition: "left center" }}
+                priority
+              />
             </Link>
 
             {/* ---- Navigation desktop ---- */}
-            <nav
-              ref={dropdownRef}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                flex: 1,
-                justifyContent: "center",
-              }}
-              className="hidden-mobile"
-            >
+            <nav ref={dropdownRef} className="main-nav hidden-mobile" aria-label="Menu principal">
               {NAV_ITEMS.map((item) => (
-                <div key={item.label} style={{ position: "relative" }}>
+                <div
+                  key={item.label}
+                  style={{ position: "relative" }}
+                  onMouseEnter={item.children ? () => openDropdown(item.label) : undefined}
+                  onMouseLeave={item.children ? scheduleClose : undefined}
+                >
                   {item.children ? (
                     <>
                       <button
                         onClick={() =>
                           setActiveDropdown(activeDropdown === item.label ? null : item.label)
                         }
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "4px",
-                          padding: "8px 12px",
-                          borderRadius: "8px",
-                          border: "none",
-                          background: "transparent",
-                          cursor: "pointer",
-                          fontFamily: "var(--font-poppins, 'Poppins')",
-                          fontWeight: 600,
-                          fontSize: "0.88rem",
-                          color: isActive(item.href) ? "var(--primary)" : "var(--text)",
-                          transition: "var(--transition)",
-                          borderBottom: isActive(item.href)
-                            ? "2px solid var(--highlight)"
-                            : "2px solid transparent",
-                          whiteSpace: "nowrap",
-                        }}
-                        onMouseEnter={() => setActiveDropdown(item.label)}
-                        onMouseLeave={() => {
-                          setTimeout(() => setActiveDropdown(null), 200);
-                        }}
+                        className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
                         aria-expanded={activeDropdown === item.label}
                       >
                         {item.label}
@@ -221,52 +177,16 @@ export default function Header() {
                         />
                       </button>
 
-                      {/* Dropdown */}
+                      {/* Sous-menu */}
                       {activeDropdown === item.label && (
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "calc(100% + 8px)",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            background: "white",
-                            borderRadius: "14px",
-                            boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-                            padding: "8px",
-                            minWidth: "240px",
-                            zIndex: 100,
-                            border: "1px solid var(--border)",
-                            animation: "slideInDown 0.2s ease",
-                          }}
-                          onMouseEnter={() => setActiveDropdown(item.label)}
-                          onMouseLeave={() => setActiveDropdown(null)}
-                        >
+                        <div className="nav-dropdown">
                           {item.children.map((child) => (
                             <Link
                               key={child.href}
                               href={child.href}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                padding: "10px 14px",
-                                borderRadius: "10px",
-                                textDecoration: "none",
-                                color: isActive(child.href) ? "var(--primary)" : "var(--text)",
-                                fontWeight: isActive(child.href) ? 600 : 500,
-                                fontSize: "0.88rem",
-                                background: isActive(child.href) ? "var(--bg-soft)" : "transparent",
-                                transition: "var(--transition)",
-                              }}
-                              className="dropdown-link"
+                              className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
                             >
-                              <span style={{
-                                width: "6px",
-                                height: "6px",
-                                borderRadius: "50%",
-                                background: "var(--highlight)",
-                                flexShrink: 0
-                              }} />
+                              <child.icon size={15} color="var(--primary)" style={{ flexShrink: 0 }} />
                               {child.label}
                             </Link>
                           ))}
@@ -276,22 +196,7 @@ export default function Header() {
                   ) : (
                     <Link
                       href={item.href}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        textDecoration: "none",
-                        fontFamily: "var(--font-poppins, 'Poppins')",
-                        fontWeight: 600,
-                        fontSize: "0.88rem",
-                        color: isActive(item.href) ? "var(--primary)" : "var(--text)",
-                        borderBottom: isActive(item.href)
-                          ? "2px solid var(--highlight)"
-                          : "2px solid transparent",
-                        transition: "var(--transition)",
-                        whiteSpace: "nowrap",
-                      }}
+                      className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
                     >
                       {item.label}
                     </Link>
@@ -301,7 +206,7 @@ export default function Header() {
             </nav>
 
             {/* ---- Actions droite ---- */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0, marginLeft: "auto" }}>
               {/* Recherche */}
               {searchOpen ? (
                 <div style={{
@@ -326,12 +231,12 @@ export default function Header() {
                       background: "transparent",
                       outline: "none",
                       fontSize: "0.88rem",
-                      width: "160px",
-                      fontFamily: "var(--font-inter, 'Inter')",
+                      width: "150px",
+                      fontFamily: "var(--font-body)",
                     }}
                     onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
                   />
-                  <button onClick={() => setSearchOpen(false)} style={{ border: "none", background: "transparent", cursor: "pointer" }}>
+                  <button onClick={() => setSearchOpen(false)} aria-label="Fermer la recherche" style={{ border: "none", background: "transparent", cursor: "pointer" }}>
                     <X size={14} color="var(--muted)" />
                   </button>
                 </div>
@@ -339,69 +244,20 @@ export default function Header() {
                 <button
                   onClick={() => setSearchOpen(true)}
                   aria-label="Rechercher"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: "38px",
-                    height: "38px",
-                    borderRadius: "50%",
-                    border: "1px solid var(--border)",
-                    background: "transparent",
-                    cursor: "pointer",
-                    transition: "var(--transition)",
-                    color: "var(--text)",
-                  }}
-                  className="hidden-mobile"
+                  className="header-icon-btn hidden-mobile"
                 >
                   <Search size={18} />
                 </button>
               )}
 
               {/* Connexion */}
-              <Link
-                href="/connexion"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "8px 16px",
-                  borderRadius: "var(--radius-full)",
-                  border: "1px solid var(--border)",
-                  textDecoration: "none",
-                  color: "var(--text)",
-                  fontWeight: 600,
-                  fontSize: "0.85rem",
-                  transition: "var(--transition)",
-                  fontFamily: "var(--font-poppins, 'Poppins')",
-                  whiteSpace: "nowrap",
-                }}
-                className="hidden-mobile"
-              >
+              <Link href="/connexion" className="header-login hidden-mobile" aria-label="Se connecter">
                 <LogIn size={15} />
-                Se connecter
+                <span className="login-text">Se connecter</span>
               </Link>
 
               {/* Bouton S'inscrire */}
-              <Link
-                href="/inscription/formulaire"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "9px 18px",
-                  borderRadius: "var(--radius-full)",
-                  background: "var(--highlight)",
-                  color: "white",
-                  textDecoration: "none",
-                  fontWeight: 700,
-                  fontSize: "0.85rem",
-                  boxShadow: "0 4px 15px rgba(245,166,35,0.35)",
-                  transition: "var(--transition)",
-                  fontFamily: "var(--font-poppins, 'Poppins')",
-                  whiteSpace: "nowrap",
-                }}
-              >
+              <Link href="/inscription/formulaire" className="header-cta">
                 S&#39;inscrire
               </Link>
 
@@ -409,19 +265,8 @@ export default function Header() {
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "8px",
-                  border: "1px solid var(--border)",
-                  background: "transparent",
-                  cursor: "pointer",
-                  color: "var(--text)",
-                }}
-                className="show-mobile"
+                className="header-icon-btn show-mobile"
+                style={{ borderRadius: "12px" }}
               >
                 {mobileOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
@@ -437,7 +282,7 @@ export default function Header() {
         style={{
           position: "fixed",
           inset: 0,
-          background: "rgba(0,0,0,0.5)",
+          background: "rgba(5,11,71,0.55)",
           zIndex: 90,
           opacity: mobileOpen ? 1 : 0,
           pointerEvents: mobileOpen ? "auto" : "none",
@@ -453,162 +298,122 @@ export default function Header() {
           top: 0,
           right: 0,
           bottom: 0,
-          width: "300px",
-          maxWidth: "85vw",
+          width: "310px",
+          maxWidth: "88vw",
           background: "white",
           zIndex: 100,
           transform: mobileOpen ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
           overflowY: "auto",
-          boxShadow: "-8px 0 32px rgba(0,0,0,0.15)",
+          boxShadow: "-8px 0 32px rgba(5,11,71,0.2)",
           display: "flex",
           flexDirection: "column",
         }}
         aria-hidden={!mobileOpen}
       >
-        {/* En-tête panneau */}
+        {/* En-tête panneau : logo sur fond blanc + bande 4 couleurs */}
         <div style={{
+          position: "relative",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "20px",
-          borderBottom: "1px solid var(--border)",
-          background: "var(--primary-dark)",
+          padding: "18px 20px",
+          borderBottom: "3px solid transparent",
+          borderImage: "var(--brand-stripe) 1",
         }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: "8px" }} onClick={() => setMobileOpen(false)}>
-            <div style={{ position: "relative", width: "40px", height: "40px" }}>
-              <Image src="/logo-cefopexd.png" alt="Logo CeFoPExD" fill style={{ objectFit: "contain" }} />
-            </div>
-            <span style={{ color: "white", fontWeight: 700, fontSize: "1rem", fontFamily: "Poppins" }}>CeFoPExD</span>
+          <Link href="/" style={{ position: "relative", width: "150px", height: "42px" }} onClick={() => setMobileOpen(false)}>
+            <Image src="/logo-cefopexd.png" alt="Logo CeFoPExD" fill sizes="150px" style={{ objectFit: "contain", objectPosition: "left center" }} />
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
-            style={{ border: "none", background: "rgba(255,255,255,0.15)", color: "white", borderRadius: "8px", width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+            aria-label="Fermer le menu"
+            className="header-icon-btn"
+            style={{ width: "36px", height: "36px", borderRadius: "10px" }}
           >
             <X size={18} />
           </button>
         </div>
 
         {/* Liens du menu mobile */}
-        <nav style={{ flex: 1, padding: "12px 0" }}>
-          {NAV_ITEMS.map((item) => (
-            <div key={item.label}>
-              {item.children ? (
-                <>
-                  <button
-                    onClick={() => setMobileExpanded(mobileExpanded === item.label ? null : item.label)}
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "14px 20px",
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                      fontWeight: 600,
-                      fontSize: "0.95rem",
-                      color: "var(--text)",
-                      fontFamily: "Poppins",
-                      textAlign: "left",
-                      borderLeft: isActive(item.href) ? "3px solid var(--highlight)" : "3px solid transparent",
-                    }}
-                  >
+        <nav style={{ flex: 1, padding: "12px" }}>
+          {NAV_ITEMS.map((item) => {
+            const active = isActive(item.href);
+            const rowStyle: React.CSSProperties = {
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "13px 16px",
+              marginBottom: "6px",
+              borderRadius: "14px",
+              border: active ? "1.5px solid var(--primary)" : "1.5px solid var(--border)",
+              background: active ? "var(--bg-soft)" : "white",
+              cursor: "pointer",
+              fontWeight: 700,
+              fontSize: "0.95rem",
+              color: active ? "var(--primary)" : "var(--text)",
+              fontFamily: "var(--font-display)",
+              textAlign: "left",
+              textDecoration: "none",
+            };
+            return (
+              <div key={item.label}>
+                {item.children ? (
+                  <>
+                    <button
+                      onClick={() => setMobileExpanded(mobileExpanded === item.label ? null : item.label)}
+                      style={rowStyle}
+                      aria-expanded={mobileExpanded === item.label}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={16}
+                        style={{
+                          transition: "transform 0.2s",
+                          transform: mobileExpanded === item.label ? "rotate(180deg)" : "rotate(0deg)",
+                        }}
+                      />
+                    </button>
+                    {mobileExpanded === item.label && (
+                      <div style={{ margin: "-2px 0 8px 14px", paddingLeft: "10px", borderLeft: "3px solid var(--logo-orange)" }}>
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            <child.icon size={15} color="var(--primary)" style={{ flexShrink: 0 }} />
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Link href={item.href} style={rowStyle} onClick={() => setMobileOpen(false)}>
                     {item.label}
-                    <ChevronDown
-                      size={16}
-                      style={{
-                        transition: "transform 0.2s",
-                        transform: mobileExpanded === item.label ? "rotate(180deg)" : "rotate(0deg)",
-                      }}
-                    />
-                  </button>
-                  {mobileExpanded === item.label && (
-                    <div style={{ background: "var(--bg-soft)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            padding: "12px 32px",
-                            textDecoration: "none",
-                            color: "var(--muted)",
-                            fontSize: "0.88rem",
-                            fontWeight: 500,
-                            borderLeft: isActive(child.href) ? "3px solid var(--highlight)" : "3px solid transparent",
-                            marginLeft: "0",
-                          }}
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "var(--highlight)", flexShrink: 0 }} />
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <Link
-                  href={item.href}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "14px 20px",
-                    textDecoration: "none",
-                    fontWeight: 600,
-                    fontSize: "0.95rem",
-                    color: isActive(item.href) ? "var(--primary)" : "var(--text)",
-                    fontFamily: "Poppins",
-                    borderLeft: isActive(item.href) ? "3px solid var(--highlight)" : "3px solid transparent",
-                  }}
-                  onClick={() => setMobileOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              )}
-            </div>
-          ))}
+                  </Link>
+                )}
+              </div>
+            );
+          })}
         </nav>
 
         {/* Footer du panneau */}
         <div style={{ padding: "20px", borderTop: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "12px" }}>
           <Link
             href="/connexion"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              padding: "12px",
-              borderRadius: "var(--radius-full)",
-              border: "1px solid var(--border)",
-              textDecoration: "none",
-              color: "var(--text)",
-              fontWeight: 600,
-              fontSize: "0.9rem",
-            }}
+            className="header-login"
+            style={{ justifyContent: "center", padding: "12px", width: "auto", height: "auto" }}
             onClick={() => setMobileOpen(false)}
           >
             <LogIn size={16} /> Se connecter
           </Link>
           <Link
             href="/inscription/formulaire"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              padding: "12px",
-              borderRadius: "var(--radius-full)",
-              background: "var(--highlight)",
-              color: "white",
-              textDecoration: "none",
-              fontWeight: 700,
-              fontSize: "0.9rem",
-            }}
+            className="header-cta"
+            style={{ justifyContent: "center", padding: "12px" }}
             onClick={() => setMobileOpen(false)}
           >
             S&#39;inscrire maintenant
@@ -619,20 +424,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-
-      {/* Styles inline pour responsive */}
-      <style jsx>{`
-        .hidden-mobile { display: flex !important; }
-        .show-mobile   { display: none !important; }
-        .dropdown-link:hover {
-          background: var(--bg-soft) !important;
-          color: var(--primary) !important;
-        }
-        @media (max-width: 900px) {
-          .hidden-mobile { display: none !important; }
-          .show-mobile   { display: flex !important; }
-        }
-      `}</style>
     </>
   );
 }

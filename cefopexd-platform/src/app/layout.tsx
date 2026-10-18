@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Caveat, Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 
 /* Polices Google */
@@ -9,10 +9,18 @@ const inter = Inter({
   display: "swap",
 });
 
-const poppins = Poppins({
-  weight: ["400", "500", "600", "700", "800"],
+const montserrat = Montserrat({
+  weight: ["500", "600", "700", "800", "900"],
   subsets: ["latin"],
-  variable: "--font-poppins",
+  variable: "--font-montserrat",
+  display: "swap",
+});
+
+/* Écriture manuscrite pour les accroches */
+const caveat = Caveat({
+  weight: ["600", "700"],
+  subsets: ["latin"],
+  variable: "--font-caveat",
   display: "swap",
 });
 
@@ -35,8 +43,8 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   icons: {
-    icon: "/logo-cefopexd.png",
-    apple: "/logo-cefopexd.png",
+    icon: "/logo-mark.png",
+    apple: "/logo-mark.png",
   },
 };
 
@@ -63,7 +71,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="fr" className={`${inter.variable} ${montserrat.variable} ${caveat.variable}`}>
       <head>
         <script
           type="application/ld+json"

@@ -55,7 +55,7 @@ export default function Footer() {
   return (
     <>
       {/* ========== FOOTER PRINCIPAL ========== */}
-      <footer style={{ background: "var(--primary-dark)", color: "white", paddingTop: "64px", paddingBottom: "0" }}>
+      <footer style={{ background: "var(--ink)", color: "white", paddingTop: "64px", paddingBottom: "0", borderTop: "4px solid transparent", borderImage: "var(--brand-stripe) 1" }}>
         <div className="container">
           <div style={{
             display: "grid",
@@ -66,20 +66,16 @@ export default function Footer() {
 
             {/* ---- Colonne 1 : Logo + infos ---- */}
             <div>
-              <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px", textDecoration: "none" }}>
-                <div style={{ position: "relative", width: "56px", height: "56px", background: "white", borderRadius: "12px", padding: "4px" }}>
-                  <Image src="/logo-cefopexd.png" alt="Logo CeFoPExD" fill style={{ objectFit: "contain", padding: "4px" }} />
-                </div>
-                <div>
-                  <div style={{ fontFamily: "Poppins", fontWeight: 800, fontSize: "1.2rem" }}>
-                    <span style={{ color: "var(--secondary)" }}>CeFo</span>
-                    <span style={{ color: "var(--accent)" }}>PExD</span>
-                  </div>
-                  <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.6)", maxWidth: "150px", lineHeight: 1.3 }}>
-                    Centre de Formation Prof. d'Excellence de Dévikinmé
+              <Link href="/" style={{ display: "inline-block", marginBottom: "14px", textDecoration: "none" }} aria-label="CeFoPExD — Accueil">
+                <div style={{ background: "white", borderRadius: "16px", padding: "12px 16px", boxShadow: "0 8px 24px rgba(0,0,0,0.25)" }}>
+                  <div style={{ position: "relative", width: "180px", height: "50px" }}>
+                    <Image src="/logo-cefopexd.png" alt="Logo CeFoPExD" fill sizes="180px" style={{ objectFit: "contain" }} />
                   </div>
                 </div>
               </Link>
+              <div style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.4, marginBottom: "16px" }}>
+                Centre de Formation Professionnelle d&#39;Excellence de Dévikinmé
+              </div>
 
               <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem", lineHeight: 1.7, marginBottom: "24px" }}>
                 Votre avenir professionnel commence ici. Des formations qualifiantes pour un avenir durable.
@@ -121,7 +117,7 @@ export default function Footer() {
 
             {/* ---- Colonne 2 : Liens rapides ---- */}
             <div>
-              <h3 style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "1rem", marginBottom: "20px", color: "var(--highlight)" }}>
+              <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1rem", marginBottom: "20px", color: "var(--highlight)" }}>
                 Liens rapides
               </h3>
               <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -159,7 +155,7 @@ export default function Footer() {
 
             {/* ---- Colonne 3 : Nos filières ---- */}
             <div>
-              <h3 style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "1rem", marginBottom: "20px", color: "var(--highlight)" }}>
+              <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1rem", marginBottom: "20px", color: "var(--highlight)" }}>
                 Nos filières
               </h3>
               <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -192,7 +188,7 @@ export default function Footer() {
 
             {/* ---- Colonne 4 : Contact ---- */}
             <div>
-              <h3 style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "1rem", marginBottom: "20px", color: "var(--highlight)" }}>
+              <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1rem", marginBottom: "20px", color: "var(--highlight)" }}>
                 Nous contacter
               </h3>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -268,7 +264,7 @@ export default function Footer() {
           borderTop: "1px solid rgba(255,255,255,0.1)",
         }}>
           <p style={{
-            fontFamily: "Poppins",
+            fontFamily: "var(--font-display)",
             fontStyle: "italic",
             fontSize: "1rem",
             color: "rgba(255,255,255,0.9)",
@@ -320,7 +316,7 @@ export default function Footer() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 4px 20px rgba(30,64,216,0.4)",
+          boxShadow: "0 4px 20px rgba(10,31,232,0.4)",
           transition: "all 0.3s ease",
           opacity: showTop ? 1 : 0,
           transform: showTop ? "translateY(0) scale(1)" : "translateY(20px) scale(0.8)",
@@ -334,7 +330,7 @@ export default function Footer() {
 
       <style jsx>{`
         .footer-link:hover { color: var(--highlight) !important; }
-        .social-btn:hover  { background: var(--highlight) !important; transform: translateY(-3px); }
+        .social-btn:hover  { background: var(--highlight) !important; color: var(--ink) !important; transform: translateY(-3px); }
         .scroll-top-btn:hover { background: var(--primary-dark) !important; transform: translateY(-3px) scale(1.1) !important; }
       `}</style>
     </>

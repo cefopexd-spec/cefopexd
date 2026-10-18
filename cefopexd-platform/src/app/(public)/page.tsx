@@ -7,7 +7,7 @@ import {
   ChevronLeft, ChevronRight, Monitor, Settings, Leaf,
   Sun, Languages, Wrench, CheckCircle, Award,
   Building2, Handshake, TrendingUp, ArrowRight,
-  Users, BookOpen, Percent, Star
+  Users, BookOpen, Percent, Star, GraduationCap, PenLine
 } from "lucide-react";
 
 /* =============================================
@@ -16,25 +16,31 @@ import {
 const HERO_SLIDES = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200&q=80",
+    image: "/images/campus-cefopexd.jpg",
+    alt: "Vue aérienne du campus du CeFoPExD à Dévikinmé",
     pretitle: "BIENVENUE AU CeFoPExD",
-    title: "Votre avenir professionnel commence ici !",
+    title: "Votre avenir professionnel",
+    accent: "commence ici !",
     subtitle:
       "Le Centre de Formation Professionnelle d'Excellence de Dévikinmé vous offre une formation de qualité, adaptée aux besoins du marché de l'emploi et aux défis de demain.",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1200&q=80",
+    image: "/images/eleves-cefopexd.jpg",
+    alt: "Élèves du CeFoPExD en séance de formation",
     pretitle: "EXCELLENCE & INNOVATION",
-    title: "Des formations pour créer l'emploi de demain",
+    title: "Des formations pour créer",
+    accent: "l'emploi de demain",
     subtitle:
       "Nous formons des cadres capables de créer de l'emploi dans leur domaine de formation. L'excellence et l'intégrité sont au cœur de notre pédagogie.",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&q=80",
+    image: "/images/batiment-cefopexd.jpg",
+    alt: "Bâtiment de formation du CeFoPExD",
     pretitle: "6 FILIÈRES D'EXCELLENCE",
-    title: "Informatique, Mécatronique, Énergie et plus encore",
+    title: "Informatique, Mécatronique,",
+    accent: "Énergie et plus encore",
     subtitle:
       "De l'informatique appliquée à l'énergie renouvelable, en passant par l'agro-alimentaire et la langue allemande, trouvez la filière qui correspond à vos ambitions.",
   },
@@ -58,17 +64,17 @@ const FILIERES = [
   {
     slug: "informatique",
     icon: Monitor,
-    color: "#1E40D8",
-    bg: "#EEF2FF",
+    color: "var(--logo-blue)",
+    text: "var(--primary)",
     title: "Informatique appliquée",
     desc: "Développez vos compétences en programmation, réseaux, bases de données et bureautique.",
-    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80",
+    image: "/images/filiere-informatique.jpg",
   },
   {
     slug: "mecatronique",
     icon: Settings,
-    color: "#E8231A",
-    bg: "#FEF2F2",
+    color: "var(--logo-red)",
+    text: "var(--accent-text)",
     title: "Mécatronique",
     desc: "Maîtrisez la mécanique, l'électronique, l'automatisme et la maintenance des équipements.",
     image: "https://images.unsplash.com/photo-1565372195458-9de0b320ef04?w=600&q=80",
@@ -76,35 +82,35 @@ const FILIERES = [
   {
     slug: "agro-alimentaire",
     icon: Leaf,
-    color: "#1FB31F",
-    bg: "#F0FDF4",
+    color: "var(--logo-green)",
+    text: "var(--secondary-text)",
     title: "Agro-alimentaire",
     desc: "Transformez et valorisez les produits agricoles dans le respect des normes sanitaires.",
-    image: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&q=80",
+    image: "/images/filiere-agro.jpg",
   },
   {
     slug: "energie-renouvelable",
     icon: Sun,
-    color: "#F5A623",
-    bg: "#FFFBEB",
+    color: "var(--logo-orange)",
+    text: "var(--primary-dark)",
     title: "Énergie renouvelable",
     desc: "Formez-vous aux solutions énergétiques durables pour un avenir plus vert.",
-    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80",
+    image: "/images/filiere-energie.jpg",
   },
   {
     slug: "langue-allemande",
     icon: Languages,
-    color: "#8B5CF6",
-    bg: "#F5F3FF",
+    color: "var(--logo-blue)",
+    text: "var(--primary)",
     title: "Langue allemande",
     desc: "Apprenez l'allemand de A1 à B2 avec préparation aux examens certifiants.",
-    image: "https://images.unsplash.com/photo-1527866959252-de096ac32d6f?w=600&q=80",
+    image: "/images/eleves-cefopexd.jpg",
   },
   {
     slug: "formations-courtes",
     icon: Wrench,
-    color: "#06B6D4",
-    bg: "#F0FDFF",
+    color: "var(--logo-green)",
+    text: "var(--secondary-text)",
     title: "Formations courtes",
     desc: "Des modules courts en artisanat et informatique pour acquérir rapidement de nouvelles compétences.",
     image: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&q=80",
@@ -120,21 +126,21 @@ const ACTUALITES = [
     titre: "Ouverture des inscriptions 2025-2026",
     date: "12 avril 2025",
     extrait: "Les inscriptions pour la nouvelle rentrée académique sont ouvertes. Ne manquez pas cette opportunité !",
-    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=200&q=80",
+    image: "/images/eleves-cefopexd.jpg",
   },
   {
     id: 2,
     titre: "Journée portes ouvertes au CeFoPExD",
     date: "28 mars 2025",
     extrait: "Découvrez nos infrastructures et rencontrez notre équipe pédagogique lors de notre journée portes ouvertes.",
-    image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=200&q=80",
+    image: "/images/batiment-cefopexd.jpg",
   },
   {
     id: 3,
     titre: "Lancement de la filière Énergie renouvelable",
     date: "14 mars 2025",
     extrait: "Une nouvelle filière pour répondre aux enjeux de demain et aux besoins croissants en énergies vertes.",
-    image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=200&q=80",
+    image: "/images/filiere-energie.jpg",
   },
 ];
 
@@ -187,10 +193,10 @@ function StatCard({ stat, animate }: { stat: typeof STATS[0]; animate: boolean }
         alignItems: "center", justifyContent: "center",
         margin: "0 auto 16px"
       }}>
-        <stat.icon size={24} color="white" />
+        <stat.icon size={24} color="var(--ink)" />
       </div>
       <div style={{
-        fontFamily: "Poppins",
+        fontFamily: "var(--font-display)",
         fontWeight: 800,
         fontSize: "2.8rem",
         color: "white",
@@ -255,157 +261,109 @@ export default function HomePage() {
       {/* =============================================
           1. HERO CARROUSEL
           ============================================= */}
-      <section
-        style={{ position: "relative", minHeight: "calc(100vh - 72px)", overflow: "hidden" }}
-        aria-label="Carrousel principal"
-      >
-        {/* Photo de fond avec effet Ken Burns */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-          <Image
-            src={slide.image}
-            alt={slide.title}
-            fill
-            style={{ objectFit: "cover", animation: "kenBurns 8s ease-in-out infinite alternate" }}
-            priority
-            sizes="100vw"
-          />
-          {/* Overlay dégradé bleu nuit */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(105deg, rgba(15,31,107,0.95) 0%, rgba(30,64,216,0.80) 55%, rgba(15,31,107,0.30) 100%)",
-          }} />
+      <section className="hero" aria-label="Carrousel principal">
+        {/* Fond : photo floutée de la slide en cours */}
+        <div className="hero-bg" aria-hidden="true">
+          <Image src={slide.image} alt="" fill sizes="100vw" style={{ objectFit: "cover" }} />
         </div>
 
-        {/* Contenu héro */}
-        <div className="container" style={{
-          position: "relative", zIndex: 1,
-          display: "flex", flexDirection: "column",
-          justifyContent: "center", minHeight: "calc(100vh - 72px)",
-          paddingTop: "60px", paddingBottom: "100px",
-        }}>
-          <div style={{ maxWidth: "640px" }}>
-            {/* Surtitré */}
-            <div
-              key={`pre-${currentSlide}`}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "8px",
-                background: "rgba(245,166,35,0.15)", border: "1px solid rgba(245,166,35,0.4)",
-                borderRadius: "var(--radius-full)", padding: "6px 16px",
-                marginBottom: "20px",
-                animation: "fadeInUp 0.6s ease forwards",
-              }}
-            >
-              <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--highlight)" }} />
-              <span style={{ color: "var(--highlight)", fontFamily: "Poppins", fontWeight: 600, fontSize: "0.78rem", letterSpacing: "2px" }}>
-                {slide.pretitle}
-              </span>
+        <div className="container hero-grid">
+          {/* ---- Texte ---- */}
+          <div>
+            <div key={`pre-${currentSlide}`} className="hero-pretitle hero-anim">
+              <span className="hero-pretitle-dot" />
+              {slide.pretitle}
             </div>
 
-            {/* Grand titre */}
-            <h1
-              key={`title-${currentSlide}`}
-              style={{
-                color: "white", fontFamily: "Poppins", fontWeight: 800,
-                fontSize: "clamp(2rem, 5vw, 3.2rem)", lineHeight: 1.15,
-                marginBottom: "20px",
-                animation: "fadeInUp 0.6s 0.1s ease both",
-              }}
-            >
-              {slide.title}
+            <h1 key={`title-${currentSlide}`} className="hero-title hero-anim" style={{ animationDelay: "0.08s" }}>
+              {slide.title}{" "}
+              <span className="hero-title-accent">{slide.accent}</span>
             </h1>
 
-            {/* Sous-titre */}
-            <p
-              key={`sub-${currentSlide}`}
-              style={{
-                color: "rgba(255,255,255,0.85)", fontSize: "1rem",
-                lineHeight: 1.7, marginBottom: "32px",
-                animation: "fadeInUp 0.6s 0.2s ease both",
-              }}
-            >
+            <p key={`sub-${currentSlide}`} className="hero-subtitle hero-anim" style={{ animationDelay: "0.16s" }}>
               {slide.subtitle}
             </p>
 
-            {/* Boutons */}
-            <div
-              key={`btns-${currentSlide}`}
-              style={{
-                display: "flex", gap: "16px", flexWrap: "wrap",
-                marginBottom: "32px",
-                animation: "fadeInUp 0.6s 0.3s ease both",
-              }}
-            >
-              <Link href="/filieres" className="btn-highlight">
+            <div key={`btns-${currentSlide}`} className="hero-actions hero-anim" style={{ animationDelay: "0.24s" }}>
+              <Link href="/filieres" className="btn-hero-primary">
+                <GraduationCap size={19} />
                 Découvrir nos filières
+                <ArrowRight size={18} />
               </Link>
-              <Link href="/inscription/formulaire" className="btn-outline-white">
+              <Link href="/inscription/formulaire" className="btn-hero-ghost">
+                <PenLine size={18} />
                 S&#39;inscrire maintenant
               </Link>
             </div>
 
             {/* Phrase manuscrite */}
-            <div
-              key={`cursive-${currentSlide}`}
-              style={{ animation: "fadeInUp 0.6s 0.4s ease both" }}
-            >
-              <span className="cursive-text" style={{ fontSize: "1.1rem" }}>
-                « Formations qualifiantes pour un avenir durable »
-              </span>
-              <div style={{ width: "80px", height: "3px", background: "var(--highlight)", borderRadius: "2px", marginTop: "8px" }} />
+            <div className="hero-script hero-anim" style={{ animationDelay: "0.32s" }}>
+              Formations qualifiantes pour un avenir durable
+              <svg width="230" height="14" viewBox="0 0 230 14" fill="none" aria-hidden="true">
+                <path
+                  d="M3 10 C 60 2, 140 2, 227 7"
+                  stroke="currentColor" strokeWidth="4" strokeLinecap="round"
+                  strokeDasharray="260" style={{ animation: "draw 1.2s 0.6s ease both" }}
+                />
+              </svg>
             </div>
           </div>
-        </div>
 
-        {/* Flèches navigation */}
-        <button
-          onClick={prev}
-          aria-label="Slide précédente"
-          style={{
-            position: "absolute", left: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 2,
-            width: "48px", height: "48px", borderRadius: "50%",
-            background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)",
-            color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-            backdropFilter: "blur(8px)", transition: "var(--transition)",
-          }}
-          className="carousel-btn"
-        >
-          <ChevronLeft size={22} />
-        </button>
-        <button
-          onClick={next}
-          aria-label="Slide suivante"
-          style={{
-            position: "absolute", right: "20px", top: "50%", transform: "translateY(-50%)", zIndex: 2,
-            width: "48px", height: "48px", borderRadius: "50%",
-            background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)",
-            color: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-            backdropFilter: "blur(8px)", transition: "var(--transition)",
-          }}
-          className="carousel-btn"
-        >
-          <ChevronRight size={22} />
-        </button>
+          {/* ---- Visuel : photos réelles du centre ---- */}
+          <div className="hero-visual">
+            <div className="hero-frame">
+              <div className="hero-frame-inner">
+                {HERO_SLIDES.map((s, i) => (
+                  <Image
+                    key={s.id}
+                    src={s.image}
+                    alt={s.alt}
+                    fill
+                    priority={i === 0}
+                    sizes="(max-width: 960px) 92vw, 540px"
+                    quality={90}
+                    className={`hero-slide-img ${i === currentSlide ? "is-active" : ""}`}
+                  />
+                ))}
+              </div>
+            </div>
 
-        {/* Points de navigation */}
-        <div style={{
-          position: "absolute", bottom: "32px", left: "50%", transform: "translateX(-50%)",
-          display: "flex", gap: "10px", zIndex: 2
-        }}>
-          {HERO_SLIDES.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              aria-label={`Aller à la slide ${i + 1}`}
-              style={{
-                width: i === currentSlide ? "28px" : "10px",
-                height: "10px",
-                borderRadius: "5px",
-                background: i === currentSlide ? "var(--highlight)" : "rgba(255,255,255,0.4)",
-                border: "none", cursor: "pointer",
-                transition: "all 0.3s ease",
-              }}
-            />
-          ))}
+            {/* Badges flottants */}
+            <div className="hero-badge hero-badge-logo">
+              <div style={{ position: "relative", width: "128px", height: "36px" }}>
+                <Image src="/logo-cefopexd.png" alt="CeFoPExD" fill sizes="128px" style={{ objectFit: "contain" }} />
+              </div>
+            </div>
+            <div className="hero-badge hero-badge-stat">
+              <div className="hero-badge-icon"><Users size={20} /></div>
+              <div>
+                <strong>500+</strong>
+                <span>étudiants formés</span>
+              </div>
+            </div>
+
+            {/* Navigation du carrousel */}
+            <div className="hero-nav">
+              <button onClick={prev} aria-label="Slide précédente" className="hero-arrow">
+                <ChevronLeft size={20} />
+              </button>
+              {HERO_SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  aria-label={`Aller à la slide ${i + 1}`}
+                  className="hero-dot"
+                  style={{
+                    width: i === currentSlide ? "30px" : "10px",
+                    background: i === currentSlide ? "var(--logo-orange)" : "rgba(255,255,255,0.35)",
+                  }}
+                />
+              ))}
+              <button onClick={next} aria-label="Slide suivante" className="hero-arrow">
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -440,7 +398,7 @@ export default function HomePage() {
                 }} className="atout-icon">
                   <atout.icon size={24} color="var(--primary)" />
                 </div>
-                <div style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "0.88rem", color: "var(--text)", marginBottom: "4px" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.88rem", color: "var(--text)", marginBottom: "4px" }}>
                   {atout.label}
                 </div>
                 <div style={{ color: "var(--muted)", fontSize: "0.78rem" }}>
@@ -492,7 +450,7 @@ export default function HomePage() {
                     position: "absolute", bottom: "-20px", left: "20px",
                     width: "48px", height: "48px", borderRadius: "14px",
                     background: filiere.color, display: "flex", alignItems: "center",
-                    justifyContent: "center", boxShadow: `0 4px 16px ${filiere.color}60`,
+                    justifyContent: "center", boxShadow: "0 6px 16px rgba(5,11,71,0.25)",
                     border: "3px solid white", zIndex: 1,
                   }}>
                     <filiere.icon size={22} color="white" />
@@ -501,7 +459,7 @@ export default function HomePage() {
 
                 {/* Contenu */}
                 <div style={{ padding: "32px 24px 24px" }}>
-                  <h3 style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "1.1rem", color: filiere.color, marginBottom: "10px" }}>
+                  <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.1rem", color: filiere.text, marginBottom: "10px" }}>
                     {filiere.title}
                   </h3>
                   <p style={{ color: "var(--muted)", fontSize: "0.88rem", lineHeight: 1.65, marginBottom: "20px" }}>
@@ -511,14 +469,13 @@ export default function HomePage() {
                     href={`/filieres/${filiere.slug}`}
                     style={{
                       display: "inline-flex", alignItems: "center", gap: "6px",
-                      color: filiere.color, fontWeight: 600, fontSize: "0.88rem",
-                      textDecoration: "none", fontFamily: "Poppins",
+                      color: filiere.text, fontWeight: 700, fontSize: "0.88rem",
+                      textDecoration: "none", fontFamily: "var(--font-display)",
                       padding: "8px 18px", borderRadius: "var(--radius-full)",
-                      border: `1.5px solid ${filiere.color}`,
+                      border: `1.5px solid ${filiere.text}`,
                       transition: "var(--transition)",
                     }}
                     className="filiere-btn"
-                    style2={{ background: filiere.bg }}
                   >
                     Détails <ArrowRight size={14} />
                   </Link>
@@ -558,8 +515,8 @@ export default function HomePage() {
                 boxShadow: "var(--shadow-lg)"
               }}>
                 <Image
-                  src="https://images.unsplash.com/photo-1562774053-701939374585?w=700&q=80"
-                  alt="Centre CeFoPExD"
+                  src="/images/campus-cefopexd.jpg"
+                  alt="Vue aérienne du campus du CeFoPExD"
                   fill
                   style={{ objectFit: "cover" }}
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -568,7 +525,7 @@ export default function HomePage() {
                   position: "absolute", bottom: "16px", left: "16px",
                   background: "var(--primary-dark)", color: "white",
                   padding: "6px 14px", borderRadius: "var(--radius-full)",
-                  fontFamily: "Poppins", fontWeight: 600, fontSize: "0.82rem"
+                  fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "0.82rem"
                 }}>
                   CeFoPExD — Lomé, Togo
                 </div>
@@ -582,8 +539,8 @@ export default function HomePage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
                   { label: "Notre vision", desc: "Développer les compétences", icon: "🎯", color: "var(--primary)" },
-                  { label: "Notre mission", desc: "Former pour l'emploi", icon: "🚀", color: "var(--secondary)" },
-                  { label: "Nos valeurs", desc: "Excellence, Intégrité, Solidarité", icon: "⭐", color: "var(--highlight)" },
+                  { label: "Notre mission", desc: "Former pour l'emploi", icon: "🚀", color: "var(--secondary-text)" },
+                  { label: "Nos valeurs", desc: "Excellence, Intégrité, Solidarité", icon: "⭐", color: "var(--accent-text)" },
                 ].map((item) => (
                   <div
                     key={item.label}
@@ -597,7 +554,7 @@ export default function HomePage() {
                   >
                     <span style={{ fontSize: "1.4rem" }}>{item.icon}</span>
                     <div>
-                      <div style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "0.9rem", color: item.color }}>{item.label}</div>
+                      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.9rem", color: item.color }}>{item.label}</div>
                       <div style={{ color: "var(--muted)", fontSize: "0.82rem" }}>{item.desc}</div>
                     </div>
                   </div>
@@ -658,7 +615,7 @@ export default function HomePage() {
                         📅 {actu.date}
                       </span>
                       <h3 style={{
-                        fontFamily: "Poppins", fontWeight: 700, fontSize: "0.9rem",
+                        fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.9rem",
                         color: "var(--text)", marginBottom: "6px",
                         overflow: "hidden", textOverflow: "ellipsis",
                         display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical",
@@ -681,10 +638,11 @@ export default function HomePage() {
               <div style={{
                 marginTop: "24px", padding: "24px",
                 borderRadius: "var(--radius-lg)",
-                background: "linear-gradient(135deg, var(--primary-dark), var(--primary))",
-                color: "white", textAlign: "center"
+                background: "radial-gradient(circle at 90% 0%, rgba(10,31,232,0.7), transparent 60%), var(--ink)",
+                color: "white", textAlign: "center", borderTop: "4px solid transparent",
+                borderImage: "var(--brand-stripe) 1"
               }}>
-                <h3 style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "1.1rem", marginBottom: "8px" }}>
+                <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.1rem", marginBottom: "8px" }}>
                   Prêt à rejoindre le CeFoPExD ?
                 </h3>
                 <p style={{ fontSize: "0.85rem", opacity: 0.85, marginBottom: "16px" }}>
@@ -705,14 +663,14 @@ export default function HomePage() {
       <section
         ref={statsRef}
         style={{
-          background: "linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%)",
+          background: "radial-gradient(circle at 80% 0%, rgba(10,31,232,0.6), transparent 60%), var(--ink)",
           padding: "80px 0",
         }}
       >
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: "48px" }}>
             <h2 style={{
-              fontFamily: "Poppins", fontWeight: 800,
+              fontFamily: "var(--font-display)", fontWeight: 800,
               fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
               color: "white", marginBottom: "12px"
             }}>
@@ -766,27 +724,27 @@ export default function HomePage() {
               {
                 icon: "💼", title: "Insertion professionnelle",
                 desc: "Nous formons des cadres capables de créer de l'emploi dans leur domaine, pas seulement d'en demander.",
-                color: "var(--highlight)"
+                color: "var(--accent-text)"
               },
               {
                 icon: "🤝", title: "Égalité des chances",
                 desc: "Nous respectons les différences et favorisons l'égalité des chances car la diversité est une richesse.",
-                color: "var(--secondary)"
+                color: "var(--secondary-text)"
               },
               {
                 icon: "🔬", title: "Recherche & Innovation",
                 desc: "Une place essentielle est accordée à la recherche, notamment en entrepreneuriat, pour innover et progresser.",
-                color: "var(--accent)"
+                color: "var(--logo-blue)"
               },
               {
                 icon: "🌱", title: "Adaptation continue",
                 desc: "Nos formations sont sans cesse adaptées à l'évolution de la société et aux besoins du marché de l'emploi.",
-                color: "#8B5CF6"
+                color: "var(--primary)"
               },
               {
                 icon: "⚖️", title: "Valeurs humaines",
                 desc: "Paix, tolérance, intégrité et équité : nous formons des hommes et femmes acteurs responsables de la société.",
-                color: "#06B6D4"
+                color: "var(--secondary-text)"
               },
             ].map((item) => (
               <div
@@ -807,7 +765,7 @@ export default function HomePage() {
                   {item.icon}
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "Poppins", fontWeight: 700, fontSize: "0.95rem", color: item.color, marginBottom: "8px" }}>
+                  <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.95rem", color: item.color, marginBottom: "8px" }}>
                     {item.title}
                   </h3>
                   <p style={{ color: "var(--muted)", fontSize: "0.85rem", lineHeight: 1.65 }}>
@@ -826,7 +784,7 @@ export default function HomePage() {
       <section style={{ background: "white", padding: "80px 0" }}>
         <div className="container" style={{ textAlign: "center" }}>
           <div style={{ maxWidth: "640px", margin: "0 auto" }}>
-            <CheckCircle size={48} color="var(--secondary)" style={{ marginBottom: "20px" }} />
+            <CheckCircle size={48} color="var(--secondary-text)" style={{ marginBottom: "20px" }} />
             <h2 className="section-title">
               Prêt à construire votre avenir avec nous ?
             </h2>
@@ -851,7 +809,6 @@ export default function HomePage() {
 
       {/* Styles hover */}
       <style jsx>{`
-        .carousel-btn:hover { background: rgba(255,255,255,0.25) !important; }
         .atout-item:hover { border-bottom-color: var(--highlight) !important; }
         .atout-item:hover .atout-icon { background: var(--primary) !important; border-color: var(--primary) !important; }
         .atout-item:hover .atout-icon svg { color: white !important; }
