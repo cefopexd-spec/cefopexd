@@ -210,7 +210,7 @@ export default async function ComptesPage({ searchParams }: Props) {
                   </div>
                   <fieldset className="g-sections">
                     <legend>
-                      <label><input type="checkbox" name="sections_perso" defaultChecked={!!p.sections} /> Choisir les rubriques une par une (sinon : rubriques par défaut du poste)</label>
+                      Rubriques ouvertes à cette personne <small>(cochées par défaut selon son poste ; cochez ou décochez librement, par exemple « Studio du site » pour un administrateur)</small>
                     </legend>
                     {SECTIONS_GESTION.filter((s) => !["tableau", "profil", "recherche"].includes(s.key)).map((s) => (
                       <label key={s.key}>

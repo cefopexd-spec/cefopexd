@@ -2,7 +2,6 @@
 
 import { revalidatePath, updateTag } from "next/cache";
 import { assertGestion } from "@/lib/session";
-import { ROLES_STUDIO } from "@/lib/roles";
 import { SITE_DEFAUT, TAG_SITE } from "@/lib/site";
 import { fusion } from "@/lib/site/fusion";
 import type { SiteConfig } from "@/lib/site/types";
@@ -46,7 +45,7 @@ function normaliser(brut: unknown): SiteConfig {
 }
 
 async function enregistrer(id: "brouillon" | "publie", donnees: SiteConfig) {
-  const { supabase, user } = await assertGestion("site", ROLES_STUDIO);
+  const { supabase, user } = await assertGestion("site");
   const le = new Date().toISOString();
   const { error } = await supabase.from("site_contenu").upsert({ id, donnees, maj_par: user!.id, maj_le: le });
   if (error) {
@@ -87,7 +86,7 @@ export async function publierSite(brut: unknown, note: string): Promise<EtatStud
 /* Recharge une ancienne publication dans le brouillon (à republier ensuite) */
 export async function restaurerVersion(id: number): Promise<EtatStudio> {
   try {
-    const { supabase } = await assertGestion("site", ROLES_STUDIO);
+    const { supabase } = await assertGestion("site");
     const { data, error } = await supabase.from("site_versions").select("donnees").eq("id", id).maybeSingle();
     if (error || !data) return { erreur: "Version introuvable." };
     const donnees = normaliser(data.donnees);
@@ -101,7 +100,7 @@ export async function restaurerVersion(id: number): Promise<EtatStudio> {
 /* Abandonne le brouillon : repart de la version actuellement en ligne */
 export async function abandonnerBrouillon(): Promise<EtatStudio> {
   try {
-    const { supabase } = await assertGestion("site", ROLES_STUDIO);
+    const { supabase } = await assertGestion("site");
     const { data } = await supabase.from("site_contenu").select("donnees").eq("id", "publie").maybeSingle();
     const donnees = normaliser(data?.donnees ?? {});
     const { le } = await enregistrer("brouillon", donnees);

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { assertGestion, nomComplet } from "@/lib/session";
-import { ROLES, ROLES_RESPONSABLES, SECTIONS_GESTION, roleLabel } from "@/lib/roles";
+import { ROLES, ROLES_RESPONSABLES, SECTIONS_GESTION, droitsDuRole, roleLabel, type Role } from "@/lib/roles";
 import { emailsDesProfils, emailsDesRoles, envoyerEmail, notifierParEmail } from "@/lib/email";
 import { lireFichiers, versDocuments } from "@/lib/fichiers";
 import { MESSAGE_CLE_MANQUANTE, adminClient } from "@/lib/supabase/admin";
@@ -33,11 +33,21 @@ export async function majCompte(_: Etat, fd: FormData): Promise<Etat> {
     }
     if (!["en_attente", "valide", "refuse"].includes(statut)) return { erreur: "Statut invalide." };
     const choisies = fd.getAll("sections").map(String).filter((s) => SECTIONS_GESTION.some((x) => x.key === s));
-    const sections = fd.get("sections_perso") === "on" ? choisies : null;
+    // Rubriques cochées identiques à celles du poste : on garde le réglage par défaut du poste ;
+    // sinon, la sélection cochée est enregistrée (plus besoin de cocher une case à part)
+    const parDefaut = SECTIONS_GESTION.filter((x) => !["tableau", "profil", "recherche"].includes(x.key) && (x.roles as readonly string[]).includes(droitsDuRole(role as Role))).map((x) => x.key as string);
+    const identiques = parDefaut.length === choisies.length && parDefaut.every((k) => choisies.includes(k));
+    // Nouveau poste : les cases affichées étaient celles de l'ancien poste, on repart des rubriques du nouveau
+    const changementDePoste = !!cible && cible.role !== role;
+    const sections = changementDePoste || identiques ? null : choisies;
     const { error } = await supabase.from("profils").update({ role, statut, sections }).eq("id", t(fd, "id"));
     if (error) return { erreur: error.message };
     revalidatePath("/gestion/comptes");
-    return { ok: "Compte mis à jour." };
+    return {
+      ok: changementDePoste
+        ? "Compte mis à jour. Les rubriques du nouveau poste sont appliquées : rouvrez la fiche pour en ajouter ou en retirer (ex. « Studio du site »)."
+        : "Compte mis à jour.",
+    };
   } catch (e) { return echec(e); }
 }
 

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { draftMode } from "next/headers";
 import { getSession, roleActif } from "@/lib/session";
-import { ROLES_STUDIO } from "@/lib/roles";
+import { ROLES_PERSONNEL, sectionsAutorisees } from "@/lib/roles";
 
 /* =============================================
    APERÇU DU BROUILLON DU SITE
-   /api/apercu?page=/contact  : active l'aperçu (DG ou gestionnaire du site)
+   /api/apercu?page=/contact  : active l'aperçu (personnes ayant accès au Studio)
    /api/apercu?quitter=1      : revient au site publié
    ============================================= */
 export async function GET(request: Request) {
@@ -19,7 +19,8 @@ export async function GET(request: Request) {
 
   const { user, profil } = await getSession();
   const role = roleActif(profil);
-  if (!user || !role || !ROLES_STUDIO.includes(role)) {
+  // Toute personne à qui la rubrique « Studio du site » est ouverte peut prévisualiser
+  if (!user || !profil || !role || !ROLES_PERSONNEL.includes(role) || !sectionsAutorisees(role, profil.sections).includes("site")) {
     return NextResponse.redirect(new URL("/connexion?next=/gestion/site", url));
   }
   draft.enable();
