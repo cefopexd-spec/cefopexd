@@ -79,7 +79,7 @@ export default async function ApprenantsPage({ searchParams }: Props) {
       {peutModifier && (
         <details className="g-card g-details">
           <summary>Ajouter un apprenant manuellement</summary>
-          <p className="field-hint">Les inscriptions validées par le DG créent automatiquement l&#39;apprenant. Utilisez ce formulaire pour les inscriptions faites directement au centre.</p>
+          <p className="field-hint">Les inscriptions validées par la Direction créent automatiquement l&#39;apprenant. Utilisez ce formulaire pour les inscriptions faites directement au centre.</p>
           <ActionForm action={creerApprenant} submitLabel="Créer l'apprenant" className="g-form" submitClassName="btn-hero-primary btn-sm">
             <ApprenantChamps filieres={filieres ?? []} />
           </ActionForm>

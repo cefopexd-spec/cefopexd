@@ -57,7 +57,7 @@ export async function completerProfil(_: EtatFormulaire, fd: FormData): Promise<
     await notifierParEmail(
       ["dg", "admin"],
       "Nouvelle demande de compte — CeFoPExD",
-      `${nomComplet(champs)} (${user.email}) a créé son compte.\nType : ${champs.type_demandeur}\nMotif : ${champs.motif}\nDocuments joints : ${fichiers.length}\n\nLe Directeur Général doit valider le compte et attribuer un rôle.`,
+      `${nomComplet(champs)} (${user.email}) a créé son compte.\nType : ${champs.type_demandeur}\nMotif : ${champs.motif}\nDocuments joints : ${fichiers.length}\n\nLa Direction doit valider le compte et attribuer un rôle.`,
       "/gestion/comptes"
     );
   }

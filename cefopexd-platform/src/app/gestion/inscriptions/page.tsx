@@ -24,7 +24,7 @@ export default async function InscriptionsPage({ searchParams }: Props) {
     <>
       <div className="g-page-head">
         <h1>Inscriptions</h1>
-        <p>Pré-inscriptions reçues en ligne : le secrétariat les traite et les transmet, l&#39;administration complète le dossier, le DG valide.</p>
+        <p>Pré-inscriptions reçues en ligne : le secrétariat les traite et les transmet, l&#39;administration complète le dossier, la Direction valide.</p>
       </div>
 
       <div className="g-tabs">

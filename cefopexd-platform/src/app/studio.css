@@ -228,3 +228,32 @@
   .cartes-planche:last-of-type { break-after: auto; }
   .apercu-bandeau { display: none !important; }
 }
+
+/* =============================================
+   ORGANIGRAMME, PROFIL, PAIEMENTS
+   ============================================= */
+.g-organigramme { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+.g-famille { border: 1px solid var(--border); border-radius: 12px; padding: 14px; border-top: 4px solid var(--primary); background: white; }
+.g-famille.is-direction { border-top-color: var(--primary-dark); }
+.g-famille.is-administration { border-top-color: var(--green, #138800); }
+.g-famille.is-enseignants { border-top-color: var(--highlight, #FDA603); }
+.g-famille.is-apprenants { border-top-color: var(--accent, #F82303); }
+.g-famille.is-public { border-top-color: #8A93A8; }
+.g-famille h3 { font-family: var(--font-display); font-size: 0.98rem; color: var(--blue-deep); margin-bottom: 10px; }
+.g-famille ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.g-famille li div { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.88rem; }
+.g-famille li p { font-size: 0.8rem; color: var(--muted); line-height: 1.45; margin-top: 2px; }
+.g-effectif { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--bg-soft); color: var(--muted); font-size: 0.72rem; font-weight: 700; }
+.g-tabs a.is-active .g-effectif { background: rgba(255, 255, 255, 0.25); color: inherit; }
+.g-profil-carte { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.g-profil-carte > div:last-child { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.g-photo-ronde { width: 96px; height: 96px; border-radius: 50%; }
+.g-profil-nom { font-family: var(--font-display); font-size: 1.25rem; color: var(--blue-deep); }
+.g-profil-titre { font-weight: 700; color: var(--green-text); }
+.g-table tr.is-annule td { color: #8a93a8; text-decoration: line-through; }
+.g-table tr.is-annule td:first-child, .g-table tr.is-annule td:last-child { text-decoration: none; }
+.doc-montant { margin: 18px 0; padding: 14px 16px; border: 2px solid var(--doc-couleur, #0B1C94); border-radius: 8px; display: flex; flex-direction: column; gap: 4px; }
+.doc-montant span { font-size: 9.5pt; text-transform: uppercase; letter-spacing: 0.6px; color: #555; }
+.doc-montant strong { font-family: var(--font-display); font-size: 20pt; color: var(--doc-couleur, #0B1C94); }
+.doc-montant em { font-size: 10pt; color: #333; }
+.doc-annule { margin: 8px 0 12px; padding: 8px; border: 2px dashed #B3261E; color: #B3261E; font-weight: 800; text-align: center; letter-spacing: 1px; }

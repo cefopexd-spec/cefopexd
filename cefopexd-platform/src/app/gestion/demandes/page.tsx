@@ -35,7 +35,7 @@ export default async function DemandesPage({ searchParams }: Props) {
   if (statut) requete = requete.eq("statut", statut);
   const { data } = await requete;
   const demandes = (data ?? []) as unknown as Demande[];
-  const peutDecider = role === "dg" || role === "secretaire";
+  const peutDecider = ["dg", "secretaire", "surveillant"].includes(role);
 
   return (
     <>

@@ -83,7 +83,7 @@ export default async function FicheInscription({ params }: Props) {
             <p className="doc-text">{d.observations as string}</p>
           </>
         )}
-        {ins.valide_le && <p className="doc-text"><strong>Inscription validée par le Directeur Général le {dateFr(ins.valide_le)}.</strong></p>}
+        {ins.valide_le && <p className="doc-text"><strong>Inscription validée par la Direction le {dateFr(ins.valide_le)}.</strong></p>}
       </DocumentOfficiel>
     </div>
   );

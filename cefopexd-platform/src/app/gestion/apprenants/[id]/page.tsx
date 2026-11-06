@@ -43,6 +43,7 @@ export default async function ApprenantDetail({ params }: Props) {
         <div className="g-actions">
           <Link href={`/gestion/apprenants/${a.id}/attestation`} target="_blank" className="btn-hero-ghost btn-sm"><Printer size={15} /> Attestation d&#39;inscription (PDF)</Link>
           <Link href={`/gestion/apprenants/${a.id}/carte`} target="_blank" className="btn-hero-ghost btn-sm"><IdCard size={15} /> Carte d&#39;étudiant (PDF)</Link>
+          {["dg", "admin", "comptable", "secretaire"].includes(role) && <Link href={`/gestion/paiements?apprenant=${a.id}`} className="btn-hero-ghost btn-sm">Paiements & reçus</Link>}
         </div>
       </div>
 

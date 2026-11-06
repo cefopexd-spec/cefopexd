@@ -36,8 +36,8 @@ export const SOCIAL = {
 };
 
 export const DIRECTEUR = {
-  nom: "Monsieur D'ALMEIDA Blaise",
-  fonction: "Directeur Général du CeFoPExD",
+  nom: "Monsieur D'ALMEIDA Blaise Pascal",
+  fonction: "Président Fondateur du CeFoPExD",
   extrait:
     "Bienvenue au CeFoPExD. Notre ambition est claire : offrir à chaque jeune une formation exigeante, concrète et tournée vers l'emploi, afin qu'il devienne non seulement un professionnel compétent, mais aussi un créateur d'opportunités pour lui-même et pour sa communauté.",
   message: [
@@ -216,7 +216,7 @@ export const SECTIONS: Record<string, Section> = {
         ],
       },
       "mot-du-dg": {
-        title: "Mot du Directeur Général",
+        title: "Mot du Président Fondateur",
         intro: "Le message de la direction aux apprenants, aux parents et aux partenaires du CeFoPExD.",
         blocks: [{ type: "director" }, CTA_INSCRIPTION],
       },

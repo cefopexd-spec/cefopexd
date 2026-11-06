@@ -13,7 +13,7 @@ type Msg = {
   dest: { prenom: string | null; nom: string | null; pseudo: string } | null;
 };
 
-const GROUPES = [["tous", "Tout le monde"], ["apprenant", "Tous les apprenants"], ["parent", "Tous les parents"], ["professeur", "Tous les professeurs"], ["secretaire", "Le secrétariat"], ["admin", "L'administration"], ["dg", "Le Directeur Général"]];
+const GROUPES = [["tous", "Tout le monde"], ["apprenant", "Tous les apprenants"], ["parent", "Tous les parents"], ["professeur", "Tous les professeurs"], ["surveillant", "La surveillance générale"], ["comptable", "La comptabilité"], ["secretaire", "Le secrétariat"], ["admin", "L'administration"], ["webmaster", "Le gestionnaire du site"], ["pedagogique", "La direction des études"], ["dg", "La Direction"]];
 
 /* =============================================
    MESSAGES — à une personne ou à tout un groupe (notification automatique)

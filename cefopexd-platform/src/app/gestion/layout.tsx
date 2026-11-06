@@ -51,7 +51,7 @@ export default async function GestionLayout({ children }: { children: React.Reac
         <header className="g-topbar">
           <div>
             <strong>{nomComplet(profil)}</strong>
-            <span>{roleLabel(role)} · @{profil.pseudo}</span>
+            <span>{profil.fonction || roleLabel(profil.role)} · @{profil.pseudo}</span>
           </div>
           <form action="/gestion/recherche" className="g-topsearch" role="search">
             <Search size={16} />

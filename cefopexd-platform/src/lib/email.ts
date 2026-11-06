@@ -22,7 +22,9 @@ export async function emailsDesRoles(roles: string[]): Promise<string[]> {
   const client = admin();
   if (!client) return [];
   let requete = client.from("profils").select("email").eq("statut", "valide");
-  if (!roles.includes("tous")) requete = requete.in("role", roles);
+  // La Direction (« dg ») comprend le Président Fondateur ; l'accès principal technique ne reçoit rien
+  if (!roles.includes("tous")) requete = requete.in("role", roles.includes("dg") ? [...roles, "fondateur"] : roles);
+  else requete = requete.neq("role", "principal");
   const { data } = await requete;
   return [...new Set((data ?? []).map((p) => p.email).filter(Boolean))];
 }

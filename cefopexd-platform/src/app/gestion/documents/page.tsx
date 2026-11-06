@@ -34,8 +34,8 @@ export default async function DocumentsPage({ searchParams }: Props) {
         <p>
           {role === "dg"
             ? "Tous les documents déposés dans le système : photos d'identité, CV, diplômes, rapports… Consultez-les ou téléchargez-les."
-            : "Documents déposés par les demandeurs (les rapports sont réservés au Directeur Général)."}
-          {" "}Seul le DG peut modifier ou supprimer un document.
+            : "Documents déposés par les demandeurs (les rapports sont réservés à la Direction)."}
+          {" "}Seule la Direction peut modifier ou supprimer un document.
         </p>
       </div>
       <form className="g-search">

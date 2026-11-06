@@ -65,7 +65,7 @@ export default async function TableauDeBord({ searchParams }: Props) {
       </div>
 
       {acces === "refuse" && (
-        <div className="form-error" role="alert"><AlertTriangle size={18} /><span>Cette rubrique ne vous est pas attribuée. Contactez le Directeur Général.</span></div>
+        <div className="form-error" role="alert"><AlertTriangle size={18} /><span>Cette rubrique ne vous est pas attribuée. Contactez la Direction.</span></div>
       )}
 
       {role === "dg" && <StatsDG supabase={supabase} periode={(["day", "week", "month", "year"].includes(periode ?? "") ? periode : "day") as Periode} />}

@@ -19,10 +19,18 @@ const echec = (e: unknown): Etat => ({ erreur: e instanceof Error ? e.message : 
    ============================================= */
 export async function majCompte(_: Etat, fd: FormData): Promise<Etat> {
   try {
-    const { supabase } = await assertGestion("comptes", ["dg"]);
+    const { supabase, profil } = await assertGestion("comptes", ["dg"]);
     const role = t(fd, "role");
     const statut = t(fd, "statut");
     if (!ROLES.some((r) => r.value === role)) return { erreur: "Rôle invalide." };
+    // L'accès principal (technique) ne se donne et ne se retire que par un accès principal
+    const { data: cible } = await supabase.from("profils").select("role").eq("id", t(fd, "id")).maybeSingle();
+    if ((role === "principal" || cible?.role === "principal") && profil.role !== "principal") {
+      return { erreur: "Ce compte est l'accès principal du système : il ne peut pas être modifié ici." };
+    }
+    if (role === "fondateur" && !["fondateur", "principal"].includes(profil.role)) {
+      return { erreur: "Seul le Président Fondateur peut nommer un Président Fondateur." };
+    }
     if (!["en_attente", "valide", "refuse"].includes(statut)) return { erreur: "Statut invalide." };
     const choisies = fd.getAll("sections").map(String).filter((s) => SECTIONS_GESTION.some((x) => x.key === s));
     const sections = fd.get("sections_perso") === "on" ? choisies : null;
@@ -88,7 +96,7 @@ export async function enregistrerDossier(_: Etat, fd: FormData): Promise<Etat> {
     const { error } = await supabase.from("inscriptions").update({ dossier, complete_par: user!.id }).eq("id", t(fd, "id"));
     if (error) return { erreur: error.message };
     revalidatePath(`/gestion/inscriptions/${t(fd, "id")}`);
-    return { ok: "Dossier enregistré. Vous pouvez le soumettre au Directeur Général." };
+    return { ok: "Dossier enregistré. Vous pouvez le soumettre à la Direction." };
   } catch (e) { return echec(e); }
 }
 
@@ -142,7 +150,7 @@ export async function validerInscription(id: string) {
   // Le demandeur obtient l'accès correspondant (apprenant ou parent) si son compte n'avait pas encore de rôle
   if (ins.user_id) {
     const nouveauRole = ins.type_demandeur === "parent" ? "parent" : "apprenant";
-    await supabase.from("profils").update({ role: nouveauRole, statut: "valide" }).eq("id", ins.user_id).eq("role", "visiteur");
+    await supabase.from("profils").update({ role: nouveauRole, statut: "valide" }).eq("id", ins.user_id).in("role", ["visiteur", "candidat"]);
     if (ins.type_demandeur === "parent") {
       await supabase.from("parents_apprenants").insert({ parent_id: ins.user_id, apprenant_id: apprenant.id, lien: d.tuteur_lien });
     }
@@ -336,7 +344,7 @@ export async function enregistrerPublication(_: Etat, fd: FormData): Promise<Eta
     revalidatePath("/informations/actualites");
     return {
       ok: statut === "publiee" ? (champs.public ? "Publié sur le site." : "Annonce interne publiée.")
-        : statut === "soumise" ? "Publication soumise au Directeur Général pour validation." : "Brouillon enregistré.",
+        : statut === "soumise" ? "Publication soumise à la Direction pour validation." : "Brouillon enregistré.",
     };
   } catch (e) { return echec(e); }
 }
@@ -390,7 +398,7 @@ export async function envoyerMessage(_: Etat, fd: FormData): Promise<Etat> {
     const envoyes = await envoyerEmail(
       adresses,
       `${sujet} — ${nomComplet(profil)}, CeFoPExD`,
-      `Message de ${nomComplet(profil)} (${profil?.role === "dg" ? "Directeur Général" : roleLabel(profil?.role ?? "")}) :
+      `Message de ${nomComplet(profil)} (${profil?.fonction || roleLabel(profil?.role ?? "")}) :
 
 ${contenu}
 
@@ -421,7 +429,7 @@ export async function soumettreRapport(_: Etat, fd: FormData): Promise<Etat> {
     }
     await notifierParEmail(["dg"], `Nouveau rapport : ${titre}`, `${nomComplet(profil)} vous a soumis un rapport${t(fd, "periode") ? ` (${t(fd, "periode")})` : ""}${fichiers.length ? ` avec ${fichiers.length} pièce(s) jointe(s)` : ""}.`, "/gestion/rapports");
     revalidatePath("/gestion/rapports");
-    return { ok: "Rapport soumis au Directeur Général." };
+    return { ok: "Rapport soumis à la Direction." };
   } catch (e) { return echec(e); }
 }
 
@@ -440,7 +448,7 @@ export async function traiterRapport(_: Etat, fd: FormData): Promise<Etat> {
    ============================================= */
 export async function traiterDemande(_: Etat, fd: FormData): Promise<Etat> {
   try {
-    const { supabase } = await assertGestion("demandes", ["dg", "secretaire"]);
+    const { supabase } = await assertGestion("demandes", ["dg", "secretaire", "surveillant"]);
     const statut = t(fd, "decision");
     if (!["approuvee", "refusee"].includes(statut)) return { erreur: "Choisissez accepter ou refuser." };
     const { error } = await supabase.from("demandes").update({ statut, reponse: tn(fd, "reponse") }).eq("id", t(fd, "id"));
@@ -471,6 +479,7 @@ export async function creerResponsable(_: Etat, fd: FormData): Promise<Etat> {
     const pseudo = t(fd, "pseudo").toLowerCase();
     if (!email || !nom || !prenom) return { erreur: "Nom, prénom et e-mail obligatoires." };
     if (!ROLES_RESPONSABLES.includes(role as never)) return { erreur: "Rôle invalide." };
+    if (role === "fondateur" && !["fondateur", "principal"].includes(profil.role)) return { erreur: "Seul le Président Fondateur peut créer ce poste." };
     if (pseudo && !/^[a-z0-9._]{3,30}$/.test(pseudo)) return { erreur: "Pseudo : 3 à 30 caractères (lettres, chiffres, point, tiret bas)." };
     const motDePasse = t(fd, "mot_de_passe") || motDePasseProvisoire();
     if (motDePasse.length < 8) return { erreur: "Le mot de passe doit contenir au moins 8 caractères." };
@@ -483,7 +492,7 @@ export async function creerResponsable(_: Etat, fd: FormData): Promise<Etat> {
     // Le profil est créé par la base ; le DG lui attribue rôle et accès (date et heure de validation enregistrées)
     const { error: errProfil } = await supabase.from("profils").update({
       nom, prenom, role, statut: "valide", profil_complet: true, telephone: tn(fd, "telephone"),
-      type_demandeur: "administration", motif: `Compte ${role} créé par le Directeur Général`,
+      type_demandeur: "administration", motif: `Compte ${role} créé par la Direction`,
       ...(pseudo ? { pseudo } : {}),
     }).eq("id", cree.user.id);
     if (errProfil) return { erreur: "Compte créé, mais profil incomplet : " + errProfil.message };
@@ -495,7 +504,7 @@ export async function creerResponsable(_: Etat, fd: FormData): Promise<Etat> {
       lien: "/gestion",
     });
     await envoyerEmail([email], "Votre accès à l'espace de gestion du CeFoPExD",
-      `Bonjour ${prenom},\n\nLe Directeur Général vous a ouvert un accès à l'espace de gestion du CeFoPExD.\n\nIdentifiant : ${email}${pseudo ? ` (ou le pseudo « ${pseudo} »)` : ""}\nMot de passe provisoire : ${motDePasse}\n\nConnectez-vous sur www.cefopexd.com/connexion (rubrique « Personnel du centre »), puis changez votre mot de passe dans « Mon espace ».`,
+      `Bonjour ${prenom},\n\nLa Direction vous a ouvert un accès à l'espace de gestion du CeFoPExD.\n\nIdentifiant : ${email}${pseudo ? ` (ou le pseudo « ${pseudo} »)` : ""}\nMot de passe provisoire : ${motDePasse}\n\nConnectez-vous sur www.cefopexd.com/connexion (rubrique « Personnel du centre »), puis changez votre mot de passe dans « Mon espace ».`,
       "/connexion");
     revalidatePath("/gestion/comptes");
     return { ok: `Compte créé pour ${prenom} ${nom}. Identifiant : ${email}${pseudo ? ` ou ${pseudo}` : ""} — mot de passe provisoire : ${motDePasse} (transmettez-le en main propre si l'e-mail n'est pas configuré).` };
@@ -524,5 +533,105 @@ export async function envoyerEmailTest(_: Etat, _fd: FormData): Promise<Etat> {
     return envoyes
       ? { ok: `E-mail de test envoyé à ${profil.email}. Vérifiez votre boîte de réception (et les spams).` }
       : { erreur: "L'envoi a échoué : vérifiez que le domaine cefopexd.com est « Verified » dans Resend." };
+  } catch (e) { return echec(e); }
+}
+
+/* =============================================
+   MON PROFIL (tout le personnel) : identité, photo, titre, e-mail
+   ============================================= */
+export async function majMonProfil(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    const { supabase, user } = await assertGestion("profil");
+    const photo = lireFichiers(fd.entries(), user!.id).find((f) => f.categorie === "photo" && f.bucket === "photos");
+    const nom = t(fd, "nom");
+    const prenom = t(fd, "prenom");
+    if (!nom || !prenom) return { erreur: "Le nom et le prénom sont obligatoires." };
+    const { error } = await supabase
+      .from("profils")
+      .update({ nom, prenom, fonction: tn(fd, "fonction"), telephone: tn(fd, "telephone"), ...(photo ? { photo_path: photo.chemin } : {}) })
+      .eq("id", user!.id);
+    if (error) return { erreur: error.message };
+    if (photo) await supabase.from("documents").insert(versDocuments([photo]));
+    revalidatePath("/gestion", "layout");
+    return { ok: "Profil mis à jour." };
+  } catch (e) { return echec(e); }
+}
+
+/* Changement d'adresse e-mail : un lien de confirmation est envoyé à la nouvelle adresse */
+export async function changerMonEmail(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    const { supabase, profil } = await assertGestion("profil");
+    const email = t(fd, "email").toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { erreur: "Adresse e-mail invalide." };
+    if (email === profil.email.toLowerCase()) return { erreur: "C'est déjà votre adresse actuelle." };
+    const { error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: "https://www.cefopexd.com/gestion/profil?email=1" });
+    if (error) return { erreur: error.message };
+    return { ok: `Un lien de confirmation a été envoyé à ${email} (et, selon la configuration, à l'ancienne adresse). Cliquez dessus pour terminer le changement.` };
+  } catch (e) { return echec(e); }
+}
+
+/* =============================================
+   ADRESSES DE LA DIRECTION (comptes « Président Fondateur » automatiques)
+   ============================================= */
+export async function majAdressesDirection(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    await assertGestion("comptes", ["dg"]);
+    const client = adminClient();
+    if (!client) return { erreur: MESSAGE_CLE_MANQUANTE };
+    const liste = [...new Set(t(fd, "emails").toLowerCase().split(/[\s,;]+/).filter(Boolean))];
+    const invalide = liste.find((e) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+    if (invalide) return { erreur: `Adresse invalide : ${invalide}` };
+    const { error } = await client.from("parametres").upsert({ cle: "dg_emails", valeur: liste.join(",") });
+    if (error) return { erreur: error.message };
+    // Comptes déjà créés avec l'une de ces adresses : ils deviennent Président Fondateur
+    if (liste.length) {
+      await client.from("profils").update({ role: "fondateur", statut: "valide" }).in("email", liste).neq("role", "principal");
+    }
+    revalidatePath("/gestion/comptes");
+    return { ok: liste.length ? "Adresses de la Direction enregistrées." : "Liste vidée." };
+  } catch (e) { return echec(e); }
+}
+
+/* =============================================
+   PAIEMENTS & REÇUS (comptabilité / caisse)
+   ============================================= */
+const MODES_PAIEMENT = ["especes", "mobile_money", "virement", "cheque", "autre"];
+
+export async function enregistrerPaiement(_: Etat, fd: FormData): Promise<Etat> {
+  let id = "";
+  try {
+    const { supabase } = await assertGestion("paiements", ["dg", "admin", "comptable"]);
+    const montant = Math.round(Number(t(fd, "montant").replace(/[\s.]/g, "").replace(",", ".")));
+    if (!t(fd, "apprenant_id")) return { erreur: "Choisissez l'apprenant." };
+    if (!Number.isFinite(montant) || montant <= 0) return { erreur: "Montant invalide." };
+    if (!t(fd, "motif")) return { erreur: "Indiquez le motif du paiement." };
+    const mode = MODES_PAIEMENT.includes(t(fd, "mode")) ? t(fd, "mode") : "especes";
+    const { data, error } = await supabase.from("paiements").insert({
+      apprenant_id: t(fd, "apprenant_id"),
+      montant,
+      motif: t(fd, "motif"),
+      mode,
+      reference: tn(fd, "reference"),
+      date_paiement: tn(fd, "date_paiement") ?? new Date().toISOString().slice(0, 10),
+      annee_academique: tn(fd, "annee_academique"),
+      observations: tn(fd, "observations"),
+    }).select("id").single();
+    if (error || !data) return { erreur: error?.message ?? "Enregistrement impossible." };
+    id = data.id;
+    revalidatePath("/gestion/paiements");
+  } catch (e) { return echec(e); }
+  redirect(`/gestion/paiements/${id}/recu?nouveau=1`);
+}
+
+export async function annulerPaiement(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    const { supabase } = await assertGestion("paiements", ["dg", "admin", "comptable"]);
+    const motif = t(fd, "motif_annulation");
+    if (!motif) return { erreur: "Indiquez le motif de l'annulation." };
+    const { error } = await supabase.from("paiements").update({ annule: true, motif_annulation: motif }).eq("id", t(fd, "id"));
+    if (error) return { erreur: error.message };
+    revalidatePath("/gestion/paiements");
+    revalidatePath(`/gestion/paiements/${t(fd, "id")}/recu`);
+    return { ok: "Reçu annulé (il reste visible dans l'historique)." };
   } catch (e) { return echec(e); }
 }

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ROLES_PERSONNEL, sectionsAutorisees, type Role, type SectionKey } from "@/lib/roles";
+import { ROLES_PERSONNEL, droitsDuRole, sectionsAutorisees, type Role, type SectionKey } from "@/lib/roles";
 
 /* =============================================
    SESSION : utilisateur connecté + son profil (table profils)
@@ -19,6 +19,7 @@ export type ProfilDb = {
   type_demandeur: string | null;
   motif: string | null;
   role: Role;
+  fonction?: string | null;
   sections: string[] | null;
   statut: "en_attente" | "valide" | "refuse";
   profil_complet: boolean;
@@ -32,9 +33,11 @@ export async function getSession() {
   return { supabase, user, profil };
 }
 
-/* Rôle réellement actif (un compte non validé n'a aucun droit) */
+/* Droits actifs (un compte non validé n'a aucun droit).
+   Le Président Fondateur et l'accès principal ont les droits de la Direction (« dg ») ;
+   pour afficher le vrai poste, utiliser profil.role. */
 export const roleActif = (profil: ProfilDb | null): Role | null =>
-  profil && profil.statut === "valide" ? profil.role : null;
+  profil && profil.statut === "valide" ? droitsDuRole(profil.role) : null;
 
 /* Page réservée aux personnes connectées dont le profil est complété */
 export async function requireProfil(next: string) {

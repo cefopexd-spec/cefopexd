@@ -271,7 +271,7 @@ export default async function MonEspacePage() {
             <strong className="profile-name">{nomComplet(profil)}</strong>
             <span className="profile-mail">@{profil.pseudo}</span>
             <span className="profile-mail"><Mail size={14} /> {profil.email}</span>
-            <span className="profile-badge">{role ? roleLabel(role) : "En attente de validation"}</span>
+            <span className="profile-badge">{role ? profil.fonction || roleLabel(profil.role) : profil.role === "candidat" ? roleLabel("candidat") : "En attente de validation"}</span>
             {role && (
               <Link href="/messagerie" className="btn-hero-primary" style={{ width: "100%" }}>
                 <MessagesSquare size={16} /> Messagerie

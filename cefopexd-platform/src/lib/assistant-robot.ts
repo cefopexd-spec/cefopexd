@@ -94,7 +94,7 @@ const INTENTIONS: { motif: RegExp; reponse: string }[] = [
   },
   {
     motif: /(directeur|dg|d almeida|blaise|fondateur|responsable du centre)/,
-    reponse: `Le Directeur Général du CeFoPExD est ${DIRECTEUR.nom}.\n\n« ${DIRECTEUR.extrait} »\n\nLire son message : [Mot du DG](/a-propos/mot-du-dg)`,
+    reponse: `Le Président Fondateur du CeFoPExD est ${DIRECTEUR.nom}.\n\n« ${DIRECTEUR.extrait} »\n\nLire son message : [Mot du Président Fondateur](/a-propos/mot-du-dg)`,
   },
   {
     motif: /(prix|frais|cout|tarif|combien coute|payer|paiement|scolarite)/,

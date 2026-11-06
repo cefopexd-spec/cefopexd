@@ -35,13 +35,13 @@ export default async function RapportsPage() {
         <p>
           {role === "dg"
             ? "Tous les rapports soumis par vos collaborateurs, avec leurs pièces jointes à consulter ou télécharger."
-            : "Rédigez votre rapport (par exemple chaque semaine) et joignez vos fichiers : il est transmis directement au Directeur Général et ne peut plus être modifié ensuite."}
+            : "Rédigez votre rapport (par exemple chaque semaine) et joignez vos fichiers : il est transmis directement à la Direction et ne peut plus être modifié ensuite."}
         </p>
       </div>
 
       <details className="g-card g-details" open={role !== "dg"}>
         <summary>Rédiger un rapport</summary>
-        <ActionForm action={soumettreRapport} submitLabel="Soumettre au DG" className="g-form" submitClassName="btn-hero-primary btn-sm">
+        <ActionForm action={soumettreRapport} submitLabel="Soumettre à la Direction" className="g-form" submitClassName="btn-hero-primary btn-sm">
           <div className="form-grid">
             <Field label="Titre" name="titre" required placeholder="Ex. : Rapport hebdomadaire du secrétariat" />
             <Field label="Période" name="periode" placeholder="Ex. : semaine du 14 au 18 octobre" />
@@ -67,8 +67,8 @@ export default async function RapportsPage() {
             </summary>
             <p className="g-rapport">{r.contenu}</p>
             {r.documents.length > 0 && <ListeDocuments documents={r.documents} />}
-            {r.lu_le && <p className="g-validation">Lu par le Directeur Général le {dateHeure(r.lu_le)}</p>}
-            {r.commentaire_dg && <p className="g-motif"><strong>Commentaire du DG :</strong> {r.commentaire_dg}</p>}
+            {r.lu_le && <p className="g-validation">Lu par la Direction le {dateHeure(r.lu_le)}</p>}
+            {r.commentaire_dg && <p className="g-motif"><strong>Commentaire de la Direction :</strong> {r.commentaire_dg}</p>}
             {role === "dg" && (
               <ActionForm action={traiterRapport} submitLabel="Enregistrer" className="g-form" submitClassName="btn-hero-ghost btn-sm">
                 <input type="hidden" name="id" value={r.id} />

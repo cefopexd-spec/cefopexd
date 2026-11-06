@@ -68,7 +68,7 @@ export default async function CompleterProfilPage({ searchParams }: Props) {
             <ol className="steps">
               {[
                 ["Votre compte est créé", `Un pseudo vous est attribué automatiquement (${profil?.pseudo ?? "à partir de votre e-mail"}). Vous pourrez le changer dans « Mon espace ».`],
-                ["La direction est prévenue", "Le Directeur Général examine votre demande et vous attribue l'accès adapté."],
+                ["La direction est prévenue", "La Direction examine votre demande et vous attribue l'accès adapté."],
                 ["Vous accédez à votre espace", "Pré-inscription, suivi de scolarité, messages… selon votre profil."],
               ].map(([t, d], i) => (
                 <li key={t}>

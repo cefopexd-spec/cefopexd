@@ -50,7 +50,7 @@ export function buildKnowledge(): string {
 
   parts.push(`## Informations générales
 Nom : CeFoPExD — Centre de Formation Professionnelle d'Excellence de Dévikinmé.
-Directeur Général : ${DIRECTEUR.nom}.
+Président Fondateur : ${DIRECTEUR.nom}.
 Localisation : ${CONTACT.localisation}. Adresse : ${CONTACT.adresse}.
 Téléphones : ${CONTACT.telephones.join(" / ")}.
 E-mail : ${CONTACT.email}.

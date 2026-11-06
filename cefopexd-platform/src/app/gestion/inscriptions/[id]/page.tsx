@@ -57,7 +57,7 @@ export default async function InscriptionDetail({ params, searchParams }: Props)
 
       {/* Étapes */}
       <ol className="g-steps">
-        {["Reçue", "Secrétariat", "Administration", "Soumise au DG", ins.statut === "refuse" ? "Refusée" : "Validée"].map((label, i) => (
+        {["Reçue", "Secrétariat", "Administration", "Soumise à la Direction", ins.statut === "refuse" ? "Refusée" : "Validée"].map((label, i) => (
           <li key={label} className={s.etape > i + 1 || (s.etape === 5 && i === 4) ? "is-done" : s.etape === i + 1 ? "is-current" : ""}>
             <span>{i + 1}</span>{label}
           </li>
@@ -104,10 +104,10 @@ export default async function InscriptionDetail({ params, searchParams }: Props)
               <form action={transmettreAdmin.bind(null, ins.id)}><button className="btn-hero-ghost btn-sm">Transmettre à l&#39;administration</button></form>
             )}
             {ins.statut === "transmis_admin" && peutAdmin && dossierRempli && (
-              <form action={soumettreDG.bind(null, ins.id)}><button className="btn-hero-primary btn-sm">Soumettre le dossier au DG</button></form>
+              <form action={soumettreDG.bind(null, ins.id)}><button className="btn-hero-primary btn-sm">Soumettre le dossier à la Direction</button></form>
             )}
             {ins.statut === "transmis_admin" && peutAdmin && !dossierRempli && (
-              <p className="field-hint">Remplissez la fiche d&#39;inscription définitive ci-dessous, puis soumettez-la au DG.</p>
+              <p className="field-hint">Remplissez la fiche d&#39;inscription définitive ci-dessous, puis soumettez-la à la Direction.</p>
             )}
             {ins.statut === "dossier_complet" && role === "dg" && (
               <form action={validerInscription.bind(null, ins.id)}><button className="btn-hero-primary btn-sm">Valider l&#39;inscription</button></form>

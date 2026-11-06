@@ -21,12 +21,12 @@ type Pub = {
 const CATEGORIES = [["actualite", "Actualité"], ["annonce", "Annonce"], ["evenement", "Événement"], ["formation", "Formation / session"]];
 const CIBLES = [["tous", "Tout le monde"], ["apprenants", "Apprenants"], ["parents", "Parents"], ["professeurs", "Professeurs"], ["personnel", "Personnel"]];
 const STATUTS: Record<string, [string, string]> = {
-  brouillon: ["Brouillon", "is-pending"], soumise: ["En attente du DG", "is-progress"], publiee: ["Publiée", "is-ok"], refusee: ["Refusée", "is-ko"],
+  brouillon: ["Brouillon", "is-pending"], soumise: ["En attente de la Direction", "is-progress"], publiee: ["Publiée", "is-ok"], refusee: ["Refusée", "is-ko"],
 };
 
 /* =============================================
    PUBLICATIONS — annonces, événements, formations
-   Le personnel prépare et soumet ; rien n'est publié sans l'accord du DG.
+   Le personnel prépare et soumet ; rien n'est publié sans l'accord de la Direction.
    ============================================= */
 export default async function PublicationsPage({ searchParams }: Props) {
   const { statut = "" } = await searchParams;
@@ -47,12 +47,12 @@ export default async function PublicationsPage({ searchParams }: Props) {
         <p>
           {estDG
             ? "Validez les annonces, événements et formations préparés par vos équipes : rien n'apparaît sur le site ou dans les espaces sans votre accord."
-            : "Préparez une annonce, un événement ou une formation, puis soumettez-la : elle sera publiée après validation du Directeur Général."}
+            : "Préparez une annonce, un événement ou une formation, puis soumettez-la : elle sera publiée après validation de la Direction."}
         </p>
       </div>
 
       <div className="g-tabs">
-        {[["", "Toutes"], ["soumise", "En attente du DG"], ["publiee", "Publiées"], ["brouillon", "Brouillons"], ["refusee", "Refusées"]].map(([v, l]) => (
+        {[["", "Toutes"], ["soumise", "En attente de la Direction"], ["publiee", "Publiées"], ["brouillon", "Brouillons"], ["refusee", "Refusées"]].map(([v, l]) => (
           <Link key={v} href={`/gestion/publications?statut=${v}`} className={statut === v ? "is-active" : ""}>{l}</Link>
         ))}
       </div>
@@ -118,7 +118,7 @@ export default async function PublicationsPage({ searchParams }: Props) {
 
 function PubForm({ p, estDG }: { p?: Pub; estDG: boolean }) {
   return (
-    <ActionForm action={enregistrerPublication} submitLabel={estDG ? "Publier maintenant" : "Soumettre au DG"} className="g-form" submitClassName="btn-hero-primary btn-sm">
+    <ActionForm action={enregistrerPublication} submitLabel={estDG ? "Publier maintenant" : "Soumettre à la Direction"} className="g-form" submitClassName="btn-hero-primary btn-sm">
       {p && <input type="hidden" name="id" value={p.id} />}
       <input type="hidden" name="intention" value={estDG ? "publier" : "soumettre"} />
       <div className="form-grid">
@@ -139,7 +139,7 @@ function PubForm({ p, estDG }: { p?: Pub; estDG: boolean }) {
       </div>
       <p className="field-hint">
         {estDG ? "Vous publiez directement." : "Pour enregistrer sans envoyer, cochez « Brouillon » :"}{" "}
-        {!estDG && <label><input type="checkbox" name="intention" value="brouillon" /> Brouillon (non transmis au DG)</label>}
+        {!estDG && <label><input type="checkbox" name="intention" value="brouillon" /> Brouillon (non transmis à la Direction)</label>}
       </p>
     </ActionForm>
   );

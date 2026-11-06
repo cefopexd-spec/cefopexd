@@ -142,8 +142,8 @@ export const TYPES_BLOCS: Record<string, { l: string; aide: string; champs: Cham
     nouveau: { type: "pending", text: "Ces informations seront publiées très prochainement." },
   },
   director: {
-    l: "Message du Directeur Général",
-    aide: "Affiche le message complet du DG (modifiable dans l'onglet « Directeur Général »).",
+    l: "Message du Président Fondateur",
+    aide: "Affiche le message complet du Président Fondateur (modifiable dans l'onglet « Président Fondateur »).",
     champs: [],
     nouveau: { type: "director" },
   },
@@ -330,8 +330,8 @@ export const ONGLETS: Onglet[] = [
         ],
       },
       {
-        t: "groupe", k: "directeur", l: "Section « Mot du Directeur »",
-        aide: "Le nom, la photo et le message se modifient dans l'onglet « Directeur Général ».",
+        t: "groupe", k: "directeur", l: "Section « Mot du Président Fondateur »",
+        aide: "Le nom, la photo et le message se modifient dans l'onglet « Président Fondateur ».",
         champs: [{ t: "oui", k: "visible", l: "Afficher cette section" }, { t: "texte", k: "surtitre", l: "Petit titre" }, { t: "texte", k: "titre", l: "Titre" }, { t: "lien", k: "bouton", l: "Bouton" }],
       },
       {
@@ -413,8 +413,8 @@ export const ONGLETS: Onglet[] = [
     ],
   },
   {
-    cle: "directeur", l: "Directeur Général", icone: "user-round",
-    aide: "Nom, fonction, photo et message du Directeur Général (accueil et page « Mot du DG »).",
+    cle: "directeur", l: "Président Fondateur", icone: "user-round",
+    aide: "Nom, titre, photo et message du Président Fondateur (accueil et page « Mot du Président Fondateur »).",
     champs: [
       { t: "texte", k: "nom", l: "Nom" },
       { t: "texte", k: "fonction", l: "Fonction" },
@@ -586,7 +586,7 @@ export const SECTIONS_ACCUEIL: Record<string, string> = {
   atouts: "Bandeau des atouts",
   filieres: "Nos filières",
   apropos: "À propos + Actualités",
-  directeur: "Mot du Directeur",
+  directeur: "Mot du Président Fondateur",
   pourquoi: "Pourquoi nous choisir",
   appel: "Appel final à l'inscription",
 };
