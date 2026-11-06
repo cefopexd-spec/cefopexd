@@ -117,7 +117,7 @@ const FILIERES: Record<string, Page & { color: string; duree?: string; skills?: 
   mecatronique: {
     title: "Mécatronique",
     color: COLORS.red,
-    image: "https://images.unsplash.com/photo-1565372195458-9de0b320ef04?w=1200&q=80",
+    image: "/images/filiere-mecatronique.jpg",
     intro: "Au croisement de la mécanique, de l'électronique et de l'informatique, la mécatronique forme des techniciens polyvalents de l'industrie.",
     duree: "2 ans",
     skills: ["Mécanique et lecture de plans", "Électronique et électrotechnique", "Automatismes et automates programmables", "Robotique de base", "Maintenance industrielle"],

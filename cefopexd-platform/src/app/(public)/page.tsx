@@ -81,7 +81,7 @@ const FILIERES = [
     text: "var(--accent-text)",
     title: "Mécatronique",
     desc: "Maîtrisez la mécanique, l'électronique, l'automatisme et la maintenance des équipements.",
-    image: "https://images.unsplash.com/photo-1565372195458-9de0b320ef04?w=600&q=80",
+    image: "/images/filiere-mecatronique.jpg",
   },
   {
     slug: "agro-alimentaire",
