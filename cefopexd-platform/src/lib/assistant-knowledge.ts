@@ -29,6 +29,11 @@ function blockToText(block: Block): string {
       return "[Information pas encore publiée sur le site : orienter vers le contact.]";
     case "director":
       return `Message de ${DIRECTEUR.nom}, ${DIRECTEUR.fonction} :\n${DIRECTEUR.message.join("\n")}`;
+    case "image":
+      return block.legende ?? "";
+    case "video":
+      return block.titre ? `Vidéo : ${block.titre}` : "";
+    case "boutons":
     case "cta":
     case "gallery":
       return "";

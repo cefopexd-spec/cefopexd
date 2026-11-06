@@ -206,6 +206,20 @@ export async function majApprenant(_: Etat, fd: FormData): Promise<Etat> {
   } catch (e) { return echec(e); }
 }
 
+/* Photo de la carte d'étudiant (fichier déposé dans le dossier de la personne connectée) */
+export async function majPhotoApprenant(_: Etat, fd: FormData): Promise<Etat> {
+  try {
+    const { supabase, user } = await assertGestion("apprenants", ["dg", "admin", "secretaire", "webmaster"]);
+    const photo = lireFichiers(fd.entries(), user!.id).find((f) => f.categorie === "photo" && f.bucket === "photos");
+    if (!photo) return { erreur: "Déposez d'abord une photo." };
+    const id = t(fd, "id");
+    const { error } = await supabase.from("apprenants").update({ photo_path: photo.chemin }).eq("id", id);
+    if (error) return { erreur: error.message };
+    revalidatePath(`/gestion/apprenants/${id}`);
+    return { ok: "Photo enregistrée : elle apparaît sur la carte d'étudiant." };
+  } catch (e) { return echec(e); }
+}
+
 /* =============================================
    PROFESSEURS ET MATIÈRES
    ============================================= */

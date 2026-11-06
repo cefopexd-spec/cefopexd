@@ -5,7 +5,7 @@ export type ApprenantDb = {
   lieu_naissance: string | null; nationalite: string | null; telephone: string | null; email: string | null;
   adresse: string | null; filiere_id: string | null; niveau_etude: string | null; annee_academique: string | null;
   tuteur_nom: string | null; tuteur_lien: string | null; tuteur_telephone: string | null; tuteur_email: string | null;
-  statut: string; created_at: string;
+  statut: string; created_at: string; photo_path?: string | null;
 };
 
 /* Champs communs à la création et à la modification d'un apprenant */

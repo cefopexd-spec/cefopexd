@@ -34,6 +34,9 @@ export default async function ApprenantsPage({ searchParams }: Props) {
       <div className="g-page-head">
         <h1>Apprenants</h1>
         <p>Tous les apprenants inscrits, avec leur matricule attribué automatiquement.</p>
+        <div className="g-actions">
+          <Link href="/gestion/apprenants/cartes" className="btn-hero-ghost btn-sm">Imprimer les cartes d&#39;étudiant</Link>
+        </div>
       </div>
 
       <form className="g-search">

@@ -6,85 +6,35 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SocialIcons from "@/components/SocialIcons";
 import { createClient } from "@/lib/supabase/client";
-import {
-  Menu, X, ChevronDown, Search, LogIn, LogOut,
-  GraduationCap, Building2, BookOpen, Calendar, Info, Phone,
-  Home, Newspaper, Mail, UserRound
-} from "lucide-react";
+import { Menu, X, ChevronDown, Search, LogIn, LogOut, Phone, Mail, UserRound } from "lucide-react";
+import { Icone } from "@/lib/site/icones";
+import { nonOptimise } from "@/lib/site/images";
+import type { SiteConfig } from "@/lib/site/types";
 
 /* =============================================
-   DONNÉES DU MENU DE NAVIGATION
+   DONNÉES DE L'EN-TÊTE (modifiables dans le Studio du site)
    ============================================= */
-const NAV_ITEMS = [
-  { label: "Accueil", href: "/", icon: Home },
-  {
-    label: "À propos",
-    href: "/a-propos",
-    icon: Info,
-    children: [
-      { label: "Présentation du centre", href: "/a-propos/presentation", icon: Building2 },
-      { label: "Mot du Directeur Général", href: "/a-propos/mot-du-dg", icon: GraduationCap },
-      { label: "Vision, mission et valeurs", href: "/a-propos/vision-mission", icon: BookOpen },
-      { label: "Nos buts et objectifs", href: "/a-propos/objectifs", icon: BookOpen },
-      { label: "Équipe administrative", href: "/a-propos/equipe", icon: Building2 },
-      { label: "Infrastructures", href: "/a-propos/infrastructures", icon: Building2 },
-      { label: "Partenaires", href: "/a-propos/partenaires", icon: Building2 },
-    ],
-  },
-  {
-    label: "Nos filières",
-    href: "/filieres",
-    icon: BookOpen,
-    children: [
-      { label: "Informatique appliquée", href: "/filieres/informatique", icon: BookOpen },
-      { label: "Mécatronique", href: "/filieres/mecatronique", icon: BookOpen },
-      { label: "Agro-alimentaire", href: "/filieres/agro-alimentaire", icon: BookOpen },
-      { label: "Énergie renouvelable", href: "/filieres/energie-renouvelable", icon: BookOpen },
-      { label: "Langue allemande", href: "/filieres/langue-allemande", icon: BookOpen },
-      { label: "Formations courtes", href: "/filieres/formations-courtes", icon: BookOpen },
-    ],
-  },
-  {
-    label: "Formations",
-    href: "/formations",
-    icon: Calendar,
-    children: [
-      { label: "Calendrier académique", href: "/formations/calendrier", icon: Calendar },
-      { label: "Sessions à venir", href: "/formations/sessions", icon: Calendar },
-      { label: "Séminaires et ateliers", href: "/formations/seminaires", icon: Calendar },
-      { label: "Formations sur mesure", href: "/formations/sur-mesure", icon: Calendar },
-    ],
-  },
-  {
-    label: "Inscription",
-    href: "/inscription",
-    icon: GraduationCap,
-    children: [
-      { label: "Comment s'inscrire", href: "/inscription/procedure", icon: GraduationCap },
-      { label: "Pièces à fournir", href: "/inscription/pieces", icon: GraduationCap },
-      { label: "Frais de formation", href: "/inscription/frais", icon: GraduationCap },
-      { label: "Pré-inscription en ligne", href: "/inscription/formulaire", icon: GraduationCap },
-    ],
-  },
-  {
-    label: "S'informer",
-    href: "/informations",
-    icon: Newspaper,
-    children: [
-      { label: "Actualités & annonces", href: "/informations/actualites", icon: Info },
-      { label: "Événements", href: "/informations/evenements", icon: Calendar },
-      { label: "Publications", href: "/informations/publications", icon: BookOpen },
-      { label: "Galerie photos/vidéos", href: "/informations/galerie", icon: Building2 },
-      { label: "FAQ", href: "/informations/faq", icon: Info },
-    ],
-  },
-  { label: "Contact", href: "/contact", icon: Phone },
-];
+export type EnteteData = {
+  logo: string;
+  nom: string;
+  entete: SiteConfig["entete"];
+  telephones: string[];
+  email: string;
+  reseaux: SiteConfig["reseaux"];
+};
 
 /* =============================================
    COMPOSANT HEADER
    ============================================= */
-export default function Header() {
+export default function Header({ site }: { site: EnteteData }) {
+  const { entete } = site;
+  const NAV_ITEMS = entete.menu
+    .filter((m) => m.visible !== false)
+    .map((m) => {
+      const enfants = (m.enfants ?? []).filter((c) => c.visible !== false);
+      return { ...m, children: enfants.length ? enfants : undefined };
+    });
+  const tel = site.telephones[0] ?? "";
   const [scrolled, setScrolled]         = useState(false);
   const [mobileOpen, setMobileOpen]     = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -162,10 +112,10 @@ export default function Header() {
           <div className="header-row">
 
             {/* ---- Logo officiel ---- */}
-            <Link href="/" className="header-logo" aria-label="CeFoPExD — Accueil">
+            <Link href="/" className="header-logo" aria-label={`${site.nom} — Accueil`}>
               <Image
-                src="/logo-cefopexd.png"
-                alt="Logo CeFoPExD"
+                src={site.logo} unoptimized={nonOptimise(site.logo)}
+                alt={`Logo ${site.nom}`}
                 fill
                 sizes="168px"
                 style={{ objectFit: "contain", objectPosition: "left center" }}
@@ -174,28 +124,28 @@ export default function Header() {
             </Link>
 
             {/* ---- Contacts rapides (grand écran) ---- */}
-            <div className="header-contact">
-              <a href="tel:+22870881306">
+            {entete.afficherContacts && <div className="header-contact">
+              {tel && <a href={`tel:${tel.replace(/\s/g, "")}`}>
                 <span className="header-contact-ico" style={{ background: "rgba(34,192,3,0.12)", color: "var(--secondary-text)" }}>
                   <Phone size={15} />
                 </span>
-                <span><small>Appelez-nous</small>+228 70 88 13 06</span>
-              </a>
-              <a href="mailto:info@cefopexd.com">
+                <span><small>{entete.texteAppel}</small>{tel}</span>
+              </a>}
+              {site.email && <a href={`mailto:${site.email}`}>
                 <span className="header-contact-ico" style={{ background: "rgba(248,35,3,0.1)", color: "var(--accent-text)" }}>
                   <Mail size={15} />
                 </span>
-                <span><small>Écrivez-nous</small>info@cefopexd.com</span>
-              </a>
-              <div className="header-social">
-                <SocialIcons variant="light" size={14} />
-              </div>
-            </div>
+                <span><small>{entete.texteEcrire}</small>{site.email}</span>
+              </a>}
+              {entete.afficherReseaux && <div className="header-social">
+                <SocialIcons reseaux={site.reseaux} variant="light" size={14} />
+              </div>}
+            </div>}
 
             {/* ---- Actions droite ---- */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0, marginLeft: "auto" }}>
               {/* Recherche */}
-              {searchOpen ? (
+              {!entete.afficherRecherche ? null : searchOpen ? (
                 <div style={{
                   display: "flex",
                   alignItems: "center",
@@ -251,14 +201,16 @@ export default function Header() {
               ) : (
                 <Link href="/connexion" className="header-login" aria-label="Se connecter">
                   <LogIn size={15} />
-                  <span className="login-text">Se connecter</span>
+                  <span className="login-text">{entete.texteConnexion}</span>
                 </Link>
               )}
 
               {/* Bouton S'inscrire */}
-              <Link href="/inscription/formulaire" className="header-cta">
-                S&#39;inscrire
-              </Link>
+              {entete.boutonCta?.label && (
+                <Link href={entete.boutonCta.href || "/"} className="header-cta">
+                  {entete.boutonCta.label}
+                </Link>
+              )}
 
               {/* Burger mobile */}
               <button
@@ -294,7 +246,7 @@ export default function Header() {
                         className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
                         aria-expanded={activeDropdown === item.label}
                       >
-                        <item.icon size={15} className="nav-ico" />
+                        <Icone nom={item.icone} size={15} className="nav-ico" />
                         {item.label}
                         <ChevronDown
                           size={14}
@@ -314,7 +266,7 @@ export default function Header() {
                               href={child.href}
                               className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
                             >
-                              <span className="dropdown-icon"><child.icon size={16} /></span>
+                              <span className="dropdown-icon"><Icone nom={child.icone} size={16} /></span>
                               {child.label}
                             </Link>
                           ))}
@@ -326,7 +278,7 @@ export default function Header() {
                       href={item.href}
                       className={`nav-link ${isActive(item.href) ? "is-active" : ""}`}
                     >
-                      <item.icon size={15} className="nav-ico" />
+                      <Icone nom={item.icone} size={15} className="nav-ico" />
                       {item.label}
                     </Link>
                   )}
@@ -342,7 +294,7 @@ export default function Header() {
                   href={item.href}
                   className={`nav-strip-link ${isActive(item.href) ? "is-active" : ""}`}
                 >
-                  <item.icon size={15} />
+                  <Icone nom={item.icone} size={15} />
                   {item.label}
                 </Link>
               ))}
@@ -397,7 +349,7 @@ export default function Header() {
           borderBottom: "1px solid var(--border)",
         }}>
           <Link href="/" style={{ position: "relative", width: "150px", height: "42px" }} onClick={() => setMobileOpen(false)}>
-            <Image src="/logo-cefopexd.png" alt="Logo CeFoPExD" fill sizes="150px" style={{ objectFit: "contain", objectPosition: "left center" }} />
+            <Image src={site.logo} unoptimized={nonOptimise(site.logo)} alt={`Logo ${site.nom}`} fill sizes="150px" style={{ objectFit: "contain", objectPosition: "left center" }} />
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
@@ -442,7 +394,7 @@ export default function Header() {
                       aria-expanded={mobileExpanded === item.label}
                     >
                       <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <item.icon size={17} />
+                        <Icone nom={item.icone} size={17} />
                         {item.label}
                       </span>
                       <ChevronDown
@@ -462,7 +414,7 @@ export default function Header() {
                             className={`dropdown-link ${isActive(child.href) ? "is-active" : ""}`}
                             onClick={() => setMobileOpen(false)}
                           >
-                            <span className="dropdown-icon"><child.icon size={16} /></span>
+                            <span className="dropdown-icon"><Icone nom={child.icone} size={16} /></span>
                             {child.label}
                           </Link>
                         ))}
@@ -471,7 +423,7 @@ export default function Header() {
                   </>
                 ) : (
                   <Link href={item.href} style={{ ...rowStyle, justifyContent: "flex-start" }} onClick={() => setMobileOpen(false)}>
-                    <item.icon size={17} />
+                    <Icone nom={item.icone} size={17} />
                     {item.label}
                   </Link>
                 )}
@@ -497,20 +449,21 @@ export default function Header() {
               </button>
             </form>
           )}
-          <Link
-            href="/inscription/formulaire"
-            className="header-cta"
-            style={{ justifyContent: "center", padding: "12px" }}
-            onClick={() => setMobileOpen(false)}
-          >
-            S&#39;inscrire maintenant
-          </Link>
+          {entete.boutonCta?.label && (
+            <Link
+              href={entete.boutonCta.href || "/"}
+              className="header-cta"
+              style={{ justifyContent: "center", padding: "12px" }}
+              onClick={() => setMobileOpen(false)}
+            >
+              {entete.boutonCta.label}
+            </Link>
+          )}
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <SocialIcons variant="light" size={15} />
+            <SocialIcons reseaux={site.reseaux} variant="light" size={15} />
           </div>
           <div style={{ textAlign: "center", color: "var(--muted)", fontSize: "0.78rem" }}>
-            <div>📞 +228 70 88 13 06</div>
-            <div>📞 +228 79 95 20 20</div>
+            {site.telephones.map((t) => <div key={t}>📞 {t}</div>)}
           </div>
         </div>
       </div>

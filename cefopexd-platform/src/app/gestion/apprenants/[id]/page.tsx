@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Printer } from "lucide-react";
+import { IdCard, Printer } from "lucide-react";
+import FileUpload from "@/components/forms/FileUpload";
+import { urlsPhotos } from "@/lib/fichiers";
 import ActionForm from "@/components/forms/ActionForm";
 import { requireGestion, nomComplet } from "@/lib/session";
 import ApprenantChamps, { type ApprenantDb } from "../ApprenantForm";
-import { majApprenant } from "../../actions";
+import { majApprenant, majPhotoApprenant } from "../../actions";
 
 export const metadata: Metadata = { title: "Fiche apprenant" };
 
@@ -29,6 +31,8 @@ export default async function ApprenantDetail({ params }: Props) {
   const totaux = { absent: 0, retard: 0, excuse: 0 } as Record<string, number>;
   for (const p of presences ?? []) if (p.statut in totaux) totaux[p.statut]++;
   const peutModifier = ["dg", "admin", "secretaire"].includes(role);
+  const peutPhoto = ["dg", "admin", "secretaire", "webmaster"].includes(role);
+  const photo = a.photo_path ? (await urlsPhotos(supabase, [a.photo_path])).get(a.photo_path) : null;
 
   return (
     <>
@@ -38,6 +42,7 @@ export default async function ApprenantDetail({ params }: Props) {
         <p>Matricule <strong>{a.matricule}</strong> · {a.filieres?.nom ?? "Filière non définie"} · <span className="statut is-ok">{a.statut}</span></p>
         <div className="g-actions">
           <Link href={`/gestion/apprenants/${a.id}/attestation`} target="_blank" className="btn-hero-ghost btn-sm"><Printer size={15} /> Attestation d&#39;inscription (PDF)</Link>
+          <Link href={`/gestion/apprenants/${a.id}/carte`} target="_blank" className="btn-hero-ghost btn-sm"><IdCard size={15} /> Carte d&#39;étudiant (PDF)</Link>
         </div>
       </div>
 
@@ -76,6 +81,22 @@ export default async function ApprenantDetail({ params }: Props) {
           )}
         </div>
       </div>
+
+      {peutPhoto && (
+        <div className="g-card">
+          <div className="g-card-head"><h2>Photo de la carte d&#39;étudiant</h2></div>
+          <div className="g-photo-carte">
+            <div className="g-photo-actuelle">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {photo ? <img src={photo} alt={`Photo de ${a.prenom} ${a.nom}`} /> : <span>Aucune photo</span>}
+            </div>
+            <ActionForm action={majPhotoApprenant} submitLabel="Enregistrer la photo" className="g-form" submitClassName="btn-hero-primary btn-sm">
+              <input type="hidden" name="id" value={a.id} />
+              <FileUpload label="Nouvelle photo (format passeport)" categorie="photo" bucket="photos" required hint="Visage de face, fond clair. JPG ou PNG, 5 Mo maximum." />
+            </ActionForm>
+          </div>
+        </div>
+      )}
 
       {peutModifier && (
         <div className="g-card">

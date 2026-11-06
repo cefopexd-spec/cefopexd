@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import "./studio.css";
 import AppInstall from "@/components/AppInstall";
 
 /* Polices Google : Plus Jakarta Sans (titres) + Inter (texte) */

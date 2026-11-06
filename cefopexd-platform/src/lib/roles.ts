@@ -2,7 +2,7 @@
    RÔLES, TYPES DE DEMANDEURS ET RUBRIQUES DE GESTION
    ============================================= */
 
-export type Role = "visiteur" | "apprenant" | "parent" | "professeur" | "secretaire" | "pedagogique" | "admin" | "dg";
+export type Role = "visiteur" | "apprenant" | "parent" | "professeur" | "secretaire" | "pedagogique" | "admin" | "webmaster" | "dg";
 
 export const ROLES: { value: Role; label: string }[] = [
   { value: "visiteur", label: "Visiteur (sans accès particulier)" },
@@ -12,12 +12,16 @@ export const ROLES: { value: Role; label: string }[] = [
   { value: "secretaire", label: "Secrétariat" },
   { value: "pedagogique", label: "Gestionnaire pédagogique" },
   { value: "admin", label: "Administration" },
+  { value: "webmaster", label: "Gestionnaire du site (Studio)" },
   { value: "dg", label: "Directeur Général" },
 ];
 export const roleLabel = (r: string) => ROLES.find((x) => x.value === r)?.label ?? r;
 
 /* Responsables dont le DG crée directement le compte (connexion par e-mail ou pseudo + mot de passe) */
-export const ROLES_RESPONSABLES: Role[] = ["admin", "secretaire", "pedagogique", "professeur"];
+export const ROLES_RESPONSABLES: Role[] = ["admin", "secretaire", "pedagogique", "professeur", "webmaster"];
+
+/* Rôles qui construisent et publient le site (Studio CeFoPExD) */
+export const ROLES_STUDIO: Role[] = ["dg", "webmaster"];
 
 export const TYPES_DEMANDEUR = [
   { value: "etudiant", label: "Étudiant(e) / futur(e) apprenant(e)" },
@@ -55,18 +59,19 @@ export const DOCUMENTS_PAR_TYPE: Record<string, { categorie: string; requis?: bo
 export const DOCUMENTS_INSCRIPTION = ["acte_naissance", "diplome", "bulletin", "piece_identite"];
 
 /* Personnel ayant accès à l'espace de gestion */
-export const ROLES_PERSONNEL: Role[] = ["dg", "admin", "secretaire", "pedagogique", "professeur"];
+export const ROLES_PERSONNEL: Role[] = ["dg", "admin", "secretaire", "pedagogique", "professeur", "webmaster"];
 const TOUS: Role[] = ["dg", "admin", "secretaire", "pedagogique", "professeur"];
 
 /* Rubriques de l'espace de gestion et rôles qui y ont accès par défaut.
    Le DG peut restreindre ou élargir les rubriques de chaque personne (colonne profils.sections). */
 export const SECTIONS_GESTION = [
-  { key: "tableau", label: "Tableau de bord", href: "/gestion", roles: TOUS },
-  { key: "recherche", label: "Recherche", href: "/gestion/recherche", roles: TOUS },
+  { key: "tableau", label: "Tableau de bord", href: "/gestion", roles: [...TOUS, "webmaster"] },
+  { key: "recherche", label: "Recherche", href: "/gestion/recherche", roles: [...TOUS, "webmaster"] },
+  { key: "site", label: "Studio du site", href: "/gestion/site", roles: ["dg", "webmaster"] },
   { key: "comptes", label: "Comptes & rôles", href: "/gestion/comptes", roles: ["dg"] },
-  { key: "inscriptions", label: "Inscriptions", href: "/gestion/inscriptions", roles: ["dg", "admin", "secretaire"] },
+  { key: "inscriptions", label: "Inscriptions", href: "/gestion/inscriptions", roles: ["dg", "admin", "secretaire", "webmaster"] },
   { key: "demandes", label: "Permissions & retards", href: "/gestion/demandes", roles: ["dg", "admin", "secretaire", "pedagogique"] },
-  { key: "apprenants", label: "Apprenants", href: "/gestion/apprenants", roles: TOUS },
+  { key: "apprenants", label: "Apprenants & cartes", href: "/gestion/apprenants", roles: [...TOUS, "webmaster"] },
   { key: "professeurs", label: "Professeurs", href: "/gestion/professeurs", roles: ["dg", "admin", "pedagogique"] },
   { key: "filieres", label: "Filières & matières", href: "/gestion/filieres", roles: ["dg", "admin", "pedagogique"] },
   { key: "presences", label: "Présences", href: "/gestion/presences", roles: TOUS },

@@ -3,19 +3,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
-import ContentBlocks from "@/components/ContentBlocks";
-import { SECTIONS } from "@/lib/site-content";
+import ContentBlocks, { contexteBlocs } from "@/components/ContentBlocks";
+import { getSite, getSitePublie, sectionsDuSite } from "@/lib/site";
+import { nonOptimise } from "@/lib/site/images";
 
 /* =============================================
    SOUS-PAGE D'UNE SECTION (ex. /filieres/informatique)
    ============================================= */
-export const dynamicParams = false;
 
 /* Pages ayant leur propre route (contenu dynamique depuis la base) */
 const ROUTES_DEDIEES = new Set(["informations/actualites", "inscription/formulaire"]);
 
-export function generateStaticParams() {
-  return Object.entries(SECTIONS).flatMap(([section, data]) =>
+export async function generateStaticParams() {
+  return Object.entries(sectionsDuSite(await getSitePublie())).flatMap(([section, data]) =>
     Object.keys(data.pages ?? {})
       .filter((slug) => !ROUTES_DEDIEES.has(`${section}/${slug}`))
       .map((slug) => ({ section, slug }))
@@ -26,13 +26,14 @@ type Props = { params: Promise<{ section: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { section, slug } = await params;
-  const page = SECTIONS[section]?.pages?.[slug];
+  const page = sectionsDuSite(await getSite())[section]?.pages?.[slug];
   return page ? { title: page.title, description: page.intro } : {};
 }
 
 export default async function SubPage({ params }: Props) {
   const { section, slug } = await params;
-  const parent = SECTIONS[section];
+  const site = await getSite();
+  const parent = sectionsDuSite(site)[section];
   const page = parent?.pages?.[slug];
   if (!parent || !page) notFound();
 
@@ -51,10 +52,10 @@ export default async function SubPage({ params }: Props) {
           <div style={{ minWidth: 0 }}>
             {page.image && (
               <div className="page-image">
-                <Image src={page.image} alt={page.title} fill priority sizes="(max-width: 1023px) 100vw, 820px" style={{ objectFit: "cover" }} />
+                <Image src={page.image} unoptimized={nonOptimise(page.image)} alt={page.title} fill priority sizes="(max-width: 1023px) 100vw, 820px" style={{ objectFit: "cover" }} />
               </div>
             )}
-            <ContentBlocks blocks={page.blocks} />
+            <ContentBlocks blocks={page.blocks} ctx={contexteBlocs(site)} />
           </div>
 
           <aside className="side-nav" aria-label={parent.title}>

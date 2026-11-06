@@ -60,6 +60,9 @@ export type Block =
   | { type: "cards"; title?: string; items: { title: string; desc: string; href?: string; image?: string; color?: string }[] }
   | { type: "faq"; title: string; items: { q: string; a: string }[] }
   | { type: "gallery"; title?: string; images: { src: string; alt: string }[] }
+  | { type: "image"; src: string; alt: string; legende?: string }
+  | { type: "video"; url: string; titre?: string }
+  | { type: "boutons"; items: { label: string; href: string; style?: string }[] }
   | { type: "pending"; text: string }
   | { type: "director" }
   | { type: "cta"; title: string; text: string; primary: Link; secondary?: Link };
@@ -103,7 +106,7 @@ const COLORS = {
 };
 
 /* ---------- Filières ---------- */
-const FILIERES: Record<string, Page & { color: string; duree?: string; skills?: string[]; jobs?: string[] }> = {
+export const FILIERES: Record<string, Page & { color: string; duree?: string; skills?: string[]; jobs?: string[] }> = {
   informatique: {
     title: "Informatique appliquée",
     color: COLORS.blue,
@@ -117,7 +120,7 @@ const FILIERES: Record<string, Page & { color: string; duree?: string; skills?: 
   mecatronique: {
     title: "Mécatronique",
     color: COLORS.red,
-    image: "/images/filiere-mecatronique.jpg",
+    image: "/images/filiere-mecatronique-atelier.jpg",
     intro: "Au croisement de la mécanique, de l'électronique et de l'informatique, la mécatronique forme des techniciens polyvalents de l'industrie.",
     duree: "2 ans",
     skills: ["Mécanique et lecture de plans", "Électronique et électrotechnique", "Automatismes et automates programmables", "Robotique de base", "Maintenance industrielle"],
@@ -165,6 +168,9 @@ const FILIERES: Record<string, Page & { color: string; duree?: string; skills?: 
     ],
   },
 };
+
+/* Blocs propres à chaque filière, avant ajout des blocs générés (repris par le Studio) */
+export const BLOCS_FILIERES: Record<string, Block[]> = Object.fromEntries(Object.entries(FILIERES).map(([k, f]) => [k, [...f.blocks]]));
 
 // Pages détaillées des filières : compétences, débouchés, durée
 for (const f of Object.values(FILIERES)) {

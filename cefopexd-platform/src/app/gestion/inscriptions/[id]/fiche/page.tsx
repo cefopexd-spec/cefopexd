@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import DocumentOfficiel, { DocLigne } from "@/components/DocumentOfficiel";
 import PrintButton from "@/components/PrintButton";
 import { requireGestion } from "@/lib/session";
-import { PIECES, STATUTS_INSCRIPTION } from "@/lib/roles";
+import { STATUTS_INSCRIPTION } from "@/lib/roles";
+import { getSite } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Fiche d'inscription" };
 
@@ -16,7 +17,8 @@ const dateFr = (d?: string | null) => (d ? new Date(d).toLocaleDateString("fr-FR
    ============================================= */
 export default async function FicheInscription({ params }: Props) {
   const { id } = await params;
-  const { supabase } = await requireGestion("inscriptions");
+  const [{ supabase }, site] = await Promise.all([requireGestion("inscriptions"), getSite()]);
+  const PIECES = site.documents.pieces;
   const { data: ins } = await supabase.from("inscriptions").select("*").eq("id", id).maybeSingle();
   if (!ins) notFound();
   const [{ data: apprenant }, { data: filiere }] = await Promise.all([
@@ -34,7 +36,7 @@ export default async function FicheInscription({ params }: Props) {
       </div>
 
       <DocumentOfficiel
-        titre="Fiche d'inscription"
+        titre={site.documents.titreFiche}
         reference={`Réf. INS-${ins.id.slice(0, 8).toUpperCase()}${apprenant?.matricule ? ` — Matricule ${apprenant.matricule}` : ""} — ${STATUTS_INSCRIPTION[ins.statut]?.label ?? ""}`}
       >
         <h2 className="doc-section">Identité de l&#39;apprenant(e)</h2>

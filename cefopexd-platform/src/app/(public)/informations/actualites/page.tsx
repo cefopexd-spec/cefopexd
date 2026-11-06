@@ -3,9 +3,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
-import ContentBlocks from "@/components/ContentBlocks";
+import ContentBlocks, { contexteBlocs } from "@/components/ContentBlocks";
+import { nonOptimise } from "@/lib/site/images";
 import { createClient } from "@/lib/supabase/server";
-import { SECTIONS } from "@/lib/site-content";
+import { getSite, sectionsDuSite } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Actualités & annonces",
@@ -28,14 +29,16 @@ export default async function ActualitesPage() {
     .order("created_at", { ascending: false })
     .limit(30);
   const pubs = (data ?? []) as Pub[];
-  const page = SECTIONS.informations.pages!.actualites;
+  const site = await getSite();
+  const SECTIONS = sectionsDuSite(site);
+  const page = SECTIONS.informations?.pages?.actualites ?? { title: "Actualités & annonces", intro: "", blocks: [] };
 
   return (
     <>
       <PageHeader
         title={page.title}
         intro={page.intro}
-        crumbs={[{ label: SECTIONS.informations.title, href: "/informations" }, { label: page.title }]}
+        crumbs={[{ label: SECTIONS.informations?.title ?? "S'informer", href: "/informations" }, { label: page.title }]}
       />
       <section className="section">
         <div className="container">
@@ -44,7 +47,7 @@ export default async function ActualitesPage() {
               {pubs.map((p) => (
                 <article key={p.id} className="pub-card" id={p.id}>
                   {p.image_url && (
-                    <div className="pub-img"><Image src={p.image_url} alt="" fill sizes="(max-width: 700px) 100vw, 360px" style={{ objectFit: "cover" }} unoptimized={!p.image_url.startsWith("/")} /></div>
+                    <div className="pub-img"><Image src={p.image_url} alt="" fill sizes="(max-width: 700px) 100vw, 360px" style={{ objectFit: "cover" }} unoptimized={nonOptimise(p.image_url)} /></div>
                   )}
                   <div className="pub-body">
                     <span className="pub-meta">
@@ -62,7 +65,7 @@ export default async function ActualitesPage() {
               ))}
             </div>
           )}
-          <ContentBlocks blocks={page.blocks} />
+          <ContentBlocks blocks={page.blocks} ctx={contexteBlocs(site)} />
           <p className="field-hint" style={{ marginTop: 24 }}>
             Pour recevoir les annonces réservées aux apprenants et aux parents, <Link href="/connexion">connectez-vous à votre espace</Link>.
           </p>

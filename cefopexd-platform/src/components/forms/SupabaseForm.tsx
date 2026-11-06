@@ -18,6 +18,7 @@ export default function SupabaseForm({
   successText,
   nextSteps,
   apresEnvoi,
+  telephone,
   children,
 }: {
   table: "inscriptions" | "contacts";
@@ -27,6 +28,8 @@ export default function SupabaseForm({
   nextSteps?: string[];
   /** Server Action appelée après l'enregistrement (ex. e-mail au personnel) */
   apresEnvoi?: (id: string) => Promise<void>;
+  /** Numéro affiché après l'envoi (réglé dans le Studio du site) */
+  telephone?: string;
   children: ReactNode;
 }) {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -133,7 +136,7 @@ export default function SupabaseForm({
           <AlertCircle size={18} />
           <span>
             L&#39;envoi a échoué. Réessayez dans un instant, ou contactez-nous directement au{" "}
-            <a href={`tel:${CONTACT.telephones[0].replace(/\s/g, "")}`}>{CONTACT.telephones[0]}</a>.
+            <a href={`tel:${(telephone || CONTACT.telephones[0]).replace(/\s/g, "")}`}>{telephone || CONTACT.telephones[0]}</a>.
           </span>
         </div>
       )}

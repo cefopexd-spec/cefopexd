@@ -1,12 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { getSite } from "@/lib/site";
+import { nonOptimise } from "@/lib/site/images";
 
 /* =============================================
    BANDEAU EN-TÊTE DES PAGES INTÉRIEURES
    Même fond que le hero : vert clair + photo du campus en filigrane
    ============================================= */
-export default function PageHeader({
+export default async function PageHeader({
   title,
   intro,
   crumbs,
@@ -17,10 +19,12 @@ export default function PageHeader({
   crumbs: { label: string; href?: string }[];
   actions?: React.ReactNode;
 }) {
+  const { identite } = await getSite();
+  const fond = identite.imageBandeau || "/images/campus-cefopexd.jpg";
   return (
     <section className="page-header">
       <div className="hero-bg" aria-hidden="true">
-        <Image src="/images/campus-cefopexd.jpg" alt="" fill sizes="100vw" quality={60} style={{ objectFit: "cover" }} />
+        <Image src={fond} unoptimized={nonOptimise(fond)} alt="" fill sizes="100vw" quality={60} style={{ objectFit: "cover" }} />
       </div>
       <div className="container" style={{ position: "relative", zIndex: 1 }}>
         <nav className="breadcrumb" aria-label="Fil d'Ariane">

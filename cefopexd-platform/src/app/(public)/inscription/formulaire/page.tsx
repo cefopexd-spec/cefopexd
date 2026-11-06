@@ -10,15 +10,13 @@ import { alerteNouvelleInscription } from "../actions";
 import FileUpload from "@/components/forms/FileUpload";
 import { CATEGORIES_DOCUMENT, DOCUMENTS_INSCRIPTION } from "@/lib/roles";
 import SupabaseForm, { Field, SelectField, TextAreaField } from "@/components/forms/SupabaseForm";
-import { CONTACT, SECTIONS } from "@/lib/site-content";
+import { getSite } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Pré-inscription en ligne",
   description: "Déposez votre pré-inscription au CeFoPExD : notre équipe d'admission vous recontacte pour finaliser votre dossier.",
 };
 
-const FILIERES = Object.values(SECTIONS.filieres.pages ?? {}).map((p) => p.title);
-const NIVEAUX = ["BEPC", "Probatoire", "BAC", "BAC +2 et plus", "Autre"];
 
 /* =============================================
    PRÉ-INSCRIPTION — enregistrée dans la table `inscriptions`
@@ -26,16 +24,19 @@ const NIVEAUX = ["BEPC", "Probatoire", "BAC", "BAC +2 et plus", "Autre"];
    la demande est rattachée au compte et visible dans « Mon espace ».
    ============================================= */
 export default async function PreInscriptionPage() {
-  const { user, profil } = await getSession();
+  const [{ user, profil }, site] = await Promise.all([getSession(), getSite()]);
+  const F = site.formulaires.inscription;
+  const FILIERES = site.filieres.filter((f) => f.visible !== false).map((f) => f.titre);
+  const tel = site.contact.telephones[0] ?? "";
   // Compte créé mais profil incomplet : on le complète d'abord
   if (user && !profil?.profil_complet) redirect("/mon-compte/completer?next=/inscription/formulaire");
 
   return (
     <>
       <PageHeader
-        title="Pré-inscription en ligne"
-        intro="Remplissez ce formulaire en quelques minutes : notre équipe d'admission vous recontacte pour finaliser votre dossier au centre."
-        crumbs={[{ label: "Inscription", href: "/inscription" }, { label: "Pré-inscription en ligne" }]}
+        title={F.titre}
+        intro={F.intro}
+        crumbs={[{ label: "Inscription", href: "/inscription" }, { label: F.titre }]}
       />
       <section className="section">
         <div className="container form-layout">
@@ -43,11 +44,8 @@ export default async function PreInscriptionPage() {
             {!profil ? (
               <div className="auth-gate">
                 <span className="auth-gate-ico"><Lock size={22} /></span>
-                <h2>Créez votre compte pour vous pré-inscrire</h2>
-                <p>
-                  Indiquez votre identité, puis continuez avec Google. Vous compléterez ensuite votre photo et vos documents,
-                  et suivrez votre demande dans « Mon espace ».
-                </p>
+                <h2>{F.connexionTitre}</h2>
+                <p>{F.connexionTexte}</p>
                 <CreationCompte next="/inscription/formulaire" />
                 <div className="auth-separateur"><span>déjà un compte ?</span></div>
                 <GoogleButton next="/inscription/formulaire" label="Me connecter avec Google" />
@@ -76,12 +74,9 @@ export default async function PreInscriptionPage() {
             <div className="form-notice">
               <Info size={20} />
               <div>
-                <strong>Avant de commencer</strong>
+                <strong>{F.consignesTitre}</strong>
                 <ul>
-                  <li>Les champs marqués d&#39;un <em>*</em> sont obligatoires.</li>
-                  <li>Indiquez un numéro de téléphone sur lequel vous êtes joignable : c&#39;est par ce numéro que nous vous recontactons.</li>
-                  <li>Après l&#39;envoi, un <strong>numéro de référence</strong> s&#39;affiche : notez-le, il vous sera demandé au centre.</li>
-                  <li>La pré-inscription est gratuite et ne vous engage pas.</li>
+                  {F.consignes.map((c, i) => <li key={i}>{c}</li>)}
                 </ul>
               </div>
             </div>
@@ -89,20 +84,17 @@ export default async function PreInscriptionPage() {
             <SupabaseForm
               table="inscriptions"
               apresEnvoi={alerteNouvelleInscription}
-              submitLabel="Envoyer ma pré-inscription"
-              successTitle="Votre pré-inscription est bien enregistrée !"
-              successText="Notre équipe d'admission vous contactera très prochainement par téléphone pour la suite de votre dossier."
-              nextSteps={[
-                "Notre équipe vous appelle pour fixer un rendez-vous.",
-                "Vous déposez votre dossier au centre (diplôme, acte de naissance, 2 photos d'identité).",
-                "Un entretien d'orientation confirme votre choix de filière.",
-              ]}
+              submitLabel={F.bouton}
+              successTitle={F.succesTitre}
+              successText={F.succesTexte}
+              nextSteps={F.etapesApres}
+              telephone={tel}
             >
               {/* Qui est le demandeur et pourquoi : repris du profil */}
               <input type="hidden" name="type_demandeur" value={profil.type_demandeur ?? ""} />
               <input type="hidden" name="motif" value={profil.motif ?? ""} />
 
-              <h2 className="form-section-title">1. Identité de l&#39;apprenant(e)</h2>
+              <h2 className="form-section-title">{F.titreIdentite}</h2>
               <div className="form-grid">
                 <Field label="Nom" name="nom" required autoComplete="family-name" defaultValue={profil.nom ?? ""} />
                 <Field label="Prénom(s)" name="prenom" required autoComplete="given-name" defaultValue={profil.prenom ?? ""} />
@@ -117,7 +109,7 @@ export default async function PreInscriptionPage() {
                 </p>
               )}
 
-              <h2 className="form-section-title">2. Photo et documents de l&#39;apprenant(e)</h2>
+              <h2 className="form-section-title">{F.titreDocuments}</h2>
               <div className="upload-grid">
                 <FileUpload label="Photo d'identité (format passeport)" categorie="photo" bucket="photos" required hint="Visage de face, fond clair." />
                 {DOCUMENTS_INSCRIPTION.map((c) => (
@@ -125,19 +117,18 @@ export default async function PreInscriptionPage() {
                 ))}
               </div>
 
-              <h2 className="form-section-title">3. Votre formation</h2>
+              <h2 className="form-section-title">{F.titreFormation}</h2>
               <div className="form-grid">
                 <SelectField label="Filière souhaitée" name="filiere" options={FILIERES} required defaultLabel="— Choisir une filière —" />
-                <SelectField label="Niveau d'étude" name="niveau_etude" options={NIVEAUX} required defaultLabel="— Choisir un niveau —" />
+                <SelectField label="Niveau d'étude" name="niveau_etude" options={F.niveaux} required defaultLabel="— Choisir un niveau —" />
                 <TextAreaField label="Message (facultatif)" name="message" placeholder="Une question, une précision sur votre parcours…" />
               </div>
 
               <label className="consent">
                 <input type="checkbox" name="consentement" required />
                 <span>
-                  J&#39;accepte d&#39;être recontacté(e) par le CeFoPExD au sujet de ma demande, ainsi que les{" "}
-                  <Link href="/conditions-utilisation">conditions d&#39;utilisation</Link> et la{" "}
-                  <Link href="/confidentialite">politique de confidentialité</Link>.
+                  {F.consentement}{" "}
+                  (<Link href="/conditions-utilisation">conditions</Link> · <Link href="/confidentialite">confidentialité</Link>)
                 </span>
               </label>
             </SupabaseForm>
@@ -146,17 +137,10 @@ export default async function PreInscriptionPage() {
           </div>
 
           <aside className="form-aside">
-            <h2 className="block-title">Comment ça se passe ?</h2>
+            <h2 className="block-title">{F.asideTitre}</h2>
             <ol className="steps">
-              {[
-                ["Connexion avec Google", "Votre compte est créé en un clic."],
-                ["Pré-inscription en ligne", "Vous remplissez ce formulaire."],
-                ["Appel de l'équipe", "Nous vous contactons pour fixer un rendez-vous."],
-                ["Dépôt du dossier", "Copie du diplôme, acte de naissance, 2 photos d'identité."],
-                ["Entretien d'orientation", "Un conseiller vous aide à confirmer votre choix."],
-                ["Rentrée", "Bienvenue dans la famille CeFoPExD !"],
-              ].map(([t, d], i) => (
-                <li key={t}>
+              {F.etapes.map(({ titre: t, desc: d }, i) => (
+                <li key={i}>
                   <span className="step-num">{i + 1}</span>
                   <div><strong>{t}</strong><p>{d}</p></div>
                 </li>
@@ -174,7 +158,7 @@ export default async function PreInscriptionPage() {
               <Phone size={18} />
               <div>
                 <strong>Besoin d&#39;aide ?</strong>
-                <a href={`tel:${CONTACT.telephones[0].replace(/\s/g, "")}`}>{CONTACT.telephones[0]}</a>
+                <a href={`tel:${tel.replace(/\s/g, "")}`}>{tel}</a>
               </div>
             </div>
           </aside>

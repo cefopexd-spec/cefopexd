@@ -3,36 +3,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { MapPin, Phone, Mail, ArrowUp, Navigation } from "lucide-react";
+import { MapPin, Phone, Mail, ArrowUp, Navigation, Clock } from "lucide-react";
 import SocialIcons, { WhatsappIcon } from "@/components/SocialIcons";
 import ChatWidget from "@/components/ChatWidget";
-import { CONTACT } from "@/lib/site-content";
+import type { SiteConfig } from "@/lib/site/types";
+import { nonOptimise } from "@/lib/site/images";
 
-const QUICK_LINKS = [
-  { label: "À propos du centre", href: "/a-propos/presentation" },
-  { label: "Mot du Directeur Général", href: "/a-propos/mot-du-dg" },
-  { label: "Comment s'inscrire", href: "/inscription/procedure" },
-  { label: "Pré-inscription en ligne", href: "/inscription/formulaire" },
-  { label: "Actualités & annonces", href: "/informations/actualites" },
-  { label: "Questions fréquentes", href: "/informations/faq" },
-  { label: "Contact", href: "/contact" },
-];
-
-const FILIERE_LINKS = [
-  { label: "Informatique appliquée", href: "/filieres/informatique" },
-  { label: "Mécatronique", href: "/filieres/mecatronique" },
-  { label: "Agro-alimentaire", href: "/filieres/agro-alimentaire" },
-  { label: "Énergie renouvelable", href: "/filieres/energie-renouvelable" },
-  { label: "Langue allemande", href: "/filieres/langue-allemande" },
-  { label: "Formations courtes", href: "/filieres/formations-courtes" },
-];
+export type PiedData = {
+  logo: string;
+  nom: string;
+  pied: SiteConfig["pied"];
+  contact: SiteConfig["contact"];
+  reseaux: SiteConfig["reseaux"];
+};
 
 /* =============================================
-   COMPOSANT FOOTER
+   PIED DE PAGE (entièrement modifiable dans le Studio du site)
    ============================================= */
-export default function Footer() {
+export default function Footer({ site }: { site: PiedData }) {
+  const { pied, contact } = site;
   const [showTop, setShowTop] = useState(false);
-  const year = new Date().getFullYear();
+  const annee = String(new Date().getFullYear());
 
   useEffect(() => {
     const handleScroll = () => setShowTop(window.scrollY > 400);
@@ -43,80 +34,72 @@ export default function Footer() {
   return (
     <>
       <footer className="site-footer">
-        <div className="container footer-grid">
+        <div className="container footer-grid" style={{ "--cols": Math.max(pied.colonnes.length, 1) } as React.CSSProperties}>
           {/* ---- Logo + présentation ---- */}
           <div>
-            <Link href="/" className="footer-logo" aria-label="CeFoPExD — Accueil">
-              <Image src="/logo-cefopexd.png" alt="Logo CeFoPExD" fill sizes="132px" style={{ objectFit: "contain" }} />
+            <Link href="/" className="footer-logo" aria-label={`${site.nom} — Accueil`}>
+              <Image src={site.logo} unoptimized={nonOptimise(site.logo)} alt={`Logo ${site.nom}`} fill sizes="132px" style={{ objectFit: "contain" }} />
             </Link>
-            <p className="footer-about">
-              Centre de Formation Professionnelle d&#39;Excellence de Dévikinmé. Des formations qualifiantes pour un avenir durable.
-            </p>
-            <SocialIcons variant="dark" size={15} />
+            {pied.texteApropos && <p className="footer-about">{pied.texteApropos}</p>}
+            <SocialIcons reseaux={site.reseaux} variant="dark" size={15} />
           </div>
 
-          {/* ---- Liens rapides ---- */}
-          <div>
-            <h3 className="footer-title">Liens rapides</h3>
-            <ul className="footer-links">
-              {QUICK_LINKS.map(({ label, href }) => (
-                <li key={href}><Link href={href}>{label}</Link></li>
-              ))}
-            </ul>
-          </div>
-
-          {/* ---- Filières ---- */}
-          <div>
-            <h3 className="footer-title">Nos filières</h3>
-            <ul className="footer-links">
-              {FILIERE_LINKS.map(({ label, href }) => (
-                <li key={href}><Link href={href}>{label}</Link></li>
-              ))}
-            </ul>
-          </div>
+          {/* ---- Colonnes de liens ---- */}
+          {pied.colonnes.map((col, i) => (
+            <div key={`${col.titre}-${i}`}>
+              <h3 className="footer-title">{col.titre}</h3>
+              <ul className="footer-links">
+                {(col.liens ?? []).map(({ label, href }, j) => (
+                  <li key={`${href}-${j}`}><Link href={href || "/"}>{label}</Link></li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
           {/* ---- Contact + localisation ---- */}
           <div>
-            <h3 className="footer-title">Nous trouver</h3>
+            <h3 className="footer-title">{pied.titreContact}</h3>
             <ul className="footer-contact">
-              <li><MapPin size={16} /><span>{CONTACT.localisation}<br />{CONTACT.adresse}</span></li>
-              <li>
-                <Phone size={16} />
-                <span>
-                  {CONTACT.telephones.map((t) => (
-                    <a key={t} href={`tel:${t.replace(/\s/g, "")}`}>{t}<br /></a>
-                  ))}
-                </span>
-              </li>
-              <li><Mail size={16} /><a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+              <li><MapPin size={16} /><span>{contact.localisation}<br />{contact.adresse}</span></li>
+              {contact.telephones.length > 0 && (
+                <li>
+                  <Phone size={16} />
+                  <span>
+                    {contact.telephones.map((t) => (
+                      <a key={t} href={`tel:${t.replace(/\s/g, "")}`}>{t}<br /></a>
+                    ))}
+                  </span>
+                </li>
+              )}
+              {contact.email && <li><Mail size={16} /><a href={`mailto:${contact.email}`}>{contact.email}</a></li>}
+              {contact.horaires && <li><Clock size={16} /><span>{contact.horaires}</span></li>}
             </ul>
-            <div className="footer-map">
-              <iframe
-                src={CONTACT.carte}
-                title="Localisation du CeFoPExD"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-            <a href={CONTACT.itineraire} target="_blank" rel="noopener noreferrer" className="footer-route">
-              <Navigation size={14} /> Itinéraire vers le centre
-            </a>
+            {pied.afficherCarte && contact.carte && (
+              <div className="footer-map">
+                <iframe src={contact.carte} title={`Localisation du ${site.nom}`} loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+              </div>
+            )}
+            {contact.itineraire && (
+              <a href={contact.itineraire} target="_blank" rel="noopener noreferrer" className="footer-route">
+                <Navigation size={14} /> {pied.texteItineraire}
+              </a>
+            )}
           </div>
         </div>
 
-        <div className="footer-slogan">Ensemble pour une jeunesse compétente et un avenir meilleur !</div>
+        {pied.slogan && <div className="footer-slogan">{pied.slogan}</div>}
 
         <div className="footer-bottom">
-          <span>© {year} CeFoPExD — Tous droits réservés</span>
+          <span>{pied.copyright.replace("{annee}", annee)}</span>
           <div>
-            <Link href="/mentions-legales">Mentions légales</Link>
-            <Link href="/conditions-utilisation">Conditions d&#39;utilisation</Link>
-            <Link href="/confidentialite">Politique de confidentialité</Link>
+            {pied.liensLegaux.map((l, i) => (
+              <Link key={`${l.href}-${i}`} href={l.href || "/"}>{l.label}</Link>
+            ))}
           </div>
         </div>
       </footer>
 
-      {/* ========== BOUTONS FLOTTANTS : WhatsApp + retour en haut ========== */}
+      {/* ========== BOUTONS FLOTTANTS : WhatsApp + assistant + retour en haut ========== */}
       <div className="floating-actions">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -125,17 +108,19 @@ export default function Footer() {
         >
           <ArrowUp size={18} />
         </button>
-        <ChatWidget />
-        <a
-          href={CONTACT.whatsapp}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Discuter sur WhatsApp"
-          title="Discuter sur WhatsApp"
-          className="float-btn float-whatsapp"
-        >
-          <WhatsappIcon size={22} />
-        </a>
+        {pied.assistant && <ChatWidget />}
+        {pied.whatsappFlottant && contact.whatsapp && (
+          <a
+            href={contact.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Discuter sur WhatsApp"
+            title="Discuter sur WhatsApp"
+            className="float-btn float-whatsapp"
+          >
+            <WhatsappIcon size={22} />
+          </a>
+        )}
       </div>
     </>
   );
